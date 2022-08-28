@@ -1,0 +1,17 @@
+key.txt
+img/hentai/*
+img/jinx/*
+img/porn/*
+img/002/*
+img/pierrot/*
+img/wallpaper/*
+img/profil/*
+img/badge/*
+log.txt
+__pycache__
+.taverne.png
+lib/credentials
+perms/user.json
+perms/wallpaper.json
+music/*
+musicCachePath
