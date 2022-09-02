@@ -17,9 +17,16 @@ import hashlib
 import json
 import praw
 import lib.imageMaker as imageMaker
+import lib.commands as commands
 
-with open("/home/ethann/Document/BotDiscord/GeorgeLeBarman/key.txt", "r") as key:
-    TOKEN = key.readline()
+BotId = 1
+
+TOKEN = None
+if os.path.exists("key.txt"):
+    with open("key.txt", "r") as key:
+        TOKEN = key.readline()
+else:
+    TOKEN = commands.getBotInfo(BotId)[1]
 
 intents = discord.Intents.default()
 intents.members = True
@@ -29,14 +36,6 @@ client = discord.Client(intents=intents)
 reddit = praw.Reddit(client_id='yyUCyKBxIWjKESgtOhlaBg',
                      client_secret='bM5hG8gkzMokN2MvG_sTsP-g3OfuIg',
                      user_agent='lol', check_for_async=False)
-
-def permsLoad(Basefile="/home/ethann/Document/BotDiscord/GeorgeLeBarman/perms/option.json"):
-    with open(Basefile, "r") as jsonFile:
-        return json.load(jsonFile, object_hook = None)
-
-def permsSave(jsonInput, Basefile="/home/ethann/Document/BotDiscord/GeorgeLeBarman/perms/option.json"):
-    with open(Basefile, "w") as jsonFile:
-        jsonFile.write(json.dumps(jsonInput))
 
 def permsForHelp(command):
     text = ""
@@ -116,11 +115,10 @@ def getBarImage():
             url = "https://cdn.discordapp.com/avatars/"+str(member.id)+"/"+member.avatar+".png"
             people[coord].append({"username": member.name, "profil": url })
 
-    return imageMaker.createBar('.taverne.png' ,'/home/ethann/Document/BotDiscord/GeorgeLeBarman/img/taverne.jpg', coords, people)
+    return imageMaker.createBar('.taverne.png' ,'img/taverne.jpg', coords, people)
 
 async def quit(message,argument):
     await message.channel.send("bye, bye")
-    await client.logout()
     await client.close()
 
 async def clear(message,argument):
@@ -130,7 +128,7 @@ async def clear(message,argument):
 async def reload(message,argument):
     global options
     options = permsLoad()
-    root = permsLoad("/home/ethann/Document/BotDiscord/GeorgeLeBarman/perms/root.json")
+    root = permsLoad("perms/root.json")
     await message.channel.send("reloaded")
 
 async def broadcast(message,argument):
@@ -187,16 +185,9 @@ async def rootManage(message,argument):
     else:
         await message.channel.send("Usage : !root (add/remove/list) (@someone)")
 
-rootoptions = {
-    'quit' : {'cmd': help, 'description': "Pour éteinde le bot", 'perm':True, 'hide':False },
-    'clear' : {'cmd': clear, 'description': "Pour clear tout les messages d'un salon textuelle", 'perm':True, 'hide':False },
-    'reload' : {'cmd': reload, 'description': "Pour reload les commands du bot", 'hide':True , "nsfw": False},
-    'channel' : {'cmd': channel, 'description': "Gestion des permission pour l'accés au salon textuelle", 'perm':True, 'hide':False },
-    'root' : {'cmd': rootManage, 'description': "Manage root account", 'perm':True, "nsfw": False},
-    'broadcast' : {'cmd': broadcast, 'description': "broadcast in a channel", 'perm': True, "nsfw": False}
-}
+rootoptions = commands.getCommands(BotId, True)
 
-options = permsLoad();
+options = commands.getCommands(BotId)
 # {
 #   "help":{"cmd":"help", "description":"Simple Help page", "perm":["dm",928452291500048434], "hide":false},
 #   "verre":{"cmd":"verre", "description":"Pour te servir un beau verre", "perm":[928452291500048434], "hide":false},
@@ -214,11 +205,11 @@ options = permsLoad();
 # }
 
 
-root = permsLoad("/home/ethann/Document/BotDiscord/GeorgeLeBarman/perms/root.json")
+root = commands.getAllRoot()
 
 @client.event
 async def on_message(message):
-    with open("/home/ethann/Document/BotDiscord/GeorgeLeBarman/log.txt", "a") as f:
+    with open("log.txt", "a") as f:
         f.write("(in "+str(message.channel)+" at "+str(datetime.datetime.now())+")"+str(message.author)+": "+message.content+"\n")
     print("(in "+str(message.channel)+" at "+str(datetime.datetime.now())+")"+str(message.author)+": "+message.content)
     if message.author == client.user:
@@ -235,10 +226,10 @@ async def on_message(message):
             argument.append("")
         if commands[0][0] in rootoptions:
             if str(message.author.id) in root:
-                await rootoptions[commands[0][0]]['cmd'](message,argument)
+                await eval(rootoptions[commands[0][0]]['cmd'])
 
         if commands[0][0] in options:
-            if options[commands[0][0]]['perm'] == True:
+            if not options[commands[0][0]]['perm']:
                 await eval(options[commands[0][0]]['cmd'])
             elif 'dm' in options[commands[0][0]]['perm'] and isinstance(message.channel, discord.channel.DMChannel):
                 await eval(options[commands[0][0]]['cmd'])
@@ -251,7 +242,6 @@ async def on_ready():
     print(client.user)
     print(client.user.id)
     print('------')
-    options = permsLoad()
 
 # Join Leave
 

@@ -176,10 +176,7 @@ async def manageWallpaper(message,argument):
         else:
             await message.channel.send("Wallpaper does not exist")
 
-rootoptions = {
-    'money' : {'cmd': money, 'description': "Pour ajouter de l'argent a quelqu'un", 'perm':True, 'hide':False },
-    'wallpaper' : {'cmd': manageWallpaper, 'description': "Pour ajouter des wallpaper", 'perm':True, 'hide':False }
-}
+rootoptions = {}
     # 'quitArchiveuse' : {'cmd': help, 'description': "Pour éteinde le bot", 'perm':True, 'hide':False },
     # 'reloadArchiveuse' : {'cmd': reload, 'description': "Pour reload les commands du bot", 'hide':True , "nsfw": False},
 

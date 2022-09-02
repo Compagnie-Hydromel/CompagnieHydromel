@@ -317,9 +317,7 @@ async def actLock(message,argument):
 
 # Music commands end
 
-rootoptions = {
-        'lock' : {'cmd': actLock, 'description': "Activer la lock pour le non root a l'accés du bot au salon musique", 'hide':True, "nsfw": False}
-    }
+rootoptions = {}
 
 options = permsLoad();
 # {
