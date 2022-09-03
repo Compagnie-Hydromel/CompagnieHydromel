@@ -1,7 +1,11 @@
 from lib.databaseConnect import querySelect, queryInsert
 
-def getCommands(botId,root=False):
-    commands = querySelect("SELECT id, name, cmdToExecute, description, hide, privateMessage FROM commands WHERE rootCommands = "+str(int(root))+" AND botId = "+str(botId))
+def getCommands(botId,root=False,all=False):
+    query = "SELECT id, name, cmdToExecute, description, hide, privateMessage FROM commands WHERE rootCommands = "+str(int(root))+" AND botId = "+str(botId)
+    if all:
+        query = "SELECT id, name, cmdToExecute, description, hide, privateMessage FROM commands"
+
+    commands = querySelect(query)
 
     valueToReturn = {}
 
@@ -26,3 +30,10 @@ def getAllRoot():
         listOfRoot.append(discordId[0])
 
     return listOfRoot
+
+def setRoot(discordId,isRoot=True):
+    if not "'" in discordId and not '"' in discordId:
+        queryInsert('UPDATE users SET isRoot = '+str(int(isRoot))+' WHERE discordId = "'+str(discordId)+'"')
+
+def setDmAccess(commandsName):
+    pass

@@ -19,6 +19,8 @@ import praw
 import lib.imageMaker as imageMaker
 import lib.commands as commands
 
+global options, rootoptions, root
+
 BotId = 1
 
 TOKEN = None
@@ -85,7 +87,7 @@ async def caveDeTorture(message, argument):
 async def SendMessage(message, argument, messages, files=None):
     if files == None:
         await message.channel.send(messages)
-    if os.path.isdir(files):
+    elif os.path.isdir(files):
         list = os.listdir(files)
         await message.channel.send(file=discord.File(files+"/"+list[random.randint(0,len(list))-1]))
     else:
@@ -126,9 +128,9 @@ async def clear(message,argument):
         await message.channel.purge()
 
 async def reload(message,argument):
-    global options
-    options = permsLoad()
-    root = permsLoad("perms/root.json")
+    rootoptions = commands.getCommands(BotId, True)
+    options = commands.getCommands(BotId)
+    root = commands.getAllRoot()
     await message.channel.send("reloaded")
 
 async def broadcast(message,argument):
@@ -144,22 +146,12 @@ async def broadcast(message,argument):
         await channel.send(message)
 
 async def channel(message,argument):
+    listAllCommands = commands.getCommands(BotId, all=True)
     if argument[0] == 'add':
-        if argument[1] in options:
-            if isinstance(message.channel, discord.channel.DMChannel):
-                options[argument[1]]['perm'].append("dm")
-            else:
-                options[argument[1]]['perm'].append(message.channel.id)
-            permsSave(options)
-            await message.channel.send("Salon ajouté")
+        
+        await message.channel.send("Salon ajouté")
     elif argument[0] == 'remove':
-        if argument[1] in options:
-            if isinstance(message.channel, discord.channel.DMChannel):
-                options[argument[0]]['perm'].remove("dm")
-            else:
-                options[argument[0]]['perm'].remove(message.channel.id)
-            permsSave(options)
-            await message.channel.send("Salon retiré")
+        await message.channel.send("Salon retiré")
 
 async def rootManage(message,argument):
     global root
@@ -168,18 +160,17 @@ async def rootManage(message,argument):
         newRoot = client.get_user(int(getUserID[0]))
 
         if argument[0] == 'add':
-            root[getUserID[0]] = {"name": str(newRoot)}
+            commands.setRoot(getUserID[0],True)
         else:
-            if getUserID[0] in root and getUserID[0] != "386200134628671492":
-                root.pop(getUserID[0])
+            commands.setRoot(getUserID[0],False)
 
-        permsSave(root, "perms/root.json")
+        root = commands.getAllRoot()
         await message.channel.send(str(newRoot)+" "+argument[0])
     elif argument[0] == 'list':
         embed=discord.Embed(title="Root", color=0x138EC3)
 
         for i in root:
-            embed.add_field(name=root[i]['name'], value=i, inline=False)
+            embed.add_field(name=client.get_user(int(i)), value=i, inline=False)
 
         await message.channel.send(embed=embed)
     else:
@@ -209,9 +200,10 @@ root = commands.getAllRoot()
 
 @client.event
 async def on_message(message):
+    log = "(in "+str(message.channel)+" at "+str(datetime.datetime.now())+")"+str(message.author)+": "+message.content
     with open("log.txt", "a") as f:
-        f.write("(in "+str(message.channel)+" at "+str(datetime.datetime.now())+")"+str(message.author)+": "+message.content+"\n")
-    print("(in "+str(message.channel)+" at "+str(datetime.datetime.now())+")"+str(message.author)+": "+message.content)
+        f.write(log+"\n")
+    print(log)
     if message.author == client.user:
         return
 
