@@ -11,8 +11,8 @@ def getCommands(botId,root=False,all=False):
 
     for command in commands:
         channels = []
-        for channel in querySelect("SELECT discordChannelId FROM channelToSend"):
-            channels.append(channel[0])
+        for channel in querySelect("SELECT discordChannelId FROM channelToSend WHERE commandsId = "+str(command[0])):
+            channels.append(int(channel[0]))
         if bool(command[5]):
             channels.append("dm")
         valueToReturn[command[1]] = {"cmd": command[2], "description": command[3], "perm": channels, "hide": bool(command[4])}
@@ -35,5 +35,9 @@ def setRoot(discordId,isRoot=True):
     if not "'" in discordId and not '"' in discordId:
         queryInsert('UPDATE users SET isRoot = '+str(int(isRoot))+' WHERE discordId = "'+str(discordId)+'"')
 
-def setDmAccess(commandsName):
-    pass
+def setDmAccess(commandsName, set=True):
+    if not "'" in discordId and not '"' in discordId:
+        queryInsert("UPDATE commands SET privateMessage = "+str(int(set))+" WHERE name = '"+str(commandsName)+"';")
+
+def addCommandsPermissionInChannels():
+    queryInsert("INSERT INTO ")

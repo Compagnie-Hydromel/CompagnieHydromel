@@ -147,11 +147,17 @@ async def broadcast(message,argument):
 
 async def channel(message,argument):
     listAllCommands = commands.getCommands(BotId, all=True)
-    if argument[0] == 'add':
-        
-        await message.channel.send("Salon ajouté")
-    elif argument[0] == 'remove':
-        await message.channel.send("Salon retiré")
+    if argument[1] in listAllCommands:
+        if argument[0] == 'add':
+            if isinstance(message.channel, discord.channel.DMChannel):
+                commands.setDmAccess(argument[1])
+            else:
+                pass
+            await message.channel.send("Salon ajouté")
+        elif argument[0] == 'remove':
+            await message.channel.send("Salon retiré")
+    else:
+        await message.channel.send("commands inexistante")
 
 async def rootManage(message,argument):
     global root
