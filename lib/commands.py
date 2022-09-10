@@ -27,7 +27,7 @@ def getAllRoot():
     listOfRoot = []
 
     for discordId in queryResult:
-        listOfRoot.append(discordId[0])
+        listOfRoot.append(str(discordId[0]))
 
     return listOfRoot
 
@@ -36,8 +36,12 @@ def setRoot(discordId,isRoot=True):
         queryInsert('UPDATE users SET isRoot = '+str(int(isRoot))+' WHERE discordId = "'+str(discordId)+'"')
 
 def setDmAccess(commandsName, set=True):
-    if not "'" in discordId and not '"' in discordId:
-        queryInsert("UPDATE commands SET privateMessage = "+str(int(set))+" WHERE name = '"+str(commandsName)+"';")
+    queryInsert("UPDATE commands SET privateMessage = "+str(int(set))+" WHERE name = '"+str(commandsName)+"'")
 
-def addCommandsPermissionInChannels():
-    queryInsert("INSERT INTO ")
+def addCommandsPermissionInChannels(commandsName, channelId):
+    commandsId = querySelect("SELECT id FROM commands WHERE name = '"+str(commandsName)+"'")[0][0]
+    queryInsert("INSERT INTO channelToSend(commandsId,discordChannelId) VALUES ("+str(commandsId)+", "+str(channelId)+")")
+
+def removeCommandsPermissionInChannels(commandsName, channelId):
+    commandsId = querySelect("SELECT id FROM commands WHERE name = '"+str(commandsName)+"'")[0][0]
+    queryInsert("DELETE FROM channelToSend WHERE commandsId = "+str(commandsId)+" AND discordChannelId = "+str(channelId))

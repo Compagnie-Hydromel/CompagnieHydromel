@@ -18,16 +18,9 @@ from contextlib import suppress
 from discord.ext import tasks
 import asyncio
 from youtube_search import YoutubeSearch
-import lib.commands as commands
 
-BotId = 2
-
-TOKEN = None
-if os.path.exists("key.txt"):
-    with open("key.txt", "r") as key:
-        TOKEN = key.readline()
-else:
-    TOKEN = commands.getBotInfo(BotId)[1]
+with open("key.txt", "r") as key:
+    TOKEN = key.readline()
 
 intents = discord.Intents.default()
 intents.members = True
@@ -40,11 +33,13 @@ vc = {}
 lock = {}
 queue = {}
 
-def reload():
-    global root, rootoptions, options
-    root = commands.getAllRoot()
-    rootoptions = commands.getCommands(BotId, True)
-    options = commands.getCommands(BotId)
+def permsLoad():
+    with open("perms/option.json", "r") as jsonFile:
+        return json.load(jsonFile, object_hook = None)
+
+def permsSave():
+    with open("perms/option.json", "w") as jsonFile:
+        jsonFile.write(json.dumps(options))
 
 # Music function
 
@@ -196,7 +191,7 @@ async def play(message,argument):
             vc[message.guild.id] = None
 
         if lock[message.guild.id] and str(message.author.id) not in root:
-            await message.channel.send("Sorry i can't")
+            await message.channel.send("non Désolé, je peux pas")
             return
 
         try:
@@ -249,7 +244,7 @@ async def stop(message,argument):
             lock[message.guild.id] = False
 
         if lock[message.guild.id] and message.author.id not in root:
-            await message.channel.send("Sorry i can't")
+            await message.channel.send("non Désolé, je peux pas")
             return
 
         if vc[message.guild.id] != None:
@@ -281,12 +276,12 @@ async def skip(message,argument):
             vc[message.guild.id] = None
 
         if lock[message.guild.id] and message.author.id not in root:
-            await message.channel.send("Sorry i can't")
+            await message.channel.send("non Désolé, je peux pas")
             return
 
         try:
             if vc[message.guild.id] == None:
-                await message.channel.send("Nothing to skip")
+                await message.channel.send("non Désolé, je peux pas")
                 return
 
             if nextMusic(vc[message.guild.id], message.guild.id):
@@ -322,9 +317,23 @@ async def actLock(message,argument):
 
 # Music commands end
 
-root = []
-rootoptions = {}
-options = {}
+rootoptions = {
+        'lock' : {'cmd': actLock, 'description': "Activer la lock pour le non root a l'accés du bot au salon musique", 'hide':True, "nsfw": False}
+    }
+
+options = permsLoad();
+# {
+#   "helpMusic": {"cmd": "help", "description": "Simple Help page for music", "perm": ["dm", 955145171484442724], "hide": false},
+#   "play": {"cmd": "play", "description": "play Music", "perm": [955145171484442724], "hide": false},
+#   "stop": {"cmd": "stop", "description": "stop Music", "perm": [955145171484442724], "hide": false},
+# }
+
+
+
+root = {
+    386200134628671492 : { 'name' : "Ethann" },
+    338972372260618241 : { 'name' : "Cirth" }
+}
 
 @tasks.loop(seconds = 1)
 async def LoopMusic():
@@ -342,7 +351,8 @@ async def LoopMusic():
 
 @client.event
 async def on_message(message):
-    print("(in "+str(message.channel)+" at "+str(datetime.datetime.now())+")"+str(message.author)+": "+message.content)
+    with open("log.txt", "a") as f:
+        f.write("(in "+str(message.channel)+" at "+str(datetime.datetime.now())+")"+str(message.author)+": "+message.content+"\n")
     if message.author == client.user:
         return
 
@@ -351,19 +361,17 @@ async def on_message(message):
         argument = re.split(' |\n',message.content[len(commands[0][0])+2:])
         for i in range(1,10):
             argument.append("")
-
-        reload()
         if commands[0][0] in rootoptions:
-            if str(message.author.id) in root:
-                await eval(rootoptions[commands[0][0]]['cmd'])
+            if message.author.id in root:
+                await rootoptions[commands[0][0]]['cmd'](message,argument)
 
         if commands[0][0] in options:
             if options[commands[0][0]]['perm'] == True:
-                await eval(options[commands[0][0]]['cmd'])
+                await eval(options[commands[0][0]]['cmd'])(message,argument)
             elif 'dm' in options[commands[0][0]]['perm'] and isinstance(message.channel, discord.channel.DMChannel):
-                await eval(options[commands[0][0]]['cmd'])
+                await eval(options[commands[0][0]]['cmd'])(message,argument)
             elif message.channel.id in options[commands[0][0]]['perm']:
-                await eval(options[commands[0][0]]['cmd'])
+                await eval(options[commands[0][0]]['cmd'])(message,argument)
 
 # End Message and Command
 
@@ -373,6 +381,7 @@ async def on_ready():
     print(client.user)
     print(client.user.id)
     print('------')
+    options = permsLoad()
     LoopMusic.start()
 
 client.run(TOKEN)

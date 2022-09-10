@@ -21,9 +21,16 @@ import lib.imageMaker as imageMaker
 from lib.user import *
 from io import BytesIO
 import requests
+import lib.commands as commands
 
-with open("key.txt", "r") as key:
-    TOKEN = key.readline()
+BotId = 3
+
+TOKEN = None
+if os.path.exists("key.txt"):
+    with open("key.txt", "r") as key:
+        TOKEN = key.readline()
+else:
+    TOKEN = commands.getBotInfo(BotId)[1]
 
 intents = discord.Intents.default()
 intents.members = True
@@ -32,13 +39,11 @@ global root, option
 
 client = discord.Client(intents=intents)
 
-def permsLoad(Basefile="perms/option.json"):
-    with open(Basefile, "r") as jsonFile:
-        return json.load(jsonFile, object_hook = None)
-
-def permsSave(jsonInput, Basefile="perms/option.json"):
-    with open(Basefile, "w") as jsonFile:
-        jsonFile.write(json.dumps(jsonInput))
+def reload():
+    global root, rootoptions, options
+    root = commands.getAllRoot()
+    rootoptions = commands.getCommands(BotId, True)
+    options = commands.getCommands(BotId)
 
 def wallpaperList(id, wallpapers=getAllWallpaper(), page=1):
     global embed
@@ -176,13 +181,7 @@ async def manageWallpaper(message,argument):
         else:
             await message.channel.send("Wallpaper does not exist")
 
-rootoptions = {}
-    # 'quitArchiveuse' : {'cmd': help, 'description': "Pour éteinde le bot", 'perm':True, 'hide':False },
-    # 'reloadArchiveuse' : {'cmd': reload, 'description': "Pour reload les commands du bot", 'hide':True , "nsfw": False},
 
-options = permsLoad();
-
-root = permsLoad("perms/root.json")
 
 @tasks.loop(seconds = 300)
 async def loopVocalPoint():
@@ -196,6 +195,11 @@ async def loopVocalPoint():
                     if not member.voice.self_mute:
                         addUserIfNotExist(str(member.id))
                         addPoint(str(member.id))
+
+
+root = []
+rootoptions = {}
+options = {}
 
 @client.event
 async def on_message(message):
@@ -214,9 +218,11 @@ async def on_message(message):
         argument = re.split(' |\n',message.content[len(commands[0][0])+2:])
         for i in range(1,10):
             argument.append("")
+
+        reload()
         if commands[0][0] in rootoptions:
             if str(message.author.id) in root:
-                await rootoptions[commands[0][0]]['cmd'](message,argument)
+                await eval(rootoptions[commands[0][0]]['cmd'])
 
         if commands[0][0] in options:
             if options[commands[0][0]]['perm'] == True:

@@ -19,8 +19,6 @@ import praw
 import lib.imageMaker as imageMaker
 import lib.commands as commands
 
-global options, rootoptions, root
-
 BotId = 1
 
 TOKEN = None
@@ -38,6 +36,12 @@ client = discord.Client(intents=intents)
 reddit = praw.Reddit(client_id='yyUCyKBxIWjKESgtOhlaBg',
                      client_secret='bM5hG8gkzMokN2MvG_sTsP-g3OfuIg',
                      user_agent='lol', check_for_async=False)
+
+def reload():
+    global root, rootoptions, options
+    root = commands.getAllRoot()
+    rootoptions = commands.getCommands(BotId, True)
+    options = commands.getCommands(BotId)
 
 def permsForHelp(command):
     text = ""
@@ -119,19 +123,9 @@ def getBarImage():
 
     return imageMaker.createBar('.taverne.png' ,'img/taverne.jpg', coords, people)
 
-async def quit(message,argument):
-    await message.channel.send("bye, bye")
-    await client.close()
-
 async def clear(message,argument):
     if not isinstance(message.channel, discord.channel.DMChannel):
         await message.channel.purge()
-
-async def reload(message,argument):
-    rootoptions = commands.getCommands(BotId, True)
-    options = commands.getCommands(BotId)
-    root = commands.getAllRoot()
-    await message.channel.send("reloaded")
 
 async def broadcast(message,argument):
     message = ""
@@ -152,9 +146,13 @@ async def channel(message,argument):
             if isinstance(message.channel, discord.channel.DMChannel):
                 commands.setDmAccess(argument[1])
             else:
-                pass
+                commands.addCommandsPermissionInChannels(argument[1], message.channel.id)
             await message.channel.send("Salon ajouté")
         elif argument[0] == 'remove':
+            if isinstance(message.channel, discord.channel.DMChannel):
+                commands.setDmAccess(argument[1], False)
+            else:
+                commands.removeCommandsPermissionInChannels(argument[1], message.channel.id)
             await message.channel.send("Salon retiré")
     else:
         await message.channel.send("commands inexistante")
@@ -170,7 +168,6 @@ async def rootManage(message,argument):
         else:
             commands.setRoot(getUserID[0],False)
 
-        root = commands.getAllRoot()
         await message.channel.send(str(newRoot)+" "+argument[0])
     elif argument[0] == 'list':
         embed=discord.Embed(title="Root", color=0x138EC3)
@@ -182,27 +179,9 @@ async def rootManage(message,argument):
     else:
         await message.channel.send("Usage : !root (add/remove/list) (@someone)")
 
-rootoptions = commands.getCommands(BotId, True)
-
-options = commands.getCommands(BotId)
-# {
-#   "help":{"cmd":"help", "description":"Simple Help page", "perm":["dm",928452291500048434], "hide":false},
-#   "verre":{"cmd":"verre", "description":"Pour te servir un beau verre", "perm":[928452291500048434], "hide":false},
-#   "biere":{"cmd":"verre", "description":"Pour te servir une belle bière", "perm":[928452291500048434], "hide":false},
-#   "beer":{"cmd":"verre", "description":"Pour te servir une belle bière", "perm":[928452291500048434], "hide":false},
-#   "hydromel":{"cmd":"hydromel", "description":"Pour te servir un verre d'hydromel", "perm":[928452291500048434], "hide":false},
-#   "water":{"cmd":"water", "description":"Pour te servir un verre d'eau pour les faibles", "perm":[928452291500048434], "hide":false},
-#   "verresansalcool":{"cmd":"verreSansAlcool", "description":"Pour te servir un verre sans alcool de faible", "perm":[928452291500048434], "hide":false},
-#   "caveDeTorture":{"cmd":"caveDeTorture", "description":"...", "perm":["dm"], "hide":true},
-#   "hentai":{"cmd":"hentai", "description":"Pour avoir des photos de hentai", "perm":["dm",952930745465307156], "hide":false},
-#   "porn":{"cmd":"porn", "description":"Pour avoir des photos pornographiques", "perm":["dm",952930745465307156], "hide":false},
-#   "jinx":{"cmd":"jinx", "description":"Pour avoir des photos de Jinx ;)", "perm":["dm",952930745465307156], "hide":false},
-#   "002":{"cmd":"ZeroTwo", "description":"Pour avoir des photos Zero Two", "perm":["dm",952930745465307156], "hide":false},
-#   "shitpost":{"cmd":"shitpost", "description":"Pour envoyer du shitpost", "perm":["dm",952930745465307156,928305986484195329], "hide":false}
-# }
-
-
-root = commands.getAllRoot()
+root = []
+rootoptions = {}
+options = {}
 
 @client.event
 async def on_message(message):
@@ -222,6 +201,8 @@ async def on_message(message):
         argument = re.split(' |\n',message.content[len(commands[0][0])+2:])
         for i in range(1,10):
             argument.append("")
+
+        reload()
         if commands[0][0] in rootoptions:
             if str(message.author.id) in root:
                 await eval(rootoptions[commands[0][0]]['cmd'])
