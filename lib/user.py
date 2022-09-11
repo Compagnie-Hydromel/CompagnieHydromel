@@ -16,6 +16,13 @@ def removeBalance(id, balance):
     else:
         return False
 
+def buy(buyerId,sellerId,price):
+    if removeBalance(buyerId,int(price)):
+        addBalance(sellerId,int(price))
+        return True
+    else:
+        return False
+
 def addUserIfNotExist(id):
     if not querySelect("SELECT discordId FROM users WHERE discordId = '"+str(id)+"';"):
         queryInsert("INSERT INTO users(discordId) VALUES ('"+str(id)+"');")

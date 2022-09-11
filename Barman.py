@@ -18,6 +18,7 @@ import json
 import praw
 import lib.imageMaker as imageMaker
 import lib.commands as commands
+import lib.user as user
 
 BotId = 1
 
@@ -43,7 +44,7 @@ def reload():
     rootoptions = commands.getCommands(BotId, True)
     options = commands.getCommands(BotId)
 
-def permsForHelp(command):
+def permsForHelp(command,commandsList):
     text = ""
     if options[command]['perm']:
         for i in options[command]['perm']:
@@ -64,22 +65,28 @@ def getImageReddit(redditName):
 
 async def help(message,argument):
     embed = None;
+    listAllCommands = commands.getCommands(BotId, all=True)
 
-    if argument[0] in options and not options[argument[0]]['hide']:
-        embed=discord.Embed(title="!"+argument[0], description=options[argument[0]]['description']+"\nChannel: "+permsForHelp(argument[0]), color=0x6D071A)
+    if argument[0] in listAllCommands and not listAllCommands[argument[0]]['hide']:
+        embed=discord.Embed(title="!"+argument[0], description=listAllCommands[argument[0]]['description']+"\nChannel: "+permsForHelp(argument[0], listAllCommands), color=0x6D071A)
 
     elif argument[0] in rootoptions:
         if message.author.id in root:
             embed=discord.Embed(title="!"+argument[0], description=rootoptions[argument[0]]['description'], color=0x6D071A)
-
     else:
         embed=discord.Embed(title="List Command Help", color=0x6D071A)
 
-        for i in options:
-            if not options[i]['hide']:
-                embed.add_field(name="!"+i, value=options[i]['description']+"\nChannel: "+permsForHelp(i), inline=False)
+        for i in listAllCommands:
+            if not listAllCommands[i]['hide']:
+                embed.add_field(name="!"+i, value=listAllCommands[i]['description']+"\nChannel: "+permsForHelp(i, listAllCommands), inline=False)
 
     await message.channel.send(embed=embed)
+
+async def buyFromGeorge(message,argument,messageToShow,img,prix):
+    if user.buy(message.author.id, 928349459815989319, int(prix)):
+        await SendMessage(message,argument,messageToShow,img)
+    else:
+        await message.channel.send("Vous avez pas les fonds nécessaire")
 
 async def caveDeTorture(message, argument):
     if hashlib.sha256(bytes(argument[0], 'utf-8')).hexdigest() == 'b33aa8cb667db7f7af0c6f8aeba093086a6e2679bdc0da14048a44a5404b1700':
@@ -93,7 +100,7 @@ async def SendMessage(message, argument, messages, files=None):
         await message.channel.send(messages)
     elif os.path.isdir(files):
         list = os.listdir(files)
-        await message.channel.send(file=discord.File(files+"/"+list[random.randint(0,len(list))-1]))
+        await message.channel.send(messages, file=discord.File(files+"/"+list[random.randint(0,len(list))-1]))
     else:
         await message.channel.send(messages, file=discord.File(files))
 
@@ -185,6 +192,7 @@ options = {}
 
 @client.event
 async def on_message(message):
+    # example : (in first-salon at 2022-09-02 22:08:46.349785)user#0069: Message
     log = "(in "+str(message.channel)+" at "+str(datetime.datetime.now())+")"+str(message.author)+": "+message.content
     with open("log.txt", "a") as f:
         f.write(log+"\n")

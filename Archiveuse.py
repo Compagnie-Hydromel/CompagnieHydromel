@@ -183,7 +183,7 @@ async def manageWallpaper(message,argument):
 
 
 
-@tasks.loop(seconds = 300)
+@tasks.loop(seconds = 290)
 async def loopVocalPoint():
     servers = client.guilds
     for server in servers:
@@ -192,7 +192,9 @@ async def loopVocalPoint():
             if isinstance(channel, discord.VoiceChannel):
                 members = channel.members
                 for member in members:
-                    if not member.voice.self_mute:
+                    if not member.voice.self_deaf:
+                        if len(members) == 1 and random.randint(0,3) != 2:
+                            return
                         addUserIfNotExist(str(member.id))
                         addPoint(str(member.id))
 
