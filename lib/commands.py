@@ -1,9 +1,11 @@
 from lib.databaseConnect import querySelect, queryInsert
 
 def getCommands(botId,root=False,all=False):
-    query = "SELECT id, name, cmdToExecute, description, hide, privateMessage FROM commands WHERE rootCommands = "+str(int(root))+" AND botId = "+str(botId)
+    query = "SELECT commands.id, commands.name, cmdToExecute, description, hide, privateMessage,bot.name AS bot FROM commands INNER JOIN bot ON bot.id = commands.botId WHERE rootCommands = "+str(int(root))+" AND botId = "+str(botId)
     if all:
-        query = "SELECT id, name, cmdToExecute, description, hide, privateMessage FROM commands"
+        query = "SELECT commands.id, commands.name, cmdToExecute, description, hide, privateMessage,bot.name AS bot FROM commands INNER JOIN bot ON bot.id = commands.botId"
+        if not root:
+            query += " WHERE rootCommands = "+str(int(root))
 
     commands = querySelect(query)
 
@@ -15,7 +17,7 @@ def getCommands(botId,root=False,all=False):
             channels.append(int(channel[0]))
         if bool(command[5]):
             channels.append("dm")
-        valueToReturn[command[1]] = {"cmd": command[2], "description": command[3], "perm": channels, "hide": bool(command[4])}
+        valueToReturn[command[1]] = {"cmd": command[2], "description": command[3], "perm": channels, "hide": bool(command[4]), "bot": command[6]}
 
     return valueToReturn
 

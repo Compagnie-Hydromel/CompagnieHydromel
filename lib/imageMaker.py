@@ -42,7 +42,7 @@ def new_bar(x, y, width, height, progress, bg=(0, 0, 0, 0), fg=(173,255,47,255),
 
     return bar
 
-def createProfil(filePath, userName, userProfilPath, level, point, display_name, badge=[], background="default"):
+def createProfil(filePath, userName, userProfilPath, level, point, display_name, badge=[], background="default", textColor=(0,50,255), barColor=(0,0,255,150)):
     if not os.path.exists("img/wallpaper/"):
         os.makedirs("img/wallpaper/")
     img = Image.open('img/wallpaper/'+background).convert('RGBA').resize((500,281))
@@ -63,12 +63,12 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
     d = ImageDraw.Draw(img)
 
     #name
-    d.multiline_text((150, 20), display_name, font=ImageFont.truetype("font/ancientMedium.ttf", 45), fill=(0, 0, 0))
+    d.multiline_text((150, 20), display_name, font=ImageFont.truetype("font/ancientMedium.ttf", 45), fill=textColor)
 
-    d.multiline_text((150, 65), userName, font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 20), fill=(0, 0, 0))
+    d.multiline_text((150, 65), userName, font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 20), fill=textColor)
 
     #level
-    d.multiline_text((250, 224), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=(255, 255,255))
+    d.multiline_text((250, 224), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=textColor)
     # text
 
     # badge
@@ -84,7 +84,7 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
 
     progress = (point * 100 / (level * 200))/100
 
-    bar = new_bar(1, 1, 500, 25, progress)
+    bar = new_bar(1, 1, 500, 25, progress, fg=barColor)
 
     img.paste(bar, (0, 254), bar)
 

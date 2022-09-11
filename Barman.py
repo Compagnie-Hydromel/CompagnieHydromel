@@ -41,13 +41,13 @@ reddit = praw.Reddit(client_id='yyUCyKBxIWjKESgtOhlaBg',
 def reload():
     global root, rootoptions, options
     root = commands.getAllRoot()
-    rootoptions = commands.getCommands(BotId, True)
+    rootoptions = commands.getCommands(BotId, root=True)
     options = commands.getCommands(BotId)
 
 def permsForHelp(command,commandsList):
     text = ""
-    if options[command]['perm']:
-        for i in options[command]['perm']:
+    if commandsList[command]['perm']:
+        for i in commandsList[command]['perm']:
             if i != 'dm':
                 text += client.get_channel(i).name + " "
             else:
@@ -68,17 +68,13 @@ async def help(message,argument):
     listAllCommands = commands.getCommands(BotId, all=True)
 
     if argument[0] in listAllCommands and not listAllCommands[argument[0]]['hide']:
-        embed=discord.Embed(title="!"+argument[0], description=listAllCommands[argument[0]]['description']+"\nChannel: "+permsForHelp(argument[0], listAllCommands), color=0x6D071A)
-
-    elif argument[0] in rootoptions:
-        if message.author.id in root:
-            embed=discord.Embed(title="!"+argument[0], description=rootoptions[argument[0]]['description'], color=0x6D071A)
+        embed=discord.Embed(title="!"+argument[0], description=listAllCommands[argument[0]]['description']+"\nChannel: "+permsForHelp(argument[0], listAllCommands)+"\nbot: "+str(listAllCommands[argument[0]]['bot']), color=0x6D071A)
     else:
         embed=discord.Embed(title="List Command Help", color=0x6D071A)
 
         for i in listAllCommands:
             if not listAllCommands[i]['hide']:
-                embed.add_field(name="!"+i, value=listAllCommands[i]['description']+"\nChannel: "+permsForHelp(i, listAllCommands), inline=False)
+                embed.add_field(name="!"+i, value=listAllCommands[i]['description']+"\nChannel: "+permsForHelp(i, listAllCommands)+"\nbot: "+str(listAllCommands[i]['bot']), inline=False)
 
     await message.channel.send(embed=embed)
 
@@ -147,7 +143,7 @@ async def broadcast(message,argument):
         await channel.send(message)
 
 async def channel(message,argument):
-    listAllCommands = commands.getCommands(BotId, all=True)
+    listAllCommands = commands.getCommands(BotId, all=True, root=True)
     if argument[1] in listAllCommands:
         if argument[0] == 'add':
             if isinstance(message.channel, discord.channel.DMChannel):
