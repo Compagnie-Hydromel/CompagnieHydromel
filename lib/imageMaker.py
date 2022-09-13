@@ -42,7 +42,7 @@ def new_bar(x, y, width, height, progress, bg=(0, 0, 0, 0), fg=(173,255,47,255),
 
     return bar
 
-def createProfil(filePath, userName, userProfilPath, level, point, display_name, badge=[], background="default", textColor=(0,50,255), barColor=(0,0,255,150)):
+def createProfil(filePath, userName, userProfilPath, level, point, display_name, badge=[], background="default", textColor=(0,0,0,255), barColor=(173,255,47,255)):
     if not os.path.exists("img/wallpaper/"):
         os.makedirs("img/wallpaper/")
     img = Image.open('img/wallpaper/'+background).convert('RGBA').resize((500,281))
@@ -68,7 +68,7 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
     d.multiline_text((150, 65), userName, font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 20), fill=textColor)
 
     #level
-    d.multiline_text((250, 224), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=textColor)
+    d.multiline_text((250, 224), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=barColor)
     # text
 
     # badge

@@ -117,6 +117,10 @@ async def show(message,argument):
         await showYourWallpaper(message,argument)
     elif argument[0] == "buy":
         await showBuyWallpaper(message,argument)
+    elif argument[0] == "barColor":
+        await changeBarColor(message,argument)
+    elif argument[0] == "nameColor":
+        await changeNameColor(message,argument)
     else:
         id = message.author.id
         url = ""
