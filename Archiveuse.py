@@ -22,6 +22,7 @@ from lib.user import *
 from io import BytesIO
 import requests
 import lib.commands as commands
+import lib.bot as bot
 
 BotId = 3
 
@@ -30,7 +31,7 @@ if os.path.exists("key.txt"):
     with open("key.txt", "r") as key:
         TOKEN = key.readline()
 else:
-    TOKEN = commands.getBotInfo(BotId)[1]
+    TOKEN = bot.getBotInfo(BotId)[1]
 
 intents = discord.Intents.default()
 intents.members = True

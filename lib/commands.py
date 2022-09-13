@@ -21,9 +21,6 @@ def getCommands(botId,root=False,all=False):
 
     return valueToReturn
 
-def getBotInfo(botId):
-    return querySelect("SELECT name,discordToken FROM bot WHERE id = "+str(botId))[0]
-
 def getAllRoot():
     queryResult = querySelect("SELECT discordId FROM users WHERE isRoot = 1")
     listOfRoot = []

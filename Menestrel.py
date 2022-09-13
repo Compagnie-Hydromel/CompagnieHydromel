@@ -19,6 +19,7 @@ from discord.ext import tasks
 import asyncio
 from youtube_search import YoutubeSearch
 import lib.commands as commands
+import lib.bot as bot
 
 BotId = 2
 
@@ -27,7 +28,7 @@ if os.path.exists("key.txt"):
     with open("key.txt", "r") as key:
         TOKEN = key.readline()
 else:
-    TOKEN = commands.getBotInfo(BotId)[1]
+    TOKEN = bot.getBotInfo(BotId)[1]
 
 intents = discord.Intents.default()
 intents.members = True

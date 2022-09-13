@@ -15,3 +15,4 @@ perms/user.json
 perms/wallpaper.json
 music/*
 musicCachePath
+descCommands/*

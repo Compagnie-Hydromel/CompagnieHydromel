@@ -19,6 +19,7 @@ import praw
 import lib.imageMaker as imageMaker
 import lib.commands as commands
 import lib.user as user
+import lib.bot as bot
 
 BotId = 1
 
@@ -27,7 +28,7 @@ if os.path.exists("key.txt"):
     with open("key.txt", "r") as key:
         TOKEN = key.readline()
 else:
-    TOKEN = commands.getBotInfo(BotId)[1]
+    TOKEN = bot.getBotInfo(BotId)[1]
 
 intents = discord.Intents.default()
 intents.members = True
@@ -63,19 +64,28 @@ def getImageReddit(redditName):
 
     return submission
 
+def commandsList(listAllCommands,title):
+    embed=discord.Embed(title=title, color=0x6D071A)
+
+    for i in listAllCommands:
+        if not listAllCommands[i]['hide']:
+            embed.add_field(name="!"+i, value=listAllCommands[i]['description']+"\nChannel: "+permsForHelp(i, listAllCommands)+"\nbot: "+str(listAllCommands[i]['bot']), inline=False)
+
+    return embed
+
 async def help(message,argument):
     embed = None;
     listAllCommands = commands.getCommands(BotId, all=True)
+    botList = bot.getBotList()
 
     if argument[0] in listAllCommands and not listAllCommands[argument[0]]['hide']:
-        embed=discord.Embed(title="!"+argument[0], description=listAllCommands[argument[0]]['description']+"\nChannel: "+permsForHelp(argument[0], listAllCommands)+"\nbot: "+str(listAllCommands[argument[0]]['bot']), color=0x6D071A)
+        with open("descCommands/"+argument[0], "r") as descFile:
+            embed=discord.Embed(title="!"+argument[0], description=descFile.read()+"\nChannel: "+permsForHelp(argument[0], listAllCommands)+"\nbot: "+str(listAllCommands[argument[0]]['bot']), color=0x6D071A)
+    elif argument[0] in botList:
+        commandsBotList = commands.getCommands(botList[argument[0]])
+        embed = commandsList(commandsBotList, "Liste des commandes de "+argument[0])
     else:
-        embed=discord.Embed(title="List Command Help", color=0x6D071A)
-
-        for i in listAllCommands:
-            if not listAllCommands[i]['hide']:
-                embed.add_field(name="!"+i, value=listAllCommands[i]['description']+"\nChannel: "+permsForHelp(i, listAllCommands)+"\nbot: "+str(listAllCommands[i]['bot']), inline=False)
-
+        embed = commandsList(listAllCommands, "Liste des commandes")
     await message.channel.send(embed=embed)
 
 async def buyFromGeorge(message,argument,messageToShow,img,prix):
