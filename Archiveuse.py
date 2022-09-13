@@ -45,6 +45,12 @@ def reload():
     rootoptions = commands.getCommands(BotId, True)
     options = commands.getCommands(BotId)
 
+# https://stackoverflow.com/questions/29643352/converting-hex-to-rgb-value-in-python
+def hex_to_rgb(value):
+    value.replace('#','')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
 def wallpaperList(id, wallpapers=getAllWallpaper(), page=1):
     global embed
     embed=discord.Embed(title="Wallpaper", description="page "+str(page), color=0x6D071A)
@@ -110,6 +116,35 @@ async def showYourWallpaper(message,argument):
 
     await message.channel.send(embed=wallpaperList(message.author.id, page=pages, wallpapers=getUserBuyWallpaper(message.author.id)))
 
+async def changeColor(message,argument,whereToChangeColor):
+
+    hexRegexCheck=re.findall(r'^#(?:[0-9a-fA-F]{3}){1,2}$|^#(?:[0-9a-fA-F]{3,4}){1,2}$',argument[1])
+
+    colorList = {
+    "blue":"0000FF",
+    "white":"FFFFFF",
+    "black":"000000",
+    "green":"00FF00",
+    "yellow":"E6E600",
+    "pink":"FF00FF",
+    "red":"FF0000",
+    "orange":"FF9900",
+    "purple":"990099",
+    "brown":"D2691E",
+    "grey":"808080"
+    }
+
+    if hexRegexCheck:
+        color = hexRegexCheck[0].replace("#","")
+    elif argument[1] in colorList:
+        color = colorList[argument[1]]
+    else:
+        await message.channel.send("Couleur pas trouvé")
+        return
+
+    setColor(message.author.id,whereToChangeColor,color)
+    await message.channel.send("Couleur modifié")
+
 async def show(message,argument):
     if argument[0] == "wallpaper":
         await showChangeWallpaper(message,argument)
@@ -118,9 +153,9 @@ async def show(message,argument):
     elif argument[0] == "buy":
         await showBuyWallpaper(message,argument)
     elif argument[0] == "barColor":
-        await changeBarColor(message,argument)
+        await changeColor(message,argument,argument[0])
     elif argument[0] == "nameColor":
-        await changeNameColor(message,argument)
+        await changeColor(message,argument,argument[0])
     else:
         id = message.author.id
         url = ""
@@ -133,7 +168,18 @@ async def show(message,argument):
 
         if not os.path.exists("img/profil/"):
             os.makedirs("img/profil/")
-        await message.channel.send("", file=discord.File(imageMaker.createProfil("img/profil/"+str(id)+".png", str(message.author), url, userInfo[0], userInfo[1], message.author.display_name, getBadgeList(id), userInfo[2])))
+        await message.channel.send("", file=discord.File(imageMaker.createProfil(
+        "img/profil/"+str(id)+".png",
+        str(message.author),
+        url,
+        userInfo[0],
+        userInfo[1],
+        message.author.display_name,
+        getBadgeList(id),
+        userInfo[2],
+        "#"+str(userInfo[4]),
+        "#"+str(userInfo[3])
+        )))
 
 async def money(message,argument):
     getUserID = re.findall(r'^<@(\S+)>$',argument[1])

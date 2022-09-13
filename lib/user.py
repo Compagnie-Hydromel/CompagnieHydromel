@@ -4,7 +4,7 @@ def getBalance(id):
     return querySelect("SELECT balance FROM users WHERE discordId = '"+str(id)+"';")[0][0]
 
 def getUserInfo(id):
-    return querySelect("SELECT users.level,users.point,wallpapers.name FROM users INNER JOIN wallpapers ON users.wallpapersId = wallpapers.id WHERE discordId = '"+str(id)+"';")[0]
+    return querySelect("SELECT users.level,users.point,wallpapers.name,barColor,nameColor FROM users INNER JOIN wallpapers ON users.wallpapersId = wallpapers.id WHERE discordId = '"+str(id)+"';")[0]
 
 def addBalance(id, balance):
     queryInsert("UPDATE users SET balance = balance+"+str(balance)+" WHERE discordId = '"+str(id)+"';")
@@ -132,3 +132,10 @@ def getBadgeList(userDiscordId):
         return badgeListReIndex
     except Exception as e:
         return []
+
+def setColor(userDiscordId, whereToChangeColor, color):
+    try:
+        queryInsert("UPDATE users SET "+str(whereToChangeColor)+" = '"+str(color)+"' WHERE discordId = "+str(userDiscordId))
+        return True
+    except Exception as e:
+        return False

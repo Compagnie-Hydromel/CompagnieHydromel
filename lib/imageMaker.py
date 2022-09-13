@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageChops, ImageFilter
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageChops, ImageFilter, ImageColor
 import requests
 from io import BytesIO
 import numpy as np
@@ -42,10 +42,13 @@ def new_bar(x, y, width, height, progress, bg=(0, 0, 0, 0), fg=(173,255,47,255),
 
     return bar
 
-def createProfil(filePath, userName, userProfilPath, level, point, display_name, badge=[], background="default", textColor=(0,0,0,255), barColor=(173,255,47,255)):
+def createProfil(filePath, userName, userProfilPath, level, point, display_name, badge=[], background="default", textColor="#0000FF", barColor="#ADFF2F"):
     if not os.path.exists("img/wallpaper/"):
         os.makedirs("img/wallpaper/")
     img = Image.open('img/wallpaper/'+background).convert('RGBA').resize((500,281))
+
+    _textColor = ImageColor.getcolor(str(textColor), "RGBA")
+    _barColor = ImageColor.getcolor(str(barColor), "RGBA")
 
     # image
     response = requests.get(userProfilPath)
@@ -63,13 +66,13 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
     d = ImageDraw.Draw(img)
 
     #name
-    d.multiline_text((150, 20), display_name, font=ImageFont.truetype("font/ancientMedium.ttf", 45), fill=textColor)
+    d.multiline_text((150, 20), display_name, font=ImageFont.truetype("font/ancientMedium.ttf", 45), fill=_textColor)
 
-    d.multiline_text((150, 65), userName, font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 20), fill=textColor)
+    d.multiline_text((150, 65), userName, font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 20), fill=_textColor)
 
     #level
-    d.multiline_text((250, 224), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=barColor)
-    # text
+    d.multiline_text((250, 224), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=_barColor)
+    # textbarColor
 
     # badge
 
@@ -84,7 +87,7 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
 
     progress = (point * 100 / (level * 200))/100
 
-    bar = new_bar(1, 1, 500, 25, progress, fg=barColor)
+    bar = new_bar(1, 1, 500, 25, progress, fg=_barColor)
 
     img.paste(bar, (0, 254), bar)
 
