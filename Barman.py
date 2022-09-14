@@ -79,6 +79,11 @@ async def help(message,argument):
     botList = bot.getBotList()
 
     if argument[0] in listAllCommands and not listAllCommands[argument[0]]['hide']:
+        if not os.path.exists("descCommands/"):
+            os.makedirs("descCommands/")
+        if not os.path.exists("descCommands/"+argument[0]):
+            with open("descCommands/"+argument[0],"w") as descFile:
+                descFile.write("")
         with open("descCommands/"+argument[0], "r") as descFile:
             embed=discord.Embed(title="!"+argument[0], description=descFile.read()+"\nChannel: "+permsForHelp(argument[0], listAllCommands)+"\nbot: "+str(listAllCommands[argument[0]]['bot']), color=0x6D071A)
     elif argument[0] in botList:
