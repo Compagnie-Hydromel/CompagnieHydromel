@@ -3,8 +3,8 @@
 #-----------------------------
 # Name : Archiveuse
 # Author : Ethann Schneider
-# Version : 2.3.3
-# Date : 20.08.22
+# Version : 2.0.0
+# Date : 14.09.22
 #-----------------------------
 
 import discord

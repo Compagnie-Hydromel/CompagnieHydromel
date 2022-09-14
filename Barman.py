@@ -3,8 +3,8 @@
 #-----------------------------
 # Name : George le barman
 # Author : Ethann Schneider
-# Version : 1.7.1
-# Date : 09.04.22
+# Version : 2.0.0
+# Date : 14.09.22
 #-----------------------------
 
 import discord
