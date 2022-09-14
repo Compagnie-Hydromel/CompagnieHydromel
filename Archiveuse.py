@@ -33,8 +33,7 @@ if os.path.exists("key.txt"):
 else:
     TOKEN = bot.getBotInfo(BotId)[1]
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all()
 
 global root, option
 
@@ -161,7 +160,7 @@ async def show(message,argument):
         id = message.author.id
         url = ""
         if message.author.avatar != None:
-            url = "https://cdn.discordapp.com/avatars/"+str(id)+"/"+message.author.avatar+".png"
+            url = message.author.avatar.url
         else:
             url = "https://shkermit.ch/Shkermit.png"
 
@@ -248,7 +247,6 @@ async def loopVocalPoint():
                             return
                         addUserIfNotExist(str(member.id))
                         addPoint(str(member.id))
-
 
 root = []
 rootoptions = {}

@@ -30,8 +30,7 @@ if os.path.exists("key.txt"):
 else:
     TOKEN = bot.getBotInfo(BotId)[1]
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all()
 
 client = discord.Client(intents=intents)
 
@@ -50,7 +49,9 @@ def permsForHelp(command,commandsList):
     if commandsList[command]['perm']:
         for i in commandsList[command]['perm']:
             if i != 'dm':
-                text += client.get_channel(i).name + " "
+                channel = client.get_channel(i)
+                if channel != None:
+                    text += channel.name + " "
             else:
                 text += "Private Message "
 
@@ -136,8 +137,7 @@ def getBarImage():
         people[coord] = []
         vocal = get_voice_channel(coords[coord]["id"])
         for member in vocal.members:
-            url = "https://cdn.discordapp.com/avatars/"+str(member.id)+"/"+member.avatar+".png"
-            people[coord].append({"username": member.name, "profil": url })
+            people[coord].append({"username": member.name, "profil": member.avatar.url })
 
     return imageMaker.createBar('.taverne.png' ,'img/taverne.jpg', coords, people)
 

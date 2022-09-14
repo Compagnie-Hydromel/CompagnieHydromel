@@ -30,8 +30,7 @@ if os.path.exists("key.txt"):
 else:
     TOKEN = bot.getBotInfo(BotId)[1]
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all()
 
 client = discord.Client(intents=intents)
 
