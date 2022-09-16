@@ -164,6 +164,15 @@ async def show(message,argument):
         else:
             url = "https://shkermit.ch/Shkermit.png"
 
+        coords = {
+            'profilPicture':{'x': 0,'y': 0},
+            'name':{'x': 150,'y': 20},
+            'userName':{'x': 150,'y': 65},
+            'level':{'x': 250,'y': 224},
+            'badge':{'x': 150,'y': 90},
+            'levelBar':{'x': 0,'y': 254}
+        }
+
         userInfo = getUserInfo(id)
 
         if not os.path.exists("img/profil/"):
@@ -175,6 +184,7 @@ async def show(message,argument):
         userInfo[0],
         userInfo[1],
         message.author.display_name,
+        coords,
         getBadgeList(id),
         userInfo[2],
         "#"+str(userInfo[4]),
@@ -184,6 +194,7 @@ async def show(message,argument):
 async def money(message,argument):
     getUserID = re.findall(r'^<@(\S+)>$',argument[1])
     if getUserID:
+
         if client.get_user(int(getUserID[0])) != None:
             if argument[0] == "add":
                 if argument[2].isnumeric():
