@@ -71,7 +71,7 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
     d.multiline_text((coords["userName"]['x'], coords["userName"]['y']), userName, font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 20), fill=_textColor)
 
     #level
-    d.multiline_text((coords["level"]['x'], coords["level"]['x']), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=_barColor)
+    d.multiline_text((coords["level"]['x'], coords["level"]['y']), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=_barColor)
     # textbarColor
 
     # badge
@@ -80,7 +80,7 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
     for i in badge:
         tempImg = Image.open("img/badge/"+i).convert('RGBA')
         tempImg.thumbnail((32,32), Image.ANTIALIAS)
-        img.paste(tempImg, (coords['badge']['x']+(coords['badge']['y']*badgeNumber),90), tempImg)
+        img.paste(tempImg, (coords['badge']['x']+(34*badgeNumber),coords['badge']['y']), tempImg)
         badgeNumber += 1
 
     # badge

@@ -73,7 +73,19 @@ def wallpaperList(id, wallpapers=getAllWallpaper(), page=1):
     return embed
 
 async def balance(message,argument):
-    await message.channel.send("Balance : "+str(getBalance(message.author.id)))
+    if argument[0] == "top":
+        messageToSend = ""
+        tops = getTopTenOfBestPlayer()
+
+        for top in tops:
+            members = client.get_user(int(top[0]))
+            if members == None:
+                members = "UserNotFound"
+            messageToSend += "**" + str(members) + "** : "+ str(top[1]) + "$\n"
+
+        await message.channel.send(messageToSend)
+    else:
+        await message.channel.send("Balance : "+str(getBalance(message.author.id)))
 
 async def showChangeWallpaper(message,argument):
     if argument[1] in getUserBuyWallpaper(str(message.author.id)):
@@ -159,7 +171,9 @@ async def show(message,argument):
     else:
         id = message.author.id
         url = ""
-        if message.author.avatar != None:
+        if message.author.guild_avatar != None:
+            url = message.author.guild_avatar.url
+        elif message.author.avatar != None:
             url = message.author.avatar.url
         else:
             url = "https://shkermit.ch/Shkermit.png"
@@ -172,6 +186,15 @@ async def show(message,argument):
             'badge':{'x': 150,'y': 90},
             'levelBar':{'x': 0,'y': 254}
         }
+
+        # coords = {
+        #     'profilPicture':{'x': 186,'y': 35},
+        #     'name':{'x': 186,'y': 155},
+        #     'userName':{'x': 190,'y': 195},
+        #     'level':{'x': 250,'y': 224},
+        #     'badge':{'x': 150,'y': 5},
+        #     'levelBar':{'x': 0,'y': 254}
+        # }
 
         userInfo = getUserInfo(id)
 
