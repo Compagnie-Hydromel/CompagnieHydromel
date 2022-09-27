@@ -178,17 +178,17 @@ async def show(message,argument):
         if not os.path.exists("img/profil/"):
             os.makedirs("img/profil/")
         await message.channel.send("", file=discord.File(imageMaker.createProfil(
-        "img/profil/"+str(id)+".png",
-        str(message.author),
-        url,
-        userInfo[0],
-        userInfo[1],
-        message.author.display_name,
-        coords,
-        getBadgeList(id),
-        userInfo[2],
-        "#"+str(userInfo[4]),
-        "#"+str(userInfo[3])
+            "img/profil/"+str(id)+".png",
+            str(message.author),
+            url,
+            userInfo[0],
+            userInfo[1],
+            message.author.display_name,
+            coords,
+            getBadgeList(id),
+            userInfo[2],
+            "#"+str(userInfo[4]),
+            "#"+str(userInfo[3])
         )))
 
 async def money(message,argument):
@@ -224,14 +224,14 @@ async def money(message,argument):
     else:
         await message.channel.send("Usage : !money <add/remove/show> <@someone> <number>")
 
-def murAdd(channelId,wallpaperName,type,levelPrix):
+async def murAdd(channelId,wallpaperName,type,levelPrix):
     messageText = ""
     if type == "level":
-        messageText = i[0] + " Level requis : " + str(levelPrix)
+        messageText = wallpaperName + " Level requis : " + str(levelPrix)
     elif type == "price":
-        messageText = i[0] + " Prix : " + str(levelPrix)
+        messageText = wallpaperName + " Prix : " + str(levelPrix)
     else:
-        messageText = i[0]
+        messageText = wallpaperName
     await client.get_channel(channelId).send(messageText,file=discord.File("img/wallpaper/"+str(wallpaperName), filename=str(wallpaperName)+".png"))
 
 
@@ -242,11 +242,11 @@ async def manageWallpaper(message,argument):
             open("img/wallpaper/"+argument[1], "wb").write(response.content)
             if argument[2] in ("level", "price") and argument[3].isnumeric():
                 addWallpaper(argument[1], argument[2], argument[3])
-                murAdd(983809785659002903,argument[1], argument[2], argument[3])
+                await murAdd(981845528037982208,argument[1], argument[2], argument[3])
             else:
                 price = random.randint(5,20)*100
                 addWallpaper(argument[1], "price", price)
-                murAdd(983809785659002903,argument[1], "price", price)
+                await murAdd(981845528037982208,argument[1], "price", price)
             await message.channel.send("Wallpaper added")
 
 
