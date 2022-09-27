@@ -224,6 +224,17 @@ async def money(message,argument):
     else:
         await message.channel.send("Usage : !money <add/remove/show> <@someone> <number>")
 
+def murAdd(channelId,wallpaperName,type,levelPrix):
+    messageText = ""
+    if type == "level":
+        messageText = i[0] + " Level requis : " + str(levelPrix)
+    elif type == "price":
+        messageText = i[0] + " Prix : " + str(levelPrix)
+    else:
+        messageText = i[0]
+    await client.get_channel(channelId).send(messageText,file=discord.File("img/wallpaper/"+str(wallpaperName), filename=str(wallpaperName)+".png"))
+
+
 async def manageWallpaper(message,argument):
     if argument[0] == "add":
         if len(message.attachments) > 0 and argument[1] != '':
@@ -231,9 +242,14 @@ async def manageWallpaper(message,argument):
             open("img/wallpaper/"+argument[1], "wb").write(response.content)
             if argument[2] in ("level", "price") and argument[3].isnumeric():
                 addWallpaper(argument[1], argument[2], argument[3])
+                murAdd(983809785659002903,argument[1], argument[2], argument[3])
             else:
-                addWallpaper(argument[1], "price", random.randint(5,20)*100)
+                price = random.randint(5,20)*100
+                addWallpaper(argument[1], "price", price)
+                murAdd(983809785659002903,argument[1], "price", price)
             await message.channel.send("Wallpaper added")
+
+
         else:
             await message.channel.send("No image in attachments and argument 2 need to be name of the wallpaper")
     if argument[0] == "remove":
