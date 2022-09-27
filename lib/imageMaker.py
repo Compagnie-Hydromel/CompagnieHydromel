@@ -42,7 +42,7 @@ def new_bar(x, y, width, height, progress, bg=(0, 0, 0, 0), fg=(173,255,47,255),
 
     return bar
 
-def createProfil(filePath, userName, userProfilPath, level, point, display_name, badge=[], background="default", textColor="#0000FF", barColor="#ADFF2F"):
+def createProfil(filePath, userName, userProfilPath, level, point, display_name, coords,badge=[], background="default", textColor="#0000FF", barColor="#ADFF2F"):
     if not os.path.exists("img/wallpaper/"):
         os.makedirs("img/wallpaper/")
     img = Image.open('img/wallpaper/'+background).convert('RGBA').resize((500,281))
@@ -59,19 +59,19 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
     pic = crop_max_square(pic).resize((w, h), Image.LANCZOS)
     pic = mask_circle_transparent(pic, 1)
 
-    img.paste(pic, (0, 0), pic)
+    img.paste(pic, (coords["profilPicture"]['x'], coords["profilPicture"]['y']), pic)
     # image
 
     # text
     d = ImageDraw.Draw(img)
 
     #name
-    d.multiline_text((150, 20), display_name, font=ImageFont.truetype("font/ancientMedium.ttf", 45), fill=_textColor)
+    d.multiline_text((coords["name"]['x'], coords["name"]['y']), display_name, font=ImageFont.truetype("font/ancientMedium.ttf", 45), fill=_textColor)
 
-    d.multiline_text((150, 65), userName, font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 20), fill=_textColor)
+    d.multiline_text((coords["userName"]['x'], coords["userName"]['y']), userName, font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 20), fill=_textColor)
 
     #level
-    d.multiline_text((250, 224), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=_barColor)
+    d.multiline_text((coords["level"]['x'], coords["level"]['y']), str(level), font=ImageFont.truetype("font/LiberationSans-Regular.ttf", 30), fill=_barColor)
     # textbarColor
 
     # badge
@@ -80,7 +80,7 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
     for i in badge:
         tempImg = Image.open("img/badge/"+i).convert('RGBA')
         tempImg.thumbnail((32,32), Image.ANTIALIAS)
-        img.paste(tempImg, (150+(34*badgeNumber),90), tempImg)
+        img.paste(tempImg, (coords['badge']['x']+(34*badgeNumber),coords['badge']['y']), tempImg)
         badgeNumber += 1
 
     # badge
@@ -89,7 +89,7 @@ def createProfil(filePath, userName, userProfilPath, level, point, display_name,
 
     bar = new_bar(1, 1, 500, 25, progress, fg=_barColor)
 
-    img.paste(bar, (0, 254), bar)
+    img.paste(bar, (coords['levelBar']['x'], coords['levelBar']['y']), bar)
 
     img.save(filePath)
 

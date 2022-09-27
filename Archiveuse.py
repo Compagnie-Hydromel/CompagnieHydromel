@@ -73,7 +73,19 @@ def wallpaperList(id, wallpapers=getAllWallpaper(), page=1):
     return embed
 
 async def balance(message,argument):
-    await message.channel.send("Balance : "+str(getBalance(message.author.id)))
+    if argument[0] == "top":
+        messageToSend = ""
+        tops = getTopTenOfBestPlayer()
+
+        for top in tops:
+            members = client.get_user(int(top[0]))
+            if members == None:
+                members = "UserNotFound"
+            messageToSend += "**" + str(members) + "** : "+ str(top[1]) + "$\n"
+
+        await message.channel.send(messageToSend)
+    else:
+        await message.channel.send("Balance : "+str(getBalance(message.author.id)))
 
 async def showChangeWallpaper(message,argument):
     if argument[1] in getUserBuyWallpaper(str(message.author.id)):
@@ -159,31 +171,53 @@ async def show(message,argument):
     else:
         id = message.author.id
         url = ""
-        if message.author.avatar != None:
+        if message.author.guild_avatar != None:
+            url = message.author.guild_avatar.url
+        elif message.author.avatar != None:
             url = message.author.avatar.url
         else:
             url = "https://shkermit.ch/Shkermit.png"
+
+        coords = {
+            'profilPicture':{'x': 0,'y': 0},
+            'name':{'x': 150,'y': 20},
+            'userName':{'x': 150,'y': 65},
+            'level':{'x': 250,'y': 224},
+            'badge':{'x': 150,'y': 90},
+            'levelBar':{'x': 0,'y': 254}
+        }
+
+        # coords = {
+        #     'profilPicture':{'x': 186,'y': 35},
+        #     'name':{'x': 186,'y': 155},
+        #     'userName':{'x': 190,'y': 195},
+        #     'level':{'x': 250,'y': 224},
+        #     'badge':{'x': 150,'y': 5},
+        #     'levelBar':{'x': 0,'y': 254}
+        # }
 
         userInfo = getUserInfo(id)
 
         if not os.path.exists("img/profil/"):
             os.makedirs("img/profil/")
         await message.channel.send("", file=discord.File(imageMaker.createProfil(
-        "img/profil/"+str(id)+".png",
-        str(message.author),
-        url,
-        userInfo[0],
-        userInfo[1],
-        message.author.display_name,
-        getBadgeList(id),
-        userInfo[2],
-        "#"+str(userInfo[4]),
-        "#"+str(userInfo[3])
+            "img/profil/"+str(id)+".png",
+            str(message.author),
+            url,
+            userInfo[0],
+            userInfo[1],
+            message.author.display_name,
+            coords,
+            getBadgeList(id),
+            userInfo[2],
+            "#"+str(userInfo[4]),
+            "#"+str(userInfo[3])
         )))
 
 async def money(message,argument):
     getUserID = re.findall(r'^<@(\S+)>$',argument[1])
     if getUserID:
+
         if client.get_user(int(getUserID[0])) != None:
             if argument[0] == "add":
                 if argument[2].isnumeric():
@@ -213,6 +247,17 @@ async def money(message,argument):
     else:
         await message.channel.send("Usage : !money <add/remove/show> <@someone> <number>")
 
+async def murAdd(channelId,wallpaperName,type,levelPrix):
+    messageText = ""
+    if type == "level":
+        messageText = wallpaperName + " Level requis : " + str(levelPrix)
+    elif type == "price":
+        messageText = wallpaperName + " Prix : " + str(levelPrix)
+    else:
+        messageText = wallpaperName
+    await client.get_channel(channelId).send(messageText,file=discord.File("img/wallpaper/"+str(wallpaperName), filename=str(wallpaperName)+".png"))
+
+
 async def manageWallpaper(message,argument):
     if argument[0] == "add":
         if len(message.attachments) > 0 and argument[1] != '':
@@ -220,9 +265,14 @@ async def manageWallpaper(message,argument):
             open("img/wallpaper/"+argument[1], "wb").write(response.content)
             if argument[2] in ("level", "price") and argument[3].isnumeric():
                 addWallpaper(argument[1], argument[2], argument[3])
+                await murAdd(981845528037982208,argument[1], argument[2], argument[3])
             else:
-                addWallpaper(argument[1], "price", random.randint(5,20)*100)
+                price = random.randint(5,20)*100
+                addWallpaper(argument[1], "price", price)
+                await murAdd(981845528037982208,argument[1], "price", price)
             await message.channel.send("Wallpaper added")
+
+
         else:
             await message.channel.send("No image in attachments and argument 2 need to be name of the wallpaper")
     if argument[0] == "remove":

@@ -139,3 +139,6 @@ def setColor(userDiscordId, whereToChangeColor, color):
         return True
     except Exception as e:
         return False
+
+def getTopTenOfBestPlayer():
+    return querySelect("SELECT discordId,Balance FROM users ORDER BY balance DESC LIMIT 10")
