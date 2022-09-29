@@ -137,7 +137,10 @@ def getBarImage():
         people[coord] = []
         vocal = get_voice_channel(coords[coord]["id"])
         for member in vocal.members:
-            people[coord].append({"username": member.name, "profil": member.avatar.url })
+            avatar = member.avatar.url
+            if member.guild_avatar != None:
+                avatar = member.guild_avatar.url
+            people[coord].append({"username": member.name, "profil": avatar })
 
     return imageMaker.createBar('.taverne.png' ,'img/taverne.jpg', coords, people)
 
