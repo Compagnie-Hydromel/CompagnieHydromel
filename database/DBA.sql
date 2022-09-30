@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `isRoot` tinyint DEFAULT '0',
   `barColor` varchar(8) COLLATE utf8mb4_general_ci DEFAULT 'ADFF2F',
   `nameColor` varchar(8) COLLATE utf8mb4_general_ci DEFAULT '0000FF',
+  `numberOfbuy` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `Column 2` (`discordId`),
   KEY `wallpapersID` (`wallpapersId`) USING BTREE,
@@ -135,6 +136,7 @@ INSERT INTO `commands` (`id`, `name`, `cmdToExecute`, `description`, `hide`, `bo
 	(27, 'root', 'rootManage(message,argument)', 'Manage root account', 0, 1, 0, 1),
 	(28, 'broadcast', 'broadcast(message,argument)', 'broadcast in a channel', 0, 1, 0, 1),
 	(29, 'money', 'money(message,argument)', 'Pour ajouter de l\'argent a quelqu\'un', 0, 3, 0, 1),
-	(30, 'wallpaper', 'manageWallpaper(message,argument)', 'Pour ajouter des wallpaper', 0, 3, 0, 1);
+	(30, 'wallpaper', 'manageWallpaper(message,argument)', 'Pour ajouter des wallpaper', 0, 3, 0, 1),
+  (31, 'top', 'top(message,argument)', 'Pour voir les personne avec le plus gros level', 0, 3, 0, 0);
 
   INSERT INTO `wallpapers` (`id`, `name`, `level`, `price`) VALUES (1, 'default', 0, 500);
