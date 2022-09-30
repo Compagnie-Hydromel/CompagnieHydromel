@@ -3,7 +3,7 @@
 #-----------------------------
 # Name : George le barman
 # Author : Ethann Schneider
-# Version : 2.0.0
+# Version : 2.1.0
 # Date : 14.09.22
 #-----------------------------
 
@@ -46,7 +46,7 @@ def reload():
 
 def permsForHelp(command,commandsList):
     text = ""
-    if commandsList[command]['perm']:
+    if commandsList[command]['perm'] != True:
         for i in commandsList[command]['perm']:
             if i != 'dm':
                 channel = client.get_channel(i)
@@ -97,6 +97,7 @@ async def help(message,argument):
 async def buyFromGeorge(message,argument,messageToShow,img,prix):
     if user.buy(message.author.id, 928349459815989319, int(prix)):
         await SendMessage(message,argument,messageToShow,img)
+        user.increaseNumberOfBuy(message.author.id)
     else:
         await message.channel.send("Vous avez pas les fonds nécessaire")
 
@@ -137,7 +138,10 @@ def getBarImage():
         people[coord] = []
         vocal = get_voice_channel(coords[coord]["id"])
         for member in vocal.members:
-            people[coord].append({"username": member.name, "profil": member.avatar.url })
+            avatar = member.avatar.url
+            if member.guild_avatar != None:
+                avatar = member.guild_avatar.url
+            people[coord].append({"username": member.name, "profil": avatar })
 
     return imageMaker.createBar('.taverne.png' ,'img/taverne.jpg', coords, people)
 
@@ -227,7 +231,7 @@ async def on_message(message):
                 await eval(rootoptions[commands[0][0]]['cmd'])
 
         if commands[0][0] in options:
-            if not options[commands[0][0]]['perm']:
+            if options[commands[0][0]]['perm'] == True:
                 await eval(options[commands[0][0]]['cmd'])
             elif 'dm' in options[commands[0][0]]['perm'] and isinstance(message.channel, discord.channel.DMChannel):
                 await eval(options[commands[0][0]]['cmd'])

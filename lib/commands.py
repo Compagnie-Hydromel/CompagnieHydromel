@@ -17,6 +17,8 @@ def getCommands(botId,root=False,all=False):
             channels.append(int(channel[0]))
         if bool(command[5]):
             channels.append("dm")
+        if channels == []:
+            channels = True
         valueToReturn[command[1]] = {"cmd": command[2], "description": command[3], "perm": channels, "hide": bool(command[4]), "bot": command[6]}
 
     return valueToReturn

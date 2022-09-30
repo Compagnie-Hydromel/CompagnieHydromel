@@ -140,5 +140,10 @@ def setColor(userDiscordId, whereToChangeColor, color):
     except Exception as e:
         return False
 
-def getTopTenOfBestPlayer():
-    return querySelect("SELECT discordId,Balance FROM users ORDER BY balance DESC LIMIT 10")
+def getTopTenOfBestPlayer(money = True,limit = 10):
+    if money:
+        return querySelect("SELECT discordId,Balance FROM users ORDER BY balance DESC LIMIT "+str(limit))
+    return querySelect("SELECT discordId,level FROM users ORDER BY level DESC,point DESC LIMIT "+str(limit))
+
+def increaseNumberOfBuy(discordId,number = 1):
+    queryInsert("UPDATE users SET numberOfbuy = numberOfbuy + "+str(number)+" WHERE discordId = "+str(discordId))

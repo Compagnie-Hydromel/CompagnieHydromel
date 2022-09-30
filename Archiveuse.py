@@ -3,7 +3,7 @@
 #-----------------------------
 # Name : Archiveuse
 # Author : Ethann Schneider
-# Version : 2.0.0
+# Version : 2.1.0
 # Date : 14.09.22
 #-----------------------------
 
@@ -72,20 +72,25 @@ def wallpaperList(id, wallpapers=getAllWallpaper(), page=1):
 
     return embed
 
+def generateMessageTop(tops, message = ""):
+    messageToSend = ""
+
+    for top in tops:
+        members = client.get_user(int(top[0]))
+        if members == None:
+            members = "UserNotFound"
+        messageToSend += "**" + str(members) + "** : "+ str(top[1]) + str(message) + "\n"
+
+    return messageToSend
+
 async def balance(message,argument):
     if argument[0] == "top":
-        messageToSend = ""
-        tops = getTopTenOfBestPlayer()
-
-        for top in tops:
-            members = client.get_user(int(top[0]))
-            if members == None:
-                members = "UserNotFound"
-            messageToSend += "**" + str(members) + "** : "+ str(top[1]) + "$\n"
-
-        await message.channel.send(messageToSend)
+        await message.channel.send(generateMessageTop(getTopTenOfBestPlayer(),"$"))
     else:
         await message.channel.send("Balance : "+str(getBalance(message.author.id)))
+
+async def top(message,argument):
+    await message.channel.send("Tableau des niveaux \n"+generateMessageTop(getTopTenOfBestPlayer(False)))
 
 async def showChangeWallpaper(message,argument):
     if argument[1] in getUserBuyWallpaper(str(message.author.id)):
@@ -171,10 +176,11 @@ async def show(message,argument):
     else:
         id = message.author.id
         url = ""
-        if message.author.guild_avatar != None:
-            url = message.author.guild_avatar.url
-        elif message.author.avatar != None:
+        if message.author.avatar != None:
             url = message.author.avatar.url
+            if isinstance(message.author,discord.Member):
+                if message.author.guild_avatar != None:
+                    url = message.author.guild_avatar.url
         else:
             url = "https://shkermit.ch/Shkermit.png"
 
