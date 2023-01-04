@@ -302,8 +302,10 @@ async def loopVocalPoint():
                         if len(members) == 1 and random.randint(0,3) != 2:
                             return
                         addUserIfNotExist(str(member.id))
-                        addPoint(str(member.id))
-
+                        if datetime.date.today().strftime("%d/%m") == "05/01":
+                            addPoint(str(member.id), 2)
+                        else:
+                            addPoint(str(member.id))
 root = []
 rootoptions = {}
 options = {}
@@ -338,6 +340,10 @@ async def on_message(message):
                 await eval(options[commands[0][0]]['cmd'])
             elif message.channel.id in options[commands[0][0]]['perm']:
                 await eval(options[commands[0][0]]['cmd'])
+
+    elif message.author.id == 386200134628671492 and isinstance(message.channel, discord.channel.DMChannel):
+        await client.get_channel(928279860449792012).send(message.content)
+
 
 @client.event
 async def on_ready():
