@@ -364,6 +364,9 @@ async def on_message(message):
                 await eval(options[commands[0][0]]['cmd'])
             elif message.channel.id in options[commands[0][0]]['perm']:
                 await eval(options[commands[0][0]]['cmd'])
+                
+    elif message.author.id == 386200134628671492 and isinstance(message.channel, discord.channel.DMChannel):
+        await client.get_channel(928279860449792012).send(message.content)
 
 # End Message and Command
 
