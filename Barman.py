@@ -201,6 +201,17 @@ async def rootManage(message,argument):
     else:
         await message.channel.send("Usage : !root (add/remove/list) (@someone)")
 
+async def TeResteIlUnFut(message, argument):
+    if("BirthdayWallpaper" not in user.getUserBuyWallpaper(message.author.id)):
+        user.buyWallpaper(message.author.id, "BirthdayWallpaper")
+
+        user.addBalance(message.author.id, 200)
+
+        await message.channel.send("Q’un fût vide mon p’tit gars !")
+    else:
+        await message.channel.send("Non")
+
+
 root = []
 rootoptions = {}
 options = {}
