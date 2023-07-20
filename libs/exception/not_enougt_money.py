@@ -1,0 +1,2 @@
+class NotEnougtMoneyException(Exception):
+    pass

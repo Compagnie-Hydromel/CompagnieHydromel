@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from libs.log import Log
 
 load_dotenv()
-barman = discord.Bot()
+intents = discord.Intents.all()
+barman = discord.Bot(intents=intents)
 
 for filename in os.listdir('./cogs/barman'):
     if filename.endswith('.py'):

@@ -22,7 +22,7 @@ class ProfilMaker():
                  user_name: str,
                  user_profil_picture: str,
                  level: int,
-                 xp: int,
+                 point: int,
                  display_name: str,
                  background_url: str,
                  coords: dict = __coords,
@@ -83,7 +83,7 @@ class ProfilMaker():
 
         # badge
 
-        progress = (xp * 100 / (level * 200))/100
+        progress = (point * 100 / (level * 200))/100
 
         bar = self.__new_bar(1, 1, 500, 25, progress, fg=_bar_color)
 

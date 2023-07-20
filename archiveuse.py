@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from libs.log import Log
 
 load_dotenv()
-archiveuse = discord.Bot()
+intents = discord.Intents.all()
+archiveuse = discord.Bot(intents=intents)
 
 for filename in os.listdir('./cogs/archiveuse'):
     if filename.endswith('.py'):

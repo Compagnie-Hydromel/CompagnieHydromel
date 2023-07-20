@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS badges (
 CREATE TABLE IF NOT EXISTS wallpapers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL UNIQUE,
+  url TEXT NOT NULL,
   level INTEGER NOT NULL,
   price INTEGER NOT NULL
 );
@@ -40,4 +41,4 @@ CREATE TABLE IF NOT EXISTS usersHaveBadge (
   CONSTRAINT userId FOREIGN KEY (usersId) REFERENCES users (id)
 );
 
-INSERT INTO wallpapers (id, name, level, price) VALUES (1, 'default', 0, 500);
+INSERT INTO wallpapers (id, name, url, level, price) VALUES (1, 'default', 'https://shkermit.ch/~ethann/compHydromelWallpaper/default.png', 0, 500);

@@ -6,6 +6,7 @@ class LogType(Enum):
     ERROR = "ERROR"
     WARNING = "WARNING"
     MESSAGE = "MESSAGE"
+    COMMAND = "COMMAND"
 
 class Log():
     __log : str

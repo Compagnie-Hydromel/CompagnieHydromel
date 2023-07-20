@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from libs.log import Log
 
 load_dotenv()
-menestrel = discord.Bot()
+intents = discord.Intents.all()
+menestrel = discord.Bot(intents=intents)
 
 for filename in os.listdir('./cogs/menestrel'):
     if filename.endswith('.py'):

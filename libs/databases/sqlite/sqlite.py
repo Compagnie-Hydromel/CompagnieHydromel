@@ -35,10 +35,3 @@ class Sqlite():
 
         self.__db.commit()
 
-# test = Sqlite("database.db")
-
-# with open("data/databases/sqliteDB.sql", "r") as dbFile:
-#     for commands in dbFile.read().split(";"):
-#         print(commands)
-#         test.modify(commands)
-

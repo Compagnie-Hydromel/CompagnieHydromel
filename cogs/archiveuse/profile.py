@@ -1,4 +1,5 @@
 import  discord
+from libs.databases.user import User
 from libs.exception.unable_to_download_wallpaper import UnableToDownloadImage
 
 from libs.log import Log
@@ -13,16 +14,19 @@ class Profile(discord.Cog):
 
     @discord.slash_command(name="profile", description="")
     async def profile(self, ctx):
+        Log(ctx.author.name + " is lauching profile commands", LogType.COMMAND)
         try: 
             await ctx.defer()
+
+            user = User(str(ctx.author.id))
 
             Utils().createDirectoryIfNotExist(".profile")
             pro = ProfilMaker(
                 ".profile/" +str(ctx.author.id) + ".png",
                 ctx.author.name,
                 ctx.author.display_avatar.url,
-                1,
-                20,
+                user.level(),
+                user.point(),
                 ctx.author.display_name,
                 background_url="https://shkermit.ch/~ethann/compHydromelWallpaper/default.png",
             )
