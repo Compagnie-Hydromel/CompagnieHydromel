@@ -24,6 +24,16 @@
 
 ## Prerequisites
 
+Before starting the Bot, you'll need to modify/create some files, create a Bot on Discord Developer Portal and make a basic discord server to make it work and to use it.
+
+First, let's start with the files needed to be modified:
+- In the root folder of the discord bot, create a file named **.env** with the informations below (remember to replace where it says **COMPLETE_IT** with the real informations)
+``` Env
+BARMAN_TOKEN = "COMPLETE_IT"
+MENESTREL_TOKEN = "COMPLETE_IT"
+ARCHIVEUSE_TOKEN = "COMPLETE_IT"
+```
+
 After this, let's create a basic Discord Server:
 - Open Discord App or use [Discord Web](https://discord.com/app)
 - Click on the **+** icon then click on **Create My Own** and after **For me and my friends**. Now give it a name and after click on **Create**.
