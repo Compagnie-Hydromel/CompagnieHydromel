@@ -56,3 +56,44 @@ Now, not all things are installed but these ones are for both OS. Open a **CMD/T
 ```bash
 python -m pip install requirements.txt
 ```
+
+## TODO 
+
+- [ ] Archiveuse
+  - [x] Add point when texting 
+  - [ ] Add point when in vocal
+  - [x] Level up
+  - [ ] Profile
+    - [x] Dynamic name 
+    - [x] Dynamic username
+    - [x] Dynamic pp
+    - [ ] Wallpaper show by selecting
+    - [ ] change text color
+    - [ ] change bar color
+    - [ ] display badge
+  - [ ] Buy wallpaper 
+  - [ ] Add wallpaper as admin 
+  - [ ] List wallpaper owned and not owned
+  - [ ] Obtain wallpaper passing level
+  - [ ] Get balance
+- [ ] Barman 
+  - [ ] help command
+  - [ ] beer command
+  - [ ] hydromel command
+  - [ ] water command
+  - [ ] non alholic beer
+  - [ ] sex command
+  - [ ] root command 
+    - [ ] clear 
+    - [ ] add root
+    - [ ] broacast 
+    - [ ] authorize command in channel
+  - [ ] meme channel 
+  - [ ] dynamic server banner with vocal channel
+  - [ ] reaction add role
+- [ ] Menestrel 
+  - [ ] Play
+  - [ ] Stop
+  - [ ] Wait list 
+  - [ ] Next
+  - [ ] Admin lock
