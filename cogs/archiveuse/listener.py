@@ -12,7 +12,7 @@ class Listener(discord.Cog):
         if message.author == self._bot.user:
             return
 
-        User(str(message.author.id)).add_point(20)
+        User(str(message.author.id)).add_point()
 
 def setup(bot):
     bot.add_cog(Listener(bot))

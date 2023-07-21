@@ -1,6 +1,6 @@
 import  discord
 from libs.databases.user import User
-from libs.exception.unable_to_download_wallpaper import UnableToDownloadImage
+from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 
 from libs.log import Log
 from libs.profile_maker import ProfilMaker
@@ -28,14 +28,16 @@ class Profile(discord.Cog):
                 user.level(),
                 user.point(),
                 ctx.author.display_name,
-                background_url="https://shkermit.ch/~ethann/compHydromelWallpaper/default.png",
+                user.current_wallpaper(),
+                bar_color = "#"+user.bar_color(),
+                name_color = "#"+user.name_color()
             )
 
             await ctx.respond(file=discord.File(pro.profil_path()))
-        except UnableToDownloadImage:
+        except UnableToDownloadImageException:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("Impossible to download image")
-        except: 
+        except:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured while making profile") 
 

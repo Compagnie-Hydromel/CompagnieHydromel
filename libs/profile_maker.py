@@ -4,8 +4,7 @@ import requests
 from io import BytesIO
 import numpy as np
 import os
-
-from libs.exception.unable_to_download_wallpaper import UnableToDownloadImage
+from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 
 class ProfilMaker():
     __coords = {
@@ -35,7 +34,7 @@ class ProfilMaker():
             response_background_url = requests.get(background_url)
             img = Image.open(BytesIO(response_background_url.content)).convert('RGBA').resize((500, 281))
         except UnidentifiedImageError: 
-            raise UnableToDownloadImage
+            raise UnableToDownloadImageException
 
         _name_color = ImageColor.getcolor(str(name_color), "RGBA")
         _bar_color = ImageColor.getcolor(str(bar_color), "RGBA")
@@ -47,7 +46,7 @@ class ProfilMaker():
             pic = Image.open(BytesIO(response_profile_picture.content)).convert(
                 'RGBA').resize((128, 128))
         except UnidentifiedImageError: 
-            raise UnableToDownloadImage
+            raise UnableToDownloadImageException
 
         h, w = pic.size
 

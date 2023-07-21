@@ -1,0 +1,2 @@
+class UnableToDownloadImageException(Exception):
+    pass

@@ -1,0 +1,2 @@
+class WallpaperNotExistException(Exception):
+    pass

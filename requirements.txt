@@ -1,0 +1,6 @@
+py-cord==2.4.1
+numpy==1.25.1
+Pillow==10.0.0
+python-dotenv==1.0.0
+PyYAML==6.0.1
+Requests==2.31.0
