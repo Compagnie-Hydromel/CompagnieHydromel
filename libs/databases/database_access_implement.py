@@ -1,3 +1,9 @@
+from enum import Enum
+
+class ProfileColoredPart(Enum):
+    BarColor = "barColor"
+    NameColor = "nameColor"
+
 class DatabaseAccessImplement:    
     def __init__(self) -> None:
         pass
@@ -53,6 +59,12 @@ class DatabaseAccessImplement:
         pass
 
     def is_wallpaper_exist(self, wallpaper_name: str) -> bool:
+        pass
+
+    def change_user_profile_custom_color(self, discord_id: str, profile_colored_part: ProfileColoredPart, color: str) -> None:
+        pass
+    
+    def get_users_badge_list(self, discord_id: str) -> list:
         pass
 
     # Public

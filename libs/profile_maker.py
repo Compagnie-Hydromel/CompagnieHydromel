@@ -8,12 +8,12 @@ from libs.exception.unable_to_download_wallpaper_exception import UnableToDownlo
 
 class ProfilMaker():
     __coords = {
-        'profilPicture': {'x': 186, 'y': 35},
-        'name': {'x': 186, 'y': 155},
-        'userName': {'x': 190, 'y': 195},
-        'level': {'x': 250, 'y': 224},
-        'badge': {'x': 150, 'y': 5},
-        'levelBar': {'x': 0, 'y': 254}
+        'profilPicture':{'x': 0,'y': 0},
+        'name':{'x': 150,'y': 20},
+        'userName':{'x': 150,'y': 65},
+        'level':{'x': 250,'y': 224},
+        'badge':{'x': 150,'y': 90},
+        'levelBar':{'x': 0,'y': 254}
     }
 
     def __init__(self,
@@ -25,7 +25,7 @@ class ProfilMaker():
                  display_name: str,
                  background_url: str,
                  coords: dict = __coords,
-                 badge: dict = [],
+                 badge: list = [],
                  name_color: str = "#0000FF",
                  bar_color: str = "#ADFF2F"
                  ):
@@ -33,7 +33,7 @@ class ProfilMaker():
         try:
             response_background_url = requests.get(background_url)
             img = Image.open(BytesIO(response_background_url.content)).convert('RGBA').resize((500, 281))
-        except UnidentifiedImageError: 
+        except: 
             raise UnableToDownloadImageException
 
         _name_color = ImageColor.getcolor(str(name_color), "RGBA")
@@ -45,7 +45,7 @@ class ProfilMaker():
             response_profile_picture = requests.get(user_profil_picture)
             pic = Image.open(BytesIO(response_profile_picture.content)).convert(
                 'RGBA').resize((128, 128))
-        except UnidentifiedImageError: 
+        except: 
             raise UnableToDownloadImageException
 
         h, w = pic.size
@@ -74,10 +74,14 @@ class ProfilMaker():
 
         badgeNumber = 0
         for i in badge:
-            tempImg = Image.open(i).convert('RGBA')
-            tempImg.thumbnail((32, 32), Image.ANTIALIAS)
-            img.paste(
-                tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
+            tempImg = None
+            try:
+                response_background_url = requests.get(i[1])
+                tempImg = Image.open(BytesIO(response_background_url.content)).convert('RGBA')
+            except: 
+                raise UnableToDownloadImageException
+            tempImg.thumbnail((32, 32), Image.LANCZOS)
+            img.paste(tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
             badgeNumber += 1
 
         # badge

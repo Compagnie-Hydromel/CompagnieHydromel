@@ -1,0 +1,2 @@
+class ColorNotCorrectException(Exception):
+    pass

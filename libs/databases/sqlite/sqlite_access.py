@@ -1,4 +1,4 @@
-from libs.databases.database_access_implement import DatabaseAccessImplement
+from libs.databases.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
 from libs.databases.sqlite.sqlite import Sqlite
 
 class SqliteAccess(DatabaseAccessImplement):
@@ -75,6 +75,15 @@ class SqliteAccess(DatabaseAccessImplement):
     
     def is_wallpaper_exist(self, wallpaper_name: str) -> bool:
         return len(self.__sqliteDB.select("SELECT name FROM wallpapers WHERE name = '" + wallpaper_name + "'")) > 0
+
+    def change_user_profile_custom_color(self, discord_id: str, profile_colored_part: ProfileColoredPart, color: str) -> None:
+        self.__sqliteDB.modify("UPDATE users SET " + profile_colored_part.value + " = '" + color + "' WHERE discordId = '" + discord_id + "';")
+
+    def get_users_badge_list(self, discord_id: str) -> list:
+        return self.__sqliteDB.select("SELECT badges.name, badges.url FROM users \
+                                      INNER JOIN usersHaveBadge ON usersHaveBadge.usersId = users.id \
+                                      INNER JOIN badges ON usersHaveBadge.badgesId = badges.id \
+                                      WHERE users.discordId = '" + discord_id + "';")
 
     # Public
 

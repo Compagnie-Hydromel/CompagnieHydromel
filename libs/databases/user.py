@@ -1,6 +1,8 @@
-from libs.databases.database_access_implement import DatabaseAccessImplement
+import re
+from libs.databases.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
 from libs.databases.sqlite.sqlite_access import SqliteAccess
 from libs.databases.wallpapers import Wallpapers
+from libs.exception.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.not_enougt_money_exception import NotEnougtMoneyException
 from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper_not_posseded_exception import WallpaperNotPossededException
@@ -49,7 +51,7 @@ class User:
     def list_of_posseded_wallpapers(self) -> str:
         return self.__db_access.get_list_posseded_wallpapers(self.__discord_id)
     
-    def change_current_wallpapers(self, wallpaper_name: str):
+    def change_current_wallpapers(self, wallpaper_name: str) -> None:
         if(Wallpapers().is_exist(wallpaper_name)):
             if self.__is_wallpaper_posseded(wallpaper_name):
                 self.__db_access.change_user_current_wallpaper(self.__discord_id, wallpaper_name)
@@ -57,6 +59,39 @@ class User:
                 raise WallpaperNotPossededException
         else:
             raise WallpaperNotExistException
+    
+    def change_name_color(self, color: str) -> None:
+        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor, self.__check_color(color))
+
+    def change_bar_color(self, color: str) -> None:
+        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, self.__check_color(color))
+
+    def badge_list(self) -> list:
+        return self.__db_access.get_users_badge_list(self.__discord_id)
+
+    def __check_color(self, color) -> str:
+        hex_regex_check=re.findall(r'^#(?:[0-9a-fA-F]{3}){1,2}$|^#(?:[0-9a-fA-F]{3,4}){1,2}$',color)
+    
+        color_list = {
+            "blue":"0000FF",
+            "white":"FFFFFF",
+            "black":"000000",
+            "green":"00FF00",
+            "yellow":"E6E600",
+            "pink":"FF00FF",
+            "red":"FF0000",
+            "orange":"FF9900",
+            "purple":"990099",
+            "brown":"D2691E",
+            "grey":"808080"
+        }
+        
+        if hex_regex_check:
+            return hex_regex_check[0].replace("#","")
+        elif color in color_list:
+            return color_list[color]
+        else:
+            raise ColorNotCorrectException
 
     def __is_wallpaper_posseded(self, wallpaper_name) -> str:
         for posseded_wallpaper in self.list_of_posseded_wallpapers():

@@ -63,19 +63,20 @@ python -m pip install requirements.txt
   - [x] Add point when texting 
   - [ ] Add point when in vocal
   - [x] Level up
-  - [ ] Profile
+  - [x] Profile
     - [x] Dynamic name 
     - [x] Dynamic username
     - [x] Dynamic pp
-    - [ ] Wallpaper show by selecting
-    - [ ] change text color
-    - [ ] change bar color
-    - [ ] display badge
+    - [x] Wallpaper show by selecting
+    - [x] change text color
+    - [x] change bar color
+    - [x] display badge
   - [ ] Buy wallpaper 
   - [ ] Add wallpaper as admin 
   - [ ] List wallpaper owned and not owned
   - [ ] Obtain wallpaper passing level
   - [ ] Get balance
+  - [ ] most level up player commands
 - [ ] Barman 
   - [ ] help command
   - [ ] beer command

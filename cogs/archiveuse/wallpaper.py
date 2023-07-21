@@ -2,6 +2,7 @@ import traceback
 import discord
 
 from libs.databases.user import User
+from libs.exception.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper_not_posseded_exception import WallpaperNotPossededException
 from libs.log import Log, LogType
@@ -36,6 +37,8 @@ class Wallpaper(discord.Cog):
             await ctx.respond("Wallpaper not exist!")
         except WallpaperNotPossededException:
             await ctx.respond("Wallpaper not posseded!")
+        except ColorNotCorrectException:
+            await ctx.respond("Color is not correct!")
         except:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured")
