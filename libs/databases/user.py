@@ -68,6 +68,9 @@ class User:
 
     def badge_list(self) -> list:
         return self.__db_access.get_users_badge_list(self.__discord_id)
+    
+    def get_smartcoin(self) -> int:
+        return self.__db_access.get_smartcoin(self.__discord_id)
 
     def __check_color(self, color) -> str:
         hex_regex_check=re.findall(r'^#(?:[0-9a-fA-F]{3}){1,2}$|^#(?:[0-9a-fA-F]{3,4}){1,2}$',color)

@@ -34,7 +34,7 @@ class SqliteAccess(DatabaseAccessImplement):
             return False
         self.__sqliteDB.modify("UPDATE users SET smartcoin = smartcoin - " + str(amount) + " WHERE discordId = '" + discord_id + "'")
         return True
-
+    
     def add_user_if_not_exist(self, discord_id: str) -> None:
         if not self.__sqliteDB.select("SELECT discordId FROM users WHERE discordId = '" + discord_id + "';"):
             self.__sqliteDB.modify("INSERT INTO users(discordId) VALUES ('" + discord_id + "')")

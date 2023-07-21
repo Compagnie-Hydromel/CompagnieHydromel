@@ -73,10 +73,11 @@ python -m pip install requirements.txt
     - [x] display badge
   - [ ] Buy wallpaper 
   - [ ] Add wallpaper as admin 
-  - [ ] List wallpaper owned 
-  - [ ] List all wallpaper
+  - [x] List wallpaper obtain 
+  - [ ] Pagination wallpaper list
+  - [x] List all wallpaper
   - [ ] Obtain wallpaper passing level
-  - [ ] Get smartcoin (/iq for the commands)
+  - [x] Get smartcoin
   - [ ] most level up player commands
 - [ ] Barman 
   - [ ] log almost everything 
