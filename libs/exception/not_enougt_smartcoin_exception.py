@@ -1,0 +1,2 @@
+class NotEnougtSmartcoinException(Exception):
+    pass

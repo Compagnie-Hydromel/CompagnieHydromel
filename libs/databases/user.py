@@ -3,7 +3,7 @@ from libs.databases.database_access_implement import DatabaseAccessImplement, Pr
 from libs.databases.sqlite.sqlite_access import SqliteAccess
 from libs.databases.wallpapers import Wallpapers
 from libs.exception.color_not_correct_exception import ColorNotCorrectException
-from libs.exception.not_enougt_money_exception import NotEnougtMoneyException
+from libs.exception.not_enougt_smartcoin_exception import NotEnougtSmartcoinException
 from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper_not_posseded_exception import WallpaperNotPossededException
 
@@ -29,12 +29,12 @@ class User:
         self.__db_access.add_user_point(self.__discord_id, point)
         self.__check_level_up()
 
-    def add_balance(self, amount : int = 1) -> None: 
-        self.__db_access.add_balance(self.__discord_id, amount)
+    def add_smartcoin(self, amount : int = 1) -> None: 
+        self.__db_access.add_smartcoin(self.__discord_id, amount)
 
-    def remove_balance(self, amount : int = 1) -> None:
-        if not self.__db_access.remove_balance(self.__discord_id, amount):
-            raise NotEnougtMoneyException
+    def remove_smartcoin(self, amount : int = 1) -> None:
+        if not self.__db_access.remove_smartcoin(self.__discord_id, amount):
+            raise NotEnougtSmartcoinException
 
     def name_color(self) -> str:
         return self.__db_access.get_user_profile_color_name(self.__discord_id)
@@ -106,4 +106,4 @@ class User:
             self.__db_access.add_user_level(self.__discord_id)
             self.__db_access.reset_point(self.__discord_id)
             self.__db_access.add_user_point(self.__discord_id, point - (200 * level))
-            self.add_balance(100+(level*100))
+            self.add_smartcoin(100+(level*100))

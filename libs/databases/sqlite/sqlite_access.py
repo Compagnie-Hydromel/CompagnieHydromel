@@ -17,8 +17,8 @@ class SqliteAccess(DatabaseAccessImplement):
     def get_user_point(self, discord_id: str) -> int:
         return self.__select_user(discord_id, "point")[0][0]
     
-    def get_balance(self, discord_id: str) -> int:
-        return self.__select_user(discord_id, "balance")[0][0]
+    def get_smartcoin(self, discord_id: str) -> int:
+        return self.__select_user(discord_id, "smartcoin")[0][0]
     
     def add_user_point(self, discord_id: str, point: int = 1) -> None:
         self.__sqliteDB.modify("UPDATE users SET point = point + " + str(point) + " WHERE discordId = '" + discord_id + "'")
@@ -26,13 +26,13 @@ class SqliteAccess(DatabaseAccessImplement):
     def add_user_level(self, discord_id: str, level = 1) -> None:
         self.__sqliteDB.modify("UPDATE users SET level = level + " + str(level) + " WHERE discordId = '" + discord_id + "'")
 
-    def add_balance(self, discord_id, amount=1) -> None:
-        self.__sqliteDB.modify("UPDATE users SET balance =  balance + " + str(amount) + " WHERE discordId = '" + discord_id + "'")
+    def add_smartcoin(self, discord_id, amount=1) -> None:
+        self.__sqliteDB.modify("UPDATE users SET smartcoin =  smartcoin + " + str(amount) + " WHERE discordId = '" + discord_id + "'")
     
-    def remove_balance(self, discord_id, amount=1) -> bool:
-        if(self.get_balance - amount < 0):
+    def remove_smartcoin(self, discord_id, amount=1) -> bool:
+        if(self.get_smartcoin - amount < 0):
             return False
-        self.__sqliteDB.modify("UPDATE users SET balance = balance - " + str(amount) + " WHERE discordId = '" + discord_id + "'")
+        self.__sqliteDB.modify("UPDATE users SET smartcoin = smartcoin - " + str(amount) + " WHERE discordId = '" + discord_id + "'")
         return True
 
     def add_user_if_not_exist(self, discord_id: str) -> None:

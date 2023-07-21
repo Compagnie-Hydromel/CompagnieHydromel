@@ -73,11 +73,13 @@ python -m pip install requirements.txt
     - [x] display badge
   - [ ] Buy wallpaper 
   - [ ] Add wallpaper as admin 
-  - [ ] List wallpaper owned and not owned
+  - [ ] List wallpaper owned 
+  - [ ] List all wallpaper
   - [ ] Obtain wallpaper passing level
-  - [ ] Get balance
+  - [ ] Get smartcoin (/iq for the commands)
   - [ ] most level up player commands
 - [ ] Barman 
+  - [ ] log almost everything 
   - [ ] help command
   - [ ] beer command
   - [ ] hydromel command

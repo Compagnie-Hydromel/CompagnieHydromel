@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
   discordId TEXT UNIQUE,
   point INTEGER DEFAULT '1',
   level INTEGER DEFAULT '1',
-  balance INTEGER DEFAULT '20',
+  smartcoin INTEGER DEFAULT '20',
   wallpapersId INTEGER DEFAULT '1',
   isRoot INTEGER DEFAULT '0',
   barColor TEXT DEFAULT 'ADFF2F',

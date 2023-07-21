@@ -1,2 +1,0 @@
-class NotEnougtMoneyException(Exception):
-    pass

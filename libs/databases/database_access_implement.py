@@ -16,7 +16,7 @@ class DatabaseAccessImplement:
     def get_user_point(self, discord_id: str) -> int:
         pass
     
-    def get_balance(self, discord_id: str) -> int:
+    def get_smartcoin(self, discord_id: str) -> int:
         pass
     
     def add_user_point(self, discord_id: str, point: int = 1) -> None:
@@ -25,10 +25,10 @@ class DatabaseAccessImplement:
     def add_user_level(self, discord_id: str, level = 1) -> None:
         pass
 
-    def add_balance(self, discord_id, amount=1) -> None:
+    def add_smartcoin(self, discord_id, amount=1) -> None:
         pass
 
-    def remove_balance(self, discord_id, amount=1) -> bool:
+    def remove_smartcoin(self, discord_id, amount=1) -> bool:
         pass
 
     def add_user_if_not_exist(self, discord_id: str) -> None:
