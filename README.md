@@ -54,7 +54,7 @@ sudo apt install python3.11
 
 Now, not all things are installed but these ones are for both OS. Open a **CMD/Terminal** and copy/paste these commands below. This command will automatically install the required dependencies for this project.
 ```bash
-python -m pip install requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ## TODO 
