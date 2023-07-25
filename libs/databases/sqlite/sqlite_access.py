@@ -85,6 +85,9 @@ class SqliteAccess(DatabaseAccessImplement):
                                       INNER JOIN badges ON usersHaveBadge.badgesId = badges.id \
                                       WHERE users.discordId = '" + discord_id + "';")
 
+    def get_top_users(self) -> list:
+        return self.__sqliteDB.select("SELECT discordId, level FROM users ORDER BY level DESC, point DESC LIMIT 10")
+
     # Public
 
     # Private

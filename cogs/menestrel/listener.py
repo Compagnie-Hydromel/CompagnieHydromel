@@ -9,7 +9,7 @@ class Listener(discord.Cog):
 
     @discord.Cog.listener()
     async def on_message(self, message):
-        Log.logMessage(message.channel, message.content, message.author.name, self._bot.user.name)
+        Log.logMessage(message.channel, message.content, message.author.name, self._bot.user.name, onlyDm=True)
         
         if message.author == self._bot.user:
             return

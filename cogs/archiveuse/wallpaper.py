@@ -16,7 +16,8 @@ class Wallpaper(discord.Cog):
     @discord.slash_command(name="wallpaper", description="To change/buy wallpaper")
     @discord.option("option", description="list/change", choices=["change", "list", "all", "name color", "bar color"])
     @discord.option("text", description="Wallpaper specified or name and bar color", required=False)
-    async def wallpaper(self, ctx, *, option : str, text : str):
+    async def wallpaper(self, ctx, *, option : str, text : str = None):
+        Log(ctx.author.name + " is launching wallpaper commands with " + option + " " + str(text), LogType.COMMAND)
         try:
             await ctx.defer()
             user = User(str(ctx.author.id))

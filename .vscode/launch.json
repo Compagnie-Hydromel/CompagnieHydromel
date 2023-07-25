@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Archiveuse debug",
+            "type": "python",
+            "request": "launch",
+            "program": "archiveuser.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Menestrel debug",
+            "type": "python",
+            "request": "launch",
+            "program": "menestrel.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Barman debug",
+            "type": "python",
+            "request": "launch",
+            "program": "barman.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

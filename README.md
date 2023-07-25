@@ -72,7 +72,7 @@ python3 -m pip install -r requirements.txt
 
 - [ ] Archiveuse
   - [x] Add point when texting 
-  - [ ] Add point when in vocal
+  - [x] Add point when in vocal
   - [x] Level up
   - [x] Profile
     - [x] Dynamic name 
@@ -85,11 +85,11 @@ python3 -m pip install -r requirements.txt
   - [ ] Buy wallpaper 
   - [ ] Add wallpaper as admin 
   - [x] List wallpaper obtain 
-  - [ ] Pagination wallpaper list
+  - [x] Pagination wallpaper list
   - [x] List all wallpaper
   - [ ] Obtain wallpaper passing level
   - [x] Get smartcoin
-  - [ ] most level up player commands
+  - [x] most level up player commands
 - [ ] Barman 
   - [ ] log almost everything 
   - [ ] help command

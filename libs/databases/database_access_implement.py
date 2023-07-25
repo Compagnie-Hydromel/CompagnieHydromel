@@ -66,5 +66,8 @@ class DatabaseAccessImplement:
     
     def get_users_badge_list(self, discord_id: str) -> list:
         pass
+    
+    def get_top_users(self) -> list:
+        pass
 
     # Public

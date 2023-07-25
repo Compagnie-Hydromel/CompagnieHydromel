@@ -14,7 +14,7 @@ class Profile(discord.Cog):
 
     @discord.slash_command(name="profile", description="")
     async def profile(self, ctx):
-        Log(ctx.author.name + " is lauching profile commands", LogType.COMMAND)
+        Log(ctx.author.name + " is launching profile commands", LogType.COMMAND)
         try: 
             await ctx.defer()
 
