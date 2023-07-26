@@ -70,4 +70,7 @@ class DatabaseAccessImplement:
     def get_top_users(self) -> list:
         pass
 
+    def add_posseded_wallpaper(self, discordId: str, wallpaper_name: str) -> None:
+        pass
+
     # Public

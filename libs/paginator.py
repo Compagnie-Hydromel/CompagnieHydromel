@@ -24,8 +24,6 @@ class Paginator(discord.ui.View):
     def current_page(self, value: int) -> None:
         if value < len(self.__pages) and value >= 0:
             self.__current_page = value
-        print(self.__current_page)
-
     
     @discord.ui.button(label="", style=discord.ButtonStyle.primary, emoji="⬅") 
     async def left_callback(self, button, interaction):

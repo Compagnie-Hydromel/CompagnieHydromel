@@ -27,7 +27,7 @@ class User:
     
     def add_point(self, point : int = 1) -> None:
         self.__db_access.add_user_point(self.__discord_id, point)
-        self.__check_level_up()
+        self.__check_add_level_up()
 
     def add_smartcoin(self, amount : int = 1) -> None: 
         self.__db_access.add_smartcoin(self.__discord_id, amount)
@@ -74,6 +74,9 @@ class User:
     
     def get_top_users(self) -> list:
         return self.__db_access.get_top_users()
+    
+    def add_posseded_wallpaper(self, wallpaper_name: str) -> list:
+        self.__db_access.add_posseded_wallpaper(self.__discord_id, wallpaper_name)
 
     def __check_color(self, color) -> str:
         hex_regex_check=re.findall(r'^#(?:[0-9a-fA-F]{3}){1,2}$|^#(?:[0-9a-fA-F]{3,4}){1,2}$',color)
@@ -105,7 +108,7 @@ class User:
                 return True
         return False
 
-    def __check_level_up(self) -> None:
+    def __check_add_level_up(self) -> None:
         point = self.point()
         level = self.level()
         if point >= 200 * level:
@@ -113,3 +116,10 @@ class User:
             self.__db_access.reset_point(self.__discord_id)
             self.__db_access.add_user_point(self.__discord_id, point - (200 * level))
             self.add_smartcoin(100+(level*100))
+            self.__check_add_if_wallpaper_at_this_level()
+    
+    def __check_add_if_wallpaper_at_this_level(self) -> None:
+        for wallpaper in Wallpapers().all():
+            if wallpaper[3] == self.level():
+                self.add_posseded_wallpaper(wallpaper[0])
+                

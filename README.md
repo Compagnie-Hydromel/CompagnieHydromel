@@ -87,7 +87,7 @@ python3 -m pip install -r requirements.txt
   - [x] List wallpaper obtain 
   - [x] Pagination wallpaper list
   - [x] List all wallpaper
-  - [ ] Obtain wallpaper passing level
+  - [x] Obtain wallpaper passing level
   - [x] Get smartcoin
   - [x] most level up player commands
 - [ ] Barman 

@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS usersBuyWallpapers (
   usersId INTEGER NOT NULL,
   wallpapersId INTEGER NOT NULL,
   CONSTRAINT buy_wallpapers_id_foreign_key FOREIGN KEY (wallpapersId) REFERENCES wallpapers (id),
-  CONSTRAINT users_id_foreign_key FOREIGN KEY (usersId) REFERENCES users (id)
+  CONSTRAINT users_id_foreign_key FOREIGN KEY (usersId) REFERENCES users (id),
+  UNIQUE (usersId, wallpapersId)
 );
 
 CREATE TABLE IF NOT EXISTS usersHaveBadge (

@@ -38,7 +38,7 @@ class SqliteAccess(DatabaseAccessImplement):
     def add_user_if_not_exist(self, discord_id: str) -> None:
         if not self.__sqliteDB.select("SELECT discordId FROM users WHERE discordId = '" + discord_id + "';"):
             self.__sqliteDB.modify("INSERT INTO users(discordId) VALUES ('" + discord_id + "')")
-            self.__sqliteDB.modify("INSERT INTO usersBuyWallpapers(usersId, wallpapersId) VALUES (" + str(self.__get_user_id(discord_id)) + ",1);")
+            self.add_posseded_wallpaper(discord_id, "default")
 
     def reset_point(self, discord_id: str) -> None:
         self.__sqliteDB.modify("UPDATE users SET point = 0 WHERE discordId = '" + discord_id + "';")
@@ -87,6 +87,14 @@ class SqliteAccess(DatabaseAccessImplement):
 
     def get_top_users(self) -> list:
         return self.__sqliteDB.select("SELECT discordId, level FROM users ORDER BY level DESC, point DESC LIMIT 10")
+    
+    def add_posseded_wallpaper(self, discordId: str, wallpaper_name: str) -> None:
+        self.__sqliteDB.modify("INSERT INTO usersBuyWallpapers (usersId, wallpapersId) \
+                                SELECT u.id AS userId, w.id AS wallpaperId \
+                                FROM users u \
+                                CROSS JOIN wallpapers w \
+                                WHERE u.discordId = '" + discordId + "' \
+                                AND w.name = '" + wallpaper_name + "';")
 
     # Public
 
@@ -94,9 +102,6 @@ class SqliteAccess(DatabaseAccessImplement):
 
     def __select_user(self, discord_id: str, selection) -> str:
         return self.__sqliteDB.select("SELECT " + selection + " FROM users WHERE discordId == " + discord_id)
-    
-    def __get_user_id(self,discord_id: str) -> str:
-        return self.__sqliteDB.select("SELECT id FROM users WHERE discordId = '" + discord_id + "';")[0][0]
     
     def __create_db(self) -> None:
         with open("data/databases/sqliteDB.sql", "r") as script:

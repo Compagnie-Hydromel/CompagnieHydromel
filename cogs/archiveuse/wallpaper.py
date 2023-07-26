@@ -64,14 +64,15 @@ class Wallpaper(discord.Cog):
         content = ""
         
         for wallpaper in wallpapers:
-            content = "**" + str(wallpaper[0]) + "**\n\n"
+            content += "**" + str(wallpaper[0]) + "**\n\n"
             counter += 1
             
-            pages.append(content)
-            if counter == wallpaper_per_page:
+            if counter > wallpaper_per_page:
+                pages.append(content)
                 content = ""
                 counter = 0
-        
+                
+        pages.append(content)
         return pages
     
 def setup(bot):
