@@ -1,0 +1,2 @@
+class WallpaperAlreadyPossededException(Exception):
+    pass

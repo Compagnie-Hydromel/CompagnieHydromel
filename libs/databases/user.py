@@ -1,9 +1,12 @@
 import re
 from libs.databases.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
 from libs.databases.sqlite.sqlite_access import SqliteAccess
+from libs.databases.wallpaper import Wallpaper
 from libs.databases.wallpapers import Wallpapers
 from libs.exception.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.not_enougt_smartcoin_exception import NotEnougtSmartcoinException
+from libs.exception.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
+from libs.exception.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
 from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper_not_posseded_exception import WallpaperNotPossededException
 
@@ -33,8 +36,10 @@ class User:
         self.__db_access.add_smartcoin(self.__discord_id, amount)
 
     def remove_smartcoin(self, amount : int = 1) -> None:
-        if not self.__db_access.remove_smartcoin(self.__discord_id, amount):
+        if self.get_smartcoin() - amount < 0:
             raise NotEnougtSmartcoinException
+        self.__db_access.remove_smartcoin(self.__discord_id, amount)
+            
 
     def name_color(self) -> str:
         return self.__db_access.get_user_profile_color_name(self.__discord_id)
@@ -45,20 +50,17 @@ class User:
     def is_root(self) -> bool:
         return self.__db_access.get_if_user_is_root(self.__discord_id)
     
-    def current_wallpaper(self) -> str:
-        return self.__db_access.get_user_current_wallpaper(self.__discord_id)
+    def current_wallpaper(self) -> Wallpaper:
+        return Wallpaper(self.__db_access.get_user_current_wallpaper(self.__discord_id))
     
-    def list_of_posseded_wallpapers(self) -> str:
-        return self.__db_access.get_list_posseded_wallpapers(self.__discord_id)
+    def list_of_posseded_wallpapers(self) -> list:        
+        return Wallpapers().create_list_wallpaper_by_list_name(self.__db_access.get_list_posseded_wallpapers(self.__discord_id)) 
     
-    def change_current_wallpapers(self, wallpaper_name: str) -> None:
-        if(Wallpapers().is_exist(wallpaper_name)):
-            if self.__is_wallpaper_posseded(wallpaper_name):
-                self.__db_access.change_user_current_wallpaper(self.__discord_id, wallpaper_name)
-            else:
-                raise WallpaperNotPossededException
+    def change_current_wallpapers(self, wallpaper: Wallpaper) -> None:
+        if self.__is_wallpaper_posseded(wallpaper):
+            self.__db_access.change_user_current_wallpaper(self.__discord_id, wallpaper.name())
         else:
-            raise WallpaperNotExistException
+            raise WallpaperNotPossededException
     
     def change_name_color(self, color: str) -> None:
         self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor, self.__check_color(color))
@@ -72,11 +74,21 @@ class User:
     def get_smartcoin(self) -> int:
         return self.__db_access.get_smartcoin(self.__discord_id)
     
-    def get_top_users(self) -> list:
-        return self.__db_access.get_top_users()
+    def add_posseded_wallpaper(self, wallpaper: Wallpaper) -> list:
+        if self.__is_wallpaper_posseded(wallpaper):
+            raise WallpaperAlreadyPossededException
+        self.__db_access.add_posseded_wallpaper(self.__discord_id, wallpaper.name())
     
-    def add_posseded_wallpaper(self, wallpaper_name: str) -> list:
-        self.__db_access.add_posseded_wallpaper(self.__discord_id, wallpaper_name)
+    def buy_wallpaper(self, wallpaper: Wallpaper) -> None:
+        if self.__is_wallpaper_posseded(wallpaper):
+            raise WallpaperAlreadyPossededException
+        wallpaper_price = wallpaper.price()
+        if wallpaper_price == 0:
+            raise WallpaperCannotBeBuyedException
+        if self.get_smartcoin() < wallpaper_price:
+            raise NotEnougtSmartcoinException
+        self.remove_smartcoin(wallpaper_price)
+        self.add_posseded_wallpaper(wallpaper)
 
     def __check_color(self, color) -> str:
         hex_regex_check=re.findall(r'^#(?:[0-9a-fA-F]{3}){1,2}$|^#(?:[0-9a-fA-F]{3,4}){1,2}$',color)
@@ -102,9 +114,9 @@ class User:
         else:
             raise ColorNotCorrectException
 
-    def __is_wallpaper_posseded(self, wallpaper_name) -> str:
+    def __is_wallpaper_posseded(self, wallpaper: Wallpaper) -> str:
         for posseded_wallpaper in self.list_of_posseded_wallpapers():
-            if posseded_wallpaper[0] == wallpaper_name:
+            if posseded_wallpaper.name() == wallpaper.name():
                 return True
         return False
 
@@ -121,5 +133,8 @@ class User:
     def __check_add_if_wallpaper_at_this_level(self) -> None:
         for wallpaper in Wallpapers().all():
             if wallpaper[3] == self.level():
-                self.add_posseded_wallpaper(wallpaper[0])
+                try:
+                    self.add_posseded_wallpaper(wallpaper[0])
+                except:
+                    pass
                 

@@ -82,7 +82,7 @@ python3 -m pip install -r requirements.txt
     - [x] change text color
     - [x] change bar color
     - [x] display badge
-  - [ ] Buy wallpaper 
+  - [x] Buy wallpaper 
   - [ ] Add wallpaper as admin 
   - [ ] Add money as admin
   - [x] List wallpaper obtain 

@@ -1,7 +1,7 @@
 import traceback
 import discord
 
-from libs.databases.user import User
+from libs.databases.users import Users
 from libs.log import Log, LogType
 
 class Top(discord.Cog):
@@ -12,11 +12,11 @@ class Top(discord.Cog):
     async def top(self, ctx):
         Log(ctx.author.name + " is launching top commands", LogType.COMMAND)
         try:
-            list_of_best_users = User(str(ctx.author.id)).get_top_users()
+            list_of_best_users = Users().get_top_users()
             message = ""
             for user in list_of_best_users:
-                username = self._bot.get_user(int(user[0])).name
-                message += f"{username} : {user[1]}\n" 
+                username = self._bot.get_user(int(user.discord_id())).name
+                message += f"{username} : {user.level()}\n" 
             
             await ctx.respond(embed = discord.Embed(title="Top player", description=message, color=0x75E6DA))
         except:

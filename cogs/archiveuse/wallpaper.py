@@ -2,21 +2,25 @@ import traceback
 import discord
 
 from libs.databases.user import User
+from libs.databases.wallpaper import Wallpaper
 from libs.databases.wallpapers import Wallpapers
 from libs.exception.color_not_correct_exception import ColorNotCorrectException
+from libs.exception.not_enougt_smartcoin_exception import NotEnougtSmartcoinException
+from libs.exception.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
+from libs.exception.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
 from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper_not_posseded_exception import WallpaperNotPossededException
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 
-class Wallpaper(discord.Cog):
+class ProfileManager(discord.Cog):
     def __init__(self, bot) -> None:
         self._bot = bot
 
-    @discord.slash_command(name="wallpaper", description="To change/buy wallpaper")
-    @discord.option("option", description="list/change", choices=["change", "list", "all", "name color", "bar color"])
-    @discord.option("text", description="Wallpaper specified or name and bar color", required=False)
-    async def wallpaper(self, ctx, *, option : str, text : str = None):
+    @discord.slash_command(name="profile-manager", description="")
+    @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "name color", "bar color"])
+    @discord.option("text", description="Specifies wallpaper or name and bar color", required=False)
+    async def profile_manager(self, ctx, *, option : str, text : str = None):
         Log(ctx.author.name + " is launching wallpaper commands with " + option + " " + str(text), LogType.COMMAND)
         try:
             await ctx.defer()
@@ -24,12 +28,17 @@ class Wallpaper(discord.Cog):
             wallpapers = Wallpapers()
 
             match option:
-                case "change":
-                    user.change_current_wallpapers(text)
+                case "set wallpaper":
+                    if text == None:
+                        text = ""
+                    user.change_current_wallpapers(Wallpaper(text))
                     await ctx.respond("Wallpaper changed!")
-                case "list":
+                case "buy wallpaper":
+                    user.buy_wallpaper(Wallpaper(text))
+                    await ctx.respond("Wallpaper buyed!")
+                case "list of posseded wallpaper":
                     await self.__respond_list_wallpapers(ctx, user.list_of_posseded_wallpapers(), "Posseded wallpapers")
-                case "all":
+                case "all wallpaper":
                     await self.__respond_list_wallpapers(ctx, wallpapers.all())
                 case "name color":
                     user.change_name_color(text)
@@ -45,6 +54,12 @@ class Wallpaper(discord.Cog):
             await ctx.respond("Wallpaper not posseded!")
         except ColorNotCorrectException:
             await ctx.respond("Color is not correct!")
+        except NotEnougtSmartcoinException:
+            await ctx.respond("Your not so smart! You don't have enought smartcoin!")
+        except WallpaperAlreadyPossededException:
+            await ctx.respond("Be smart! Wallpaper already posseded!")
+        except WallpaperCannotBeBuyedException:
+            await ctx.respond("Be smart! Wallpaper cannot be buyed!")
         except:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured")
@@ -64,7 +79,7 @@ class Wallpaper(discord.Cog):
         content = ""
         
         for wallpaper in wallpapers:
-            content += "**" + str(wallpaper[0]) + "**\n\n"
+            content += "**" + str(wallpaper.name()) + "**\n\n"
             counter += 1
             
             if counter > wallpaper_per_page:
@@ -76,4 +91,4 @@ class Wallpaper(discord.Cog):
         return pages
     
 def setup(bot):
-    bot.add_cog(Wallpaper(bot))
+    bot.add_cog(ProfileManager(bot))

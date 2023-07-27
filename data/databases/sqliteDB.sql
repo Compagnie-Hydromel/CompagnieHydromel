@@ -43,4 +43,5 @@ CREATE TABLE IF NOT EXISTS usersHaveBadge (
   CONSTRAINT users_id_foreign_key FOREIGN KEY (usersId) REFERENCES users (id)
 );
 
-INSERT INTO wallpapers (id, name, url, level, price) VALUES (1, 'default', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/default.png', 0, 500);
+INSERT INTO wallpapers (id, name, url, level, price) VALUES 
+(1, 'default', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/default.png', 0, 500);

@@ -28,7 +28,7 @@ class DatabaseAccessImplement:
     def add_smartcoin(self, discord_id, amount=1) -> None:
         pass
 
-    def remove_smartcoin(self, discord_id, amount=1) -> bool:
+    def remove_smartcoin(self, discord_id, amount=1) -> None:
         pass
 
     def add_user_if_not_exist(self, discord_id: str) -> None:
@@ -59,6 +59,15 @@ class DatabaseAccessImplement:
         pass
 
     def is_wallpaper_exist(self, wallpaper_name: str) -> bool:
+        pass
+
+    def get_wallpaper_price(self, wallpaper_name: str) -> int:
+        pass
+
+    def get_wallpaper_url(self, wallpaper_name: str) -> str:
+        pass
+    
+    def get_wallpaper_level(self, wallpaper_name: str) -> str:
         pass
 
     def change_user_profile_custom_color(self, discord_id: str, profile_colored_part: ProfileColoredPart, color: str) -> None:

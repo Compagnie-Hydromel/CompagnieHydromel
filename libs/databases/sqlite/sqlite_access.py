@@ -29,11 +29,8 @@ class SqliteAccess(DatabaseAccessImplement):
     def add_smartcoin(self, discord_id, amount=1) -> None:
         self.__sqliteDB.modify("UPDATE users SET smartcoin =  smartcoin + " + str(amount) + " WHERE discordId = '" + discord_id + "'")
     
-    def remove_smartcoin(self, discord_id, amount=1) -> bool:
-        if(self.get_smartcoin - amount < 0):
-            return False
+    def remove_smartcoin(self, discord_id, amount=1) -> None:
         self.__sqliteDB.modify("UPDATE users SET smartcoin = smartcoin - " + str(amount) + " WHERE discordId = '" + discord_id + "'")
-        return True
     
     def add_user_if_not_exist(self, discord_id: str) -> None:
         if not self.__sqliteDB.select("SELECT discordId FROM users WHERE discordId = '" + discord_id + "';"):
@@ -53,13 +50,13 @@ class SqliteAccess(DatabaseAccessImplement):
         return bool(self.__select_user(discord_id, "isRoot")[0][0])
 
     def get_user_current_wallpaper(self, discord_id: str) -> str:
-        return self.__sqliteDB.select("SELECT wallpapers.url FROM users INNER JOIN wallpapers ON users.wallpapersId = wallpapers.id WHERE discordId = '" + discord_id + "';")[0][0]
+        return self.__sqliteDB.select("SELECT wallpapers.name FROM users INNER JOIN wallpapers ON users.wallpapersId = wallpapers.id WHERE discordId = '" + discord_id + "';")[0][0]
 
     def get_list_posseded_wallpapers(self, discord_id: str) -> list:
-        return self.__sqliteDB.select("SELECT wallpapers.name, wallpapers.url, wallpapers.price, wallpapers.level FROM users \
+        return self.__reorder_list(self.__sqliteDB.select("SELECT wallpapers.name FROM users \
                                       INNER JOIN usersBuyWallpapers ON usersBuyWallpapers.usersId = users.id \
                                       INNER JOIN wallpapers ON usersBuyWallpapers.wallpapersId = wallpapers.id \
-                                      WHERE discordId = '" + discord_id + "';")
+                                      WHERE discordId = '" + discord_id + "';"))
 
     def change_user_current_wallpaper(self, discord_id: str, wallpaper_name: str) -> None:
         return self.__sqliteDB.modify("WITH updated_wallpapers AS (\
@@ -71,10 +68,19 @@ class SqliteAccess(DatabaseAccessImplement):
                                     WHERE discordId = '" + discord_id + "';")
     
     def get_all_wallpapers(self) -> list:
-        return self.__sqliteDB.select("SELECT name, url, price, level FROM wallpapers")
+        return self.__reorder_list(self.__sqliteDB.select("SELECT name FROM wallpapers"))
     
     def is_wallpaper_exist(self, wallpaper_name: str) -> bool:
         return len(self.__sqliteDB.select("SELECT name FROM wallpapers WHERE name = '" + wallpaper_name + "'")) > 0
+    
+    def get_wallpaper_price(self, wallpaper_name: str) -> int:
+        return self.__select_wallpaper(wallpaper_name, "price")[0][0]
+    
+    def get_wallpaper_url(self, wallpaper_name: str) -> str:
+        return self.__select_wallpaper(wallpaper_name, "url")[0][0]
+    
+    def get_wallpaper_level(self, wallpaper_name: str) -> str:
+        return self.__select_wallpaper(wallpaper_name, "level")[0][0]
 
     def change_user_profile_custom_color(self, discord_id: str, profile_colored_part: ProfileColoredPart, color: str) -> None:
         self.__sqliteDB.modify("UPDATE users SET " + profile_colored_part.value + " = '" + color + "' WHERE discordId = '" + discord_id + "';")
@@ -86,7 +92,7 @@ class SqliteAccess(DatabaseAccessImplement):
                                       WHERE users.discordId = '" + discord_id + "';")
 
     def get_top_users(self) -> list:
-        return self.__sqliteDB.select("SELECT discordId, level FROM users ORDER BY level DESC, point DESC LIMIT 10")
+        return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users ORDER BY level DESC, point DESC LIMIT 10"))
     
     def add_posseded_wallpaper(self, discordId: str, wallpaper_name: str) -> None:
         self.__sqliteDB.modify("INSERT INTO usersBuyWallpapers (usersId, wallpapersId) \
@@ -101,11 +107,20 @@ class SqliteAccess(DatabaseAccessImplement):
     # Private
 
     def __select_user(self, discord_id: str, selection) -> str:
-        return self.__sqliteDB.select("SELECT " + selection + " FROM users WHERE discordId == " + discord_id)
+        return self.__sqliteDB.select("SELECT " + selection + " FROM users WHERE discordId = '" + discord_id + "'")
+    
+    def __select_wallpaper(self, wallpaper_name: str, selection) -> str:
+        return self.__sqliteDB.select("SELECT " + selection + " FROM wallpapers WHERE name = '" + wallpaper_name + "'")
     
     def __create_db(self) -> None:
         with open("data/databases/sqliteDB.sql", "r") as script:
             for cmd in script.read().split(";"):
                 self.__sqliteDB.modify(cmd)
     
+    def __reorder_list(self, list_to_reorder: list) -> list:
+        list_reorder = []
+        for item in list_to_reorder:
+            list_reorder.append(item[0])
+        return list_reorder
+
     # Private

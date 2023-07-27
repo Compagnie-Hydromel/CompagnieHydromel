@@ -1,0 +1,2 @@
+class WallpaperCannotBeBuyedException(Exception):
+    pass

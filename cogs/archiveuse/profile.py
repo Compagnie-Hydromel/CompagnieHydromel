@@ -1,4 +1,4 @@
-import  discord
+import discord
 from libs.databases.user import User
 from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 
@@ -37,7 +37,7 @@ class Profile(discord.Cog):
                 user.level(),
                 user.point(),
                 ctx.author.display_name,
-                user.current_wallpaper(),
+                user.current_wallpaper().url(),
                 bar_color = "#"+user.bar_color(),
                 name_color = "#"+user.name_color(),
                 badge = user.badge_list(),
