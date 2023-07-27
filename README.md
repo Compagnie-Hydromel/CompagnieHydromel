@@ -84,6 +84,7 @@ python3 -m pip install -r requirements.txt
     - [x] display badge
   - [ ] Buy wallpaper 
   - [ ] Add wallpaper as admin 
+  - [ ] Add money as admin
   - [x] List wallpaper obtain 
   - [x] Pagination wallpaper list
   - [x] List all wallpaper
