@@ -1,5 +1,6 @@
+-- File only here to store not used except if you want to add these in databases
+
 INSERT INTO wallpapers (id, name, url, level, price) VALUES 
-(1, 'default', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/default.png', 0, 500),
 (2, '2manAndMonster', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/2manAndMonster.png', 25, 0),
 (3, 'akiraBadguy', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/akiraBadguy.png', 0, 1300),
 (4, 'akiraBoom', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/akiraBoom.png', 0, 2400),

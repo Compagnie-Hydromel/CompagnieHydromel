@@ -42,10 +42,10 @@ class User:
             
 
     def name_color(self) -> str:
-        return self.__db_access.get_user_profile_color_name(self.__discord_id)
+        return self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor)
     
     def bar_color(self) -> str:
-        return self.__db_access.get_user_profile_color_bar(self.__discord_id)
+        return self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor)
     
     def is_root(self) -> bool:
         return self.__db_access.get_if_user_is_root(self.__discord_id)

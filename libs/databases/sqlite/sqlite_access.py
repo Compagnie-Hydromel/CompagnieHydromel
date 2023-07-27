@@ -12,6 +12,14 @@ class SqliteAccess(DatabaseAccessImplement):
     # Public 
 
     def get_user_level(self, discord_id: str) -> int:
+        """This method is designed to get the user level.
+
+        Args:
+            discord_id (str): discord user id as a string
+
+        Returns:
+            int: the user level
+        """
         return self.__select_user(discord_id, "level")[0][0]
 
     def get_user_point(self, discord_id: str) -> int:
@@ -40,11 +48,8 @@ class SqliteAccess(DatabaseAccessImplement):
     def reset_point(self, discord_id: str) -> None:
         self.__sqliteDB.modify("UPDATE users SET point = 0 WHERE discordId = '" + discord_id + "';")
 
-    def get_user_profile_color_bar(self, discord_id: str) -> str:
-        return self.__select_user(discord_id, "barColor")[0][0]
-
-    def get_user_profile_color_name(self, discord_id: str) -> str:
-        return self.__select_user(discord_id, "nameColor")[0][0]
+    def get_user_profile_custom_color(self, discord_id: str, profile_colored_part: ProfileColoredPart) -> str:
+        return self.__select_user(discord_id, profile_colored_part.value)[0][0]
 
     def get_if_user_is_root(self, discord_id: str) -> bool:
         return bool(self.__select_user(discord_id, "isRoot")[0][0])
@@ -86,6 +91,7 @@ class SqliteAccess(DatabaseAccessImplement):
         self.__sqliteDB.modify("UPDATE users SET " + profile_colored_part.value + " = '" + color + "' WHERE discordId = '" + discord_id + "';")
 
     def get_users_badge_list(self, discord_id: str) -> list:
+        # TODO: Add badge class
         return self.__sqliteDB.select("SELECT badges.name, badges.url FROM users \
                                       INNER JOIN usersHaveBadge ON usersHaveBadge.usersId = users.id \
                                       INNER JOIN badges ON usersHaveBadge.badgesId = badges.id \
