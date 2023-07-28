@@ -121,8 +121,6 @@ class ProfilMaker():
         if level > 15:
             calculated_point_per_level = 200 * 15
 
-        print("point" + str(point) + " point to have:" + str(calculated_point_per_level))
-
         progress = (point * 100 / (calculated_point_per_level))/100
 
         bar = self.__new_bar(1, 1, 500, 25, progress, fg=_bar_color)

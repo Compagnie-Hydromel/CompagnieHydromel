@@ -283,9 +283,7 @@ class User:
         calculated_point_per_level = 200 * level
         if level > 15:
             calculated_point_per_level = 200 * 15
-            
-        print("point" + str(point) + " point to have:" + str(calculated_point_per_level))
-            
+                        
         if point >= calculated_point_per_level:
             self.__db_access.add_user_level(self.__discord_id)
             self.__db_access.reset_point(self.__discord_id)

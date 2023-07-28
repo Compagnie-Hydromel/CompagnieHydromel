@@ -45,22 +45,22 @@ class Paginator(discord.ui.View):
             self.__current_page = value
     
     @discord.ui.button(label="", style=discord.ButtonStyle.primary, emoji="⬅") 
-    async def left_callback(self, button: discord.ui.button.Button, interaction: discord.interactions.Interaction) -> None:
+    async def left_callback(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
         """This method is a callback designed to go to the left page.
 
         Args:
-            button (discord.ui.button.Button): The button that was clicked.
+            button (discord.ui.Button): The button that was clicked.
             interaction (discord.interactions.Interaction): The discord interaction.
         """
         self.current_page -= 1
         await self.__refresh(interaction)
         
     @discord.ui.button(label="", style=discord.ButtonStyle.primary, emoji="➡")
-    async def right_callback(self, button: discord.ui.button.Button, interaction: discord.interactions.Interaction) -> None:
+    async def right_callback(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
         """This method is a callback designed to go to the right page.
 
         Args:
-            button (discord.ui.button.Button): The button that was clicked.
+            button (discord.ui.Button): The button that was clicked.
             interaction (discord.interactions.Interaction): The discord interaction.
         """
         self.current_page += 1

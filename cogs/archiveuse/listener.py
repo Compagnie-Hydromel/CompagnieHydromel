@@ -22,6 +22,16 @@ class Listener(discord.Cog):
             return
 
         User(str(message.author.id)).add_point()
+        
+    @discord.Cog.listener()
+    async def on_message_delete(self, message: discord.Message):
+        log_content = "deleted a message : " + message.content
+        Log.logMessage(message.channel, log_content, message.author.name, self._bot.user.name, onlyDm=True)
+        
+    @discord.Cog.listener()
+    async def on_message_edit(self, before: discord.Message, after: discord.Message):
+        log_content = "edited a message : " + before.content + " -> " + after.content
+        Log.logMessage(before.channel, log_content, before.author.name, self._bot.user.name, onlyDm=True)
 
     @tasks.loop(seconds = 299)
     async def loop_check_point_in_vocal(self):
