@@ -9,11 +9,11 @@ from libs.log import LogType
 import traceback
 
 class Profile(discord.Cog):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: discord.bot.Bot) -> None:
         self._bot = bot
 
     @discord.slash_command(name="profile", description="")
-    async def profile(self, ctx):
+    async def profile(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching profile commands", LogType.COMMAND)
         try: 
             await ctx.defer()
@@ -52,5 +52,5 @@ class Profile(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured while making profile") 
 
-def setup(bot):
+def setup(bot: discord.bot.Bot):
     bot.add_cog(Profile(bot))

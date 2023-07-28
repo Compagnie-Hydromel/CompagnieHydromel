@@ -5,11 +5,11 @@ from libs.databases.users import Users
 from libs.log import Log, LogType
 
 class Top(discord.Cog):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: discord.bot.Bot) -> None:
         self._bot = bot        
 
     @discord.slash_command(name="top", description="")
-    async def top(self, ctx):
+    async def top(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching top commands", LogType.COMMAND)
         try:
             list_of_best_users = Users().get_top_users()
@@ -23,5 +23,5 @@ class Top(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured")
 
-def setup(bot):
+def setup(bot: discord.bot.Bot):
     bot.add_cog(Top(bot))

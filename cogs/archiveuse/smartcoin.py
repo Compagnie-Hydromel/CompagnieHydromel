@@ -5,10 +5,10 @@ from libs.databases.user import User
 from libs.log import Log, LogType
 
 class Smartcoin(discord.Cog):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: discord.bot.Bot) -> None:
         self._bot = bot
 
-    async def __smartcoin(self, ctx):
+    async def __smartcoin(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching smartcoin commands", LogType.COMMAND)
         try:
             user = User(str(ctx.author.id))
@@ -19,12 +19,12 @@ class Smartcoin(discord.Cog):
             await ctx.respond("An error occured while getting your smartcoin level")
 
     @discord.slash_command(name="smartcoin", description="")
-    async def smartcoin(self, ctx):
+    async def smartcoin(self, ctx: discord.commands.context.ApplicationContext):
         await self.__smartcoin(ctx)
 
     @discord.slash_command(name="iq", description="")
-    async def iq(self, ctx):
+    async def iq(self, ctx: discord.commands.context.ApplicationContext):
         await self.__smartcoin(ctx)
 
-def setup(bot):
+def setup(bot: discord.bot.Bot):
     bot.add_cog(Smartcoin(bot))

@@ -14,13 +14,13 @@ from libs.log import Log, LogType
 from libs.paginator import Paginator
 
 class ProfileManager(discord.Cog):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: discord.bot.Bot) -> None:
         self._bot = bot
 
     @discord.slash_command(name="profile-manager", description="")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "name color", "bar color"])
     @discord.option("text", description="Specifies wallpaper or name and bar color", required=False)
-    async def profile_manager(self, ctx, *, option : str, text : str = None):
+    async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option : str, text : str = None):
         Log(ctx.author.name + " is launching wallpaper commands with " + option + " " + str(text), LogType.COMMAND)
         try:
             await ctx.defer()
@@ -64,7 +64,7 @@ class ProfileManager(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured")
             
-    async def __respond_list_wallpapers(self, ctx, wallpapers: list, wallpapers_name: str = "Wallpapers"):
+    async def __respond_list_wallpapers(self, ctx: discord.commands.context.ApplicationContext, wallpapers: list, wallpapers_name: str = "Wallpapers"):
         paginator = Paginator(self.__generate_pages(wallpapers), wallpapers_name)
         
         await ctx.respond(
@@ -72,7 +72,7 @@ class ProfileManager(discord.Cog):
             embed = paginator.embeb
         )
 
-    def __generate_pages(self, wallpapers: list) -> list:
+    def __generate_pages(self, wallpapers: list[Wallpaper]) -> list:
         pages = []
         wallpaper_per_page = 10
         counter = 0
@@ -90,5 +90,5 @@ class ProfileManager(discord.Cog):
         pages.append(content)
         return pages
     
-def setup(bot):
+def setup(bot: discord.bot.Bot):
     bot.add_cog(ProfileManager(bot))
