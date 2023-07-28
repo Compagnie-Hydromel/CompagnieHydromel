@@ -21,7 +21,7 @@ class Listener(discord.Cog):
         if message.author == self._bot.user:
             return
 
-        User(str(message.author.id)).add_point(20)
+        User(str(message.author.id)).add_point()
 
     @tasks.loop(seconds = 299)
     async def loop_check_point_in_vocal(self):

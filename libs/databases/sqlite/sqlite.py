@@ -3,7 +3,12 @@ import sqlite3
 class Sqlite():
     __db : sqlite3.Connection
 
-    def __init__(self, file):
+    def __init__(self, file: str) -> None:
+        """This method is designed to initialize the Sqlite class.
+
+        Args:
+            file (str): The path to the database file.
+        """
         self.__db =  sqlite3.connect(file)
 
     def select(self, query:str) -> dict:

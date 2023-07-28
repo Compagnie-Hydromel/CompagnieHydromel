@@ -4,8 +4,12 @@ class ProfileColoredPart(Enum):
     BarColor = "barColor"
     NameColor = "nameColor"
 
-class DatabaseAccessImplement:    
+class DatabaseAccessImplement:
+    """This class is designed to be the interface of the database access.
+    """
     def __init__(self) -> None:
+        """This method is designed to initialize the class. Use it to initialize the database connection.
+        """
         pass
 
     # Public 
@@ -154,7 +158,7 @@ class DatabaseAccessImplement:
 
         Returns:
             list[str]: All wallpapers name (example: ['default', 'wallpaper_name']).
-        """             
+        """         
         pass
 
     def is_wallpaper_exist(self, wallpaper_name: str) -> bool:
