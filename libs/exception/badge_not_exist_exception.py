@@ -1,0 +1,2 @@
+class BadgeNotExistException(Exception):
+    pass

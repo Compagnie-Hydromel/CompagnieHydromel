@@ -1,4 +1,5 @@
 import re
+from libs.databases.badges import Badges
 from libs.databases.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
 from libs.databases.sqlite.sqlite_access import SqliteAccess
 from libs.databases.wallpaper import Wallpaper
@@ -163,13 +164,13 @@ class User:
         """        
         self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, self.__check_color(color))
 
-    def badge_list(self) -> list[list[str]]:
-        """This method is designed to get the badge list of the user.
+    def badges_list(self) -> list[str]:
+        """This method is designed to get the badges list of the user.
 
         Returns:
-            list[list[str]]: The user badge list (example: [['badge_name', 'https://badge_url'], ['badge_name', 'https://badge_url']]).
+            list[str]: The user badges list (example: ['badge_name', 'badge_name']).
         """
-        return self.__db_access.get_users_badge_list(self.__discord_id)
+        return Badges().create_list_badges_by_list_name(self.__db_access.get_users_badge_list(self.__discord_id))
     
     def get_smartcoin(self) -> int:
         """This method is designed to get the smartcoin of the user.

@@ -40,11 +40,12 @@ class Profile(discord.Cog):
                 user.current_wallpaper().url(),
                 bar_color = "#"+user.bar_color(),
                 name_color = "#"+user.name_color(),
-                badge = user.badge_list(),
+                badges = user.badges_list(),
                 coords = coords
             )
 
             await ctx.respond(file=discord.File(pro.profil_path()))
+            Log(ctx.author.name + " profile saved at " + pro.profil_path(), LogType.INFO)
         except UnableToDownloadImageException:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("Impossible to download image")

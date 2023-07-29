@@ -242,5 +242,27 @@ class DatabaseAccessImplement:
             wallpaper_name (str): The wallpaper name.
         """
         pass
+    
+    def is_badge_exist(self, badge_name: str) -> bool:
+        """This method is designed to check if a badge exist.
+
+        Args:
+            badge_name (str): The badge name.
+
+        Returns:
+            bool: True if the badge exist, False if not.
+        """
+        pass
+    
+    def get_badge_url(self, badge_name: str) -> str:
+        """This method is designed to get a badge url.
+
+        Args:
+            badge_name (str): The badge name.
+
+        Returns:
+            str: The badge url (example: https://example.com/img.png).
+        """
+        pass
 
     # Public

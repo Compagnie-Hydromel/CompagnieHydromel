@@ -226,20 +226,19 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         self.__sqliteDB.modify("UPDATE users SET " + profile_colored_part.value + " = '" + color + "' WHERE discordId = '" + discord_id + "';")
 
-    def get_users_badge_list(self, discord_id: str) -> list[list[str]]:
+    def get_users_badge_list(self, discord_id: str) -> list[str]:
         """This method is designed to get a user badge list.
 
         Args:
             discord_id (str): Discord user id as a string.
 
         Returns:
-            list[list[str]]: The user badge list (example: [['badge_name', 'https://badge_url'], ['badge_name', 'https://badge_url']]).
+            list[str]: The user badge list (example: ['badge_name', 'badge_name']).
         """
-        # TODO: Add badge class
-        return self.__sqliteDB.select("SELECT badges.name, badges.url FROM users \
+        return self.__reorder_list(self.__sqliteDB.select("SELECT badges.name FROM users \
                                       INNER JOIN usersHaveBadge ON usersHaveBadge.usersId = users.id \
                                       INNER JOIN badges ON usersHaveBadge.badgesId = badges.id \
-                                      WHERE users.discordId = '" + discord_id + "';")
+                                      WHERE users.discordId = '" + discord_id + "';"))
 
     def get_top_users(self) -> list[str]:
         """This method is designed to get the top users.
@@ -262,6 +261,28 @@ class SqliteAccess(DatabaseAccessImplement):
                                 CROSS JOIN wallpapers w \
                                 WHERE u.discordId = '" + discordId + "' \
                                 AND w.name = '" + wallpaper_name + "';")
+        
+    def is_badge_exist(self, badge_name: str) -> bool:
+        """This method is designed to check if a badge exist.
+
+        Args:
+            badge_name (str): The badge name.
+
+        Returns:
+            bool: True if the badge exist, False if not.
+        """
+        return len(self.__sqliteDB.select("SELECT name FROM badges WHERE name = '" + badge_name + "'")) > 0
+    
+    def get_badge_url(self, badge_name: str) -> str:
+        """This method is designed to get a badge url.
+
+        Args:
+            badge_name (str): The badge name.
+
+        Returns:
+            str: The badge url (example: https://example.com/img.png).
+        """
+        return self.__sqliteDB.select("SELECT url FROM badges WHERE name = '" + badge_name + "'")[0][0]
 
     # Public
 

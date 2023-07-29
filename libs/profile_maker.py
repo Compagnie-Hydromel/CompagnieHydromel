@@ -4,6 +4,7 @@ import requests
 from io import BytesIO
 import numpy as np
 import os
+from libs.databases.badge import Badge
 from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 
 class ProfilMaker():
@@ -27,7 +28,7 @@ class ProfilMaker():
                  display_name: str,
                  background_url: str,
                  coords: dict = __coords,
-                 badge: list[list[str]] = [],
+                 badges: list[Badge] = [],
                  name_color: str = "#0000FF",
                  bar_color: str = "#ADFF2F"
                  ):
@@ -42,7 +43,7 @@ class ProfilMaker():
             display_name (str): Display name show in the profile.
             background_url (str): background url (https://example.com/path/to/background.png).
             coords (dict, optional): Coordonate to puts the different display object (name, profilPicture) see behind the paterns. Defaults to __coords.
-            badge (list, optional): The badge list in the profile (example: [['badge_name', 'https://badge_url'], ['badge_name', 'https://badge_url']]). Defaults to [].
+            badge (list[badge], optional): The badge list in the profile (example: []). Defaults to [].
             name_color (str, optional): The color name as Hex RGB(example: 00ff00, ff00ffaf, etc..). Defaults to "#0000FF".
             bar_color (str, optional): The bar name as Hex RGB(example: 00ff00, ff00ffaf, etc..). Defaults to "#ADFF2F".
             
@@ -60,17 +61,22 @@ class ProfilMaker():
             UnableToDownloadImageException: _description_
             UnableToDownloadImageException: _description_
         """
+        
+        # region [background]
         img = None
         try:
             response_background_url = requests.get(background_url)
             img = Image.open(BytesIO(response_background_url.content)).convert('RGBA').resize((500, 281))
         except: 
             raise UnableToDownloadImageException
-
+        # endregion
+        
+        # region [bar and name color]
         _name_color = ImageColor.getcolor(str(name_color), "RGBA")
         _bar_color = ImageColor.getcolor(str(bar_color), "RGBA")
+        # endregion
 
-        # image
+        # region [image]
         pic = None
         try: 
             response_profile_picture = requests.get(user_profil_picture)
@@ -86,28 +92,32 @@ class ProfilMaker():
 
         img.paste(pic, (coords["profilPicture"]['x'],
                   coords["profilPicture"]['y']), pic)
+        # endregion
 
-        # text
+        # region [text]
         d = ImageDraw.Draw(img)
+        # endregion
 
-        # name
+        # region [name]
         d.multiline_text((coords["name"]['x'], coords["name"]['y']), display_name, font=ImageFont.truetype(
             "data/font/ancientMedium.ttf", 45), fill=_name_color)
 
         d.multiline_text((coords["userName"]['x'], coords["userName"]['y']), user_name, font=ImageFont.truetype(
             "data/font/LiberationSans-Regular.ttf", 20), fill=_name_color)
+        # endregion
 
-        # level
+        # region [level]
         d.multiline_text((coords["level"]['x'], coords["level"]['y']), str(
             level), font=ImageFont.truetype("data/font/LiberationSans-Regular.ttf", 30), fill=_bar_color)
+        # endregion
 
-        # badge
+        # region [badge]
 
         badgeNumber = 0
-        for i in badge:
+        for badge in badges:
             tempImg = None
             try:
-                response_background_url = requests.get(i[1])
+                response_background_url = requests.get(badge.url())
                 tempImg = Image.open(BytesIO(response_background_url.content)).convert('RGBA')
             except: 
                 raise UnableToDownloadImageException
@@ -115,8 +125,9 @@ class ProfilMaker():
             img.paste(tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
             badgeNumber += 1
 
-        # badge
+        # endregion
         
+        # region [level bar]
         calculated_point_per_level = 200 * level
         if level > 15:
             calculated_point_per_level = 200 * 15
@@ -126,10 +137,13 @@ class ProfilMaker():
         bar = self.__new_bar(1, 1, 500, 25, progress, fg=_bar_color)
 
         img.paste(bar, (coords['levelBar']['x'], coords['levelBar']['y']), bar)
+        # endregion
 
+        # region [save]
         img.save(profil_path)
 
         self.__profilPath = profil_path
+        # endregion
 
     def profil_path(self) -> str:
         """This method is designed to get the profil path.
