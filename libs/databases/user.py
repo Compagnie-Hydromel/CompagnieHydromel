@@ -282,14 +282,16 @@ class User:
         point = self.point()
         level = self.level()
         calculated_point_per_level = 200 * level
+        calculated_money_per_level = 100+(level*100)
         if level > 15:
             calculated_point_per_level = 200 * 15
-                        
+            calculated_money_per_level = 100+(15*100)
+        
         if point >= calculated_point_per_level:
             self.__db_access.add_user_level(self.__discord_id)
             self.__db_access.reset_point(self.__discord_id)
             self.__db_access.add_user_point(self.__discord_id, point - (calculated_point_per_level))
-            self.add_smartcoin(100+(level*100))
+            self.add_smartcoin(calculated_money_per_level)
             self.__check_add_if_wallpaper_at_this_level()
     
     def __check_add_if_wallpaper_at_this_level(self) -> None:

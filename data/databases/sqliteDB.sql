@@ -44,4 +44,4 @@ CREATE TABLE IF NOT EXISTS usersHaveBadge (
 );
 
 INSERT INTO wallpapers (id, name, url, level, price) VALUES 
-(1, 'default', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/default.png', 0, 500);
+(1, 'default', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/default.png', 0, 0);

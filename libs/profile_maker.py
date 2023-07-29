@@ -1,5 +1,6 @@
 #!/usr/local/bin/python3
 from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError, ImageFilter, ImageColor
+from utils import pillow_crop_center, pillow_crop_max_square, pillow_mask_circle_transparent, pillow_new_bar
 import requests
 from io import BytesIO
 import numpy as np
@@ -87,8 +88,8 @@ class ProfilMaker():
 
         h, w = pic.size
 
-        pic = self.__crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
-        pic = self.__mask_circle_transparent(pic, 1)
+        pic = pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
+        pic = pillow_mask_circle_transparent(pic, 1)
 
         img.paste(pic, (coords["profilPicture"]['x'],
                   coords["profilPicture"]['y']), pic)
@@ -134,7 +135,7 @@ class ProfilMaker():
 
         progress = (point * 100 / (calculated_point_per_level))/100
 
-        bar = self.__new_bar(1, 1, 500, 25, progress, fg=_bar_color)
+        bar = pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
 
         img.paste(bar, (coords['levelBar']['x'], coords['levelBar']['y']), bar)
         # endregion
@@ -152,47 +153,3 @@ class ProfilMaker():
             str: The profil path.
         """
         return self.__profilPath
-
-    # Private Methods
-    def __crop_center(self, pil_img, crop_width, crop_height):
-        img_width, img_height = pil_img.size
-        return pil_img.crop(((img_width - crop_width) // 2,
-                             (img_height - crop_height) // 2,
-                             (img_width + crop_width) // 2,
-                             (img_height + crop_height) // 2))
-
-    def __crop_max_square(self, pil_img):
-        return self.__crop_center(pil_img, min(pil_img.size), min(pil_img.size))
-
-    def __mask_circle_transparent(self, pil_img, blur_radius, offset=0):
-        offset = blur_radius * 2 + offset
-        mask = Image.new("L", pil_img.size, 0)
-        draw = ImageDraw.Draw(mask)
-        draw.ellipse(
-            (offset, offset, pil_img.size[0] - offset, pil_img.size[1] - offset), fill=255)
-        mask = mask.filter(ImageFilter.GaussianBlur(blur_radius))
-
-        result = pil_img.copy()
-        result.putalpha(mask)
-
-        return result
-
-    def __new_bar(self, x, y, width, height, progress, bg=(0, 0, 0, 0), fg=(173, 255, 47, 255), fg2=(15, 15, 15, 0)):
-        bar = Image.new(mode="RGBA", size=(width+(x*2)*2, height+(y*2)*2))
-        draw = ImageDraw.Draw(bar)
-
-        # Draw the background
-        draw.rectangle((x+(height/2), y, x+width+(height/2),
-                       y+height), fill=fg2, width=10)
-        draw.ellipse((x+width, y, x+height+width, y+height), fill=fg2)
-        draw.ellipse((x, y, x+height, y+height), fill=fg2)
-        width = int(width*progress)
-
-        # Draw the part of the progress bar that is actually filled
-        draw.rectangle((x+(height/2), y, x+width+(height/2),
-                       y+height), fill=fg, width=10)
-        draw.ellipse((x+width, y, x+height+width, y+height), fill=fg)
-        draw.ellipse((x, y, x+height, y+height), fill=fg)
-
-        return bar
-    # Private Methods

@@ -92,7 +92,7 @@ python3 -m pip install -r requirements.txt
   - [x] Get smartcoin
   - [x] most level up player commands
 - [ ] Barman 
-  - [ ] log almost everything 
+  - [x] log almost everything 
   - [ ] help command
   - [ ] beer command
   - [ ] hydromel command

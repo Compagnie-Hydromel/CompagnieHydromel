@@ -79,7 +79,15 @@ class ProfileManager(discord.Cog):
         content = ""
         
         for wallpaper in wallpapers:
-            content += "**" + str(wallpaper.name()) + "**\n\n"
+            unlock_with = ""
+            if wallpaper.price() != 0:
+                unlock_with += "\n" + str(wallpaper.price()) + " smartcoin"
+            elif wallpaper.level() != 0:
+                unlock_with += "\nUnlock at level " + str(wallpaper.level())
+            else:
+                unlock_with += "\n" + "not buyable"
+                
+            content += "**" + str(wallpaper.name()) + "**" + unlock_with + "\n"
             counter += 1
             
             if counter > wallpaper_per_page:
