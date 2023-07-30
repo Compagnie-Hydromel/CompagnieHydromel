@@ -1,5 +1,5 @@
 blagues_api==1.0.2
-pycord==2.4.1
+py-cord==2.4.1
 Pillow==10.0.0
 python-dotenv==1.0.0
 PyYAML==6.0.1
