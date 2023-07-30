@@ -15,6 +15,7 @@ class Top(discord.Cog):
             list_of_best_users = Users().get_top_users()
             message = ""
             for user in list_of_best_users:
+                # TODO handle if get_user return None
                 username = self._bot.get_user(int(user.discord_id())).name
                 message += f"{username} : {user.level()}\n" 
             
