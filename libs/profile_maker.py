@@ -1,10 +1,8 @@
 #!/usr/local/bin/python3
-from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError, ImageFilter, ImageColor
-from utils import pillow_crop_center, pillow_crop_max_square, pillow_mask_circle_transparent, pillow_new_bar
+from PIL import Image, ImageDraw, ImageFont, ImageColor
+from libs.utils import Utils
 import requests
 from io import BytesIO
-import numpy as np
-import os
 from libs.databases.badge import Badge
 from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 
@@ -88,8 +86,8 @@ class ProfilMaker():
 
         h, w = pic.size
 
-        pic = pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
-        pic = pillow_mask_circle_transparent(pic, 1)
+        pic = Utils().pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
+        pic = Utils().pillow_mask_circle_transparent(pic, 1)
 
         img.paste(pic, (coords["profilPicture"]['x'],
                   coords["profilPicture"]['y']), pic)
@@ -135,7 +133,7 @@ class ProfilMaker():
 
         progress = (point * 100 / (calculated_point_per_level))/100
 
-        bar = pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
+        bar = Utils().pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
 
         img.paste(bar, (coords['levelBar']['x'], coords['levelBar']['y']), bar)
         # endregion
