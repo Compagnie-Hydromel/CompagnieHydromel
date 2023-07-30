@@ -47,7 +47,7 @@ class FunCommands(discord.Cog):
         await ctx.respond(message)
         
     @discord.slash_command(description="To get a random joke")
-    @discord.option(name="type",choices=["Global", "Dev", "Dark", "Limit", "Beauf", "Blondes"])
+    @discord.option(name="type",choices=["Global", "Dev", "Beauf"])
     async def joke(self, ctx : discord.ApplicationContext, type : str):
         if os.getenv("BLAGUES_API_KEY") is None:
             await ctx.respond("Not api access!")
