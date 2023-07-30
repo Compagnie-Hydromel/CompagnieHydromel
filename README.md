@@ -32,6 +32,13 @@ First, let's start with the files needed to be modified:
 BARMAN_TOKEN = "COMPLETE_IT"
 MENESTREL_TOKEN = "COMPLETE_IT"
 ARCHIVEUSE_TOKEN = "COMPLETE_IT"
+
+# https://www.blagues-api.fr/
+BLAGUES_API_KEY = "COMPLETE_IT"
+
+# https://github.com/praw-dev/praw
+REDDIT_CLIENT_ID = "COMPLETE_IT"
+REDDIT_CLIENT_SECRET = "COMPLETE_IT"
 ```
 
 After this, let's create a basic Discord Server:
@@ -104,9 +111,9 @@ python3 -m pip install -r requirements.txt
     - [ ] add root
     - [ ] broacast 
     - [ ] authorize command in channel
-  - [ ] meme channel 
+  - [x] meme commands 
   - [x] dynamic server banner with vocal channel
-  - [ ] reaction add role
+  - [x] reaction add role
 - [ ] Menestrel 
   - [ ] Play
   - [ ] Stop
