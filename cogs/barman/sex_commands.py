@@ -12,7 +12,7 @@ class SexCommands(discord.Cog):
         self._bot = bot
         self.__config = Config()
 
-    @discord.slash_command(name="porn", description="")
+    @discord.slash_command(name="porn", description="Get some porn in NSFW channel only")
     @discord.option("choose", description="", choices=["porn", "hentai", "jinx", "002", "overwatch"])
     async def porn(self, ctx: discord.commands.context.ApplicationContext, choose : str):
         try:

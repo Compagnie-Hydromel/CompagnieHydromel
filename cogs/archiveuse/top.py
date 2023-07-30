@@ -8,7 +8,7 @@ class Top(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self._bot = bot        
 
-    @discord.slash_command(name="top", description="")
+    @discord.slash_command(name="top", description="get the top player")
     async def top(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching top commands", LogType.COMMAND)
         try:

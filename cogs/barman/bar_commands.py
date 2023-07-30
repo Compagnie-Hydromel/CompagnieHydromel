@@ -12,19 +12,19 @@ class BarCommands(discord.Cog):
         self._bot = bot
         self.__config = Config()
 
-    @discord.slash_command(name="beer", description="")
+    @discord.slash_command(name="beer", description="Get your beer but it cost some smartcoin")
     async def beer(self, ctx: discord.commands.context.ApplicationContext):
         await self.handler(ctx, "beer")
             
-    @discord.slash_command(name="soft", description="")
+    @discord.slash_command(name="soft", description="Get your soft but it cost some smartcoin")
     async def soft(self, ctx: discord.commands.context.ApplicationContext):
         await self.handler(ctx, "soft")
     
-    @discord.slash_command(name="hydromel", description="")
+    @discord.slash_command(name="hydromel", description="Get some hydrmel but it cost some smartcoin")
     async def hydromel(self, ctx: discord.commands.context.ApplicationContext):
         await self.handler(ctx, "hydromel")
         
-    @discord.slash_command(name="water", description="")
+    @discord.slash_command(name="water", description="Get some free water")
     async def water(self, ctx: discord.commands.context.ApplicationContext):
         await self.handler(ctx, "water")
                     

@@ -4,7 +4,7 @@ class Play(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self._bot = bot
 
-    @discord.slash_command(name="play", description="")
+    @discord.slash_command(name="play", description="WIP!")
     async def play(self, ctx: discord.commands.context.ApplicationContext):
         await ctx.respond("WIP")
 

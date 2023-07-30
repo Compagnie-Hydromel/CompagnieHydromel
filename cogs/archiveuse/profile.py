@@ -12,7 +12,7 @@ class Profile(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self._bot = bot
 
-    @discord.slash_command(name="profile", description="")
+    @discord.slash_command(name="profile", description="To get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching profile commands", LogType.COMMAND)
         try: 

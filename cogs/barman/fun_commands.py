@@ -11,7 +11,7 @@ class FunCommands(discord.Cog):
     def __init__(self, bot) -> None:
         self.__bot = bot
         
-    @discord.slash_command(description="Commande qui permet de jouer au jeu *Pierre, Papier, Ciseau*.")
+    @discord.slash_command(description="Command to play *Rock, Paper, Scissors*.")
     @discord.option(name="choice", choices=["Rock", "Paper", "Scissors"])
     async def rock_paper_scissors(self, ctx : discord.ApplicationContext, choice : str):
         possibilities = ["Rock", "Paper", "Scissors"]
@@ -46,7 +46,7 @@ class FunCommands(discord.Cog):
         
         await ctx.respond(message)
         
-    @discord.slash_command(description="Le bot fait une blague")
+    @discord.slash_command(description="To get a random joke")
     @discord.option(name="type",choices=["Global", "Dev", "Dark", "Limit", "Beauf", "Blondes"])
     async def joke(self, ctx : discord.ApplicationContext, type : str):
         if os.getenv("BLAGUES_API_KEY") is None:
@@ -61,7 +61,7 @@ class FunCommands(discord.Cog):
         
         await ctx.respond(f"{blague_infos[0]}\n\n\n{blague_infos[1]}")
         
-    @discord.slash_command(name="meme", description="")
+    @discord.slash_command(name="meme", description="Get a random meme from reddit")
     async def meme(self, ctx : discord.ApplicationContext):
         if os.getenv("REDDIT_CLIENT_ID") is None and os.getenv("REDDIT_CLIENT_SECRET") is None:
             await ctx.respond("Not api access!")
