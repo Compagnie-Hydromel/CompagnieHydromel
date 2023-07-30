@@ -1,5 +1,8 @@
+from io import BytesIO
 import os
+import random
 from PIL import Image, ImageDraw, ImageFilter
+import requests
 
 class Utils():
     """This class is designed to manage the utils.
@@ -54,3 +57,26 @@ class Utils():
         draw.ellipse((x, y, x+height, y+height), fill=fg)
 
         return bar
+    
+    def download_image_with_list_random(self, list_of_url: list[str]) -> BytesIO:
+        """This method is designed to download an image with a list of url.
+
+        Args:
+            list_of_url (list[str]): The list of url.
+
+        Returns:
+            BytesIO: The image.
+        """
+        response_beers = requests.get(random.choice(list_of_url))
+        return BytesIO(response_beers.content)
+    
+    def random_file(self, path: str) -> str:
+        """This method is designed to get a random file.
+
+        Args:
+            path (str): The path to get a random file.
+
+        Returns:
+            str: The random file.
+        """
+        return path + "/" + random.choice(os.listdir(path))

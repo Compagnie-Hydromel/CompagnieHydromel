@@ -15,7 +15,54 @@ class Config():
                 'table3': {"w":450,"h":457, "id": 0}
             },
             "guild_id": 0
-        } 
+        },
+        "sex_commands": {
+            "enable": False,
+            "porn": "",
+            "hentai": "",
+            "jinx": "",
+            "002": "",
+            "overwatch": ""
+        },
+        "bar_commands": {
+            "beer": {
+                "list": [
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere1.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere2.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere4.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere5.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere6.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere7.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere8.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere9.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere10.jpg"
+                ],
+                "price": 5
+            }, 
+            "soft": {
+                "list": [
+                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre0.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre1.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre2.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre3.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre4.jpg",
+                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre5.jpg"
+                ],
+                "price": 3
+            }, 
+            "hydromel": {
+                "list": [
+                    "https://shkermit.ch/~ethann/compHydromel/hydromel/Hydromel1.jpg"
+                ],
+                "price": 9
+            }, 
+            "water": {
+                "list": [
+                    "https://shkermit.ch/~ethann/compHydromel/water/water.jpg"
+                ],
+                "price": 0
+            }, 
+        }
     }
     __config_file = "config.yml"
     

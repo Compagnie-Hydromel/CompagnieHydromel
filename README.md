@@ -94,18 +94,18 @@ python3 -m pip install -r requirements.txt
 - [ ] Barman 
   - [x] log almost everything 
   - [ ] help command
-  - [ ] beer command
-  - [ ] hydromel command
-  - [ ] water command
-  - [ ] non alholic beer
-  - [ ] sex command
+  - [x] beer command
+  - [x] hydromel command
+  - [x] water command
+  - [x] non alholic beer
+  - [x] sex command
   - [ ] root command 
     - [ ] clear 
     - [ ] add root
     - [ ] broacast 
     - [ ] authorize command in channel
   - [ ] meme channel 
-  - [ ] dynamic server banner with vocal channel
+  - [x] dynamic server banner with vocal channel
   - [ ] reaction add role
 - [ ] Menestrel 
   - [ ] Play
