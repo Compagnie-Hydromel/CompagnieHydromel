@@ -59,7 +59,7 @@ class FunCommands(discord.Cog):
         
         blague_infos = [blague.joke, blague.answer]
         
-        await ctx.respond(f"{blague_infos[0]}\n\n\n\n{blague_infos[1]}")
+        await ctx.respond(f"{blague_infos[0]}\n\n\n{blague_infos[1]}")
         
     @discord.slash_command(name="meme", description="")
     async def meme(self, ctx : discord.ApplicationContext):
