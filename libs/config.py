@@ -61,7 +61,17 @@ class Config():
                     "https://shkermit.ch/~ethann/compHydromel/water/water.jpg"
                 ],
                 "price": 0
-            }, 
+            },
+        },
+        "reactions": {
+            "enable": False,
+            "list": [
+                {
+                    "emoji": "✅",
+                    "role_id": 0,
+                    "message_id": 0,
+                }
+            ]
         }
     }
     __config_file = "config.yml"
