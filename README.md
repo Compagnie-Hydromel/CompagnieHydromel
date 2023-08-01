@@ -75,6 +75,11 @@ now you can install the dependency with
 python3 -m pip install -r requirements.txt
 ```
 
+`WARNING`: check that python3 is the good version of python you want to use, if not replace it with the good one by exemple using directly.
+```bash
+python3.11
+```
+
 ## TODO 
 
 - [ ] Archiveuse
