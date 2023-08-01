@@ -52,7 +52,7 @@ class BannerUpdater(discord.Cog):
                 image_url = self.__get_bar_image()
                 with open(image_url, "rb") as image:
                     Log("Banner updated in " + image_url, LogType.INFO)
-                    await self._bot.get_guild(983809784753049611).edit(banner=image.read())
+                    await self._bot.get_guild(self.__config.value["banner"]["guild_id"]).edit(banner=image.read())
         except:
             Log(traceback.format_exc(), LogType.ERROR)
 
