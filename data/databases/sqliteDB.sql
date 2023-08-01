@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS wallpapers (
   price INTEGER NOT NULL
 );
 
--- TODO : increase the number of buy in the code
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   discordId TEXT UNIQUE,
@@ -23,7 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
   isRoot INTEGER DEFAULT '0',
   barColor TEXT DEFAULT 'ADFF2F',
   nameColor TEXT DEFAULT '0000FF',
-  numberOfbuy INTEGER DEFAULT '0',
+  numberOfBuy INTEGER DEFAULT '0',
   CONSTRAINT current_wallpapers_id_foreign_key FOREIGN KEY (wallpapersId) REFERENCES wallpapers (id)
 );
 

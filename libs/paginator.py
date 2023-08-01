@@ -8,7 +8,7 @@ class Paginator(discord.ui.View):
     __title: str = ""
     __color: int = 0x75E6DA
      
-    def __init__(self, pages: list[str], title: str, color: int = 0x75E6DA) -> None:
+    def __init__(self, pages: list[str], title: str, color: int = 0x000000) -> None:
         """This method is designed to initialize the Paginator class.
 
         Args:

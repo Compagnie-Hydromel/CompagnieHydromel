@@ -264,5 +264,13 @@ class DatabaseAccessImplement:
             str: The badge url (example: https://example.com/img.png).
         """
         pass
+    
+    def increase_number_of_buy(self, discord_id: str) -> None:
+        """This method is designed to increase the number of buy of a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        pass
 
     # Public

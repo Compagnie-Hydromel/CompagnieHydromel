@@ -283,6 +283,14 @@ class SqliteAccess(DatabaseAccessImplement):
             str: The badge url (example: https://example.com/img.png).
         """
         return self.__sqliteDB.select("SELECT url FROM badges WHERE name = '" + badge_name + "'")[0][0]
+    
+    def increase_number_of_buy(self, discord_id: str) -> None:
+        """This method is designed to increase the number of buy of a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        self.__sqliteDB.modify("UPDATE users SET numberOfBuy = numberOfBuy + 1 WHERE discordId = '" + discord_id + "';")
 
     # Public
 

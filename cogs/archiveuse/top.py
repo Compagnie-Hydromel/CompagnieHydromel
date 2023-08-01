@@ -15,9 +15,12 @@ class Top(discord.Cog):
             list_of_best_users = Users().get_top_users()
             message = ""
             for user in list_of_best_users:
-                # TODO handle if get_user return None
-                username = self._bot.get_user(int(user.discord_id())).name
-                message += f"{username} : {user.level()}\n" 
+                discord_user = self._bot.get_user(int(user.discord_id()))
+                if discord_user is None:
+                    username = "Unknown Username"
+                else:
+                    username = discord_user.name
+                message += f"**{username}** is level {user.level()}\n\n" 
             
             await ctx.respond(embed = discord.Embed(title="Top player", description=message, color=0x75E6DA))
         except:

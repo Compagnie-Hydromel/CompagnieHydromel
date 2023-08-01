@@ -67,8 +67,7 @@ class Utils():
         Returns:
             BytesIO: The image.
         """
-        response_beers = requests.get(random.choice(list_of_url))
-        return BytesIO(response_beers.content)
+        return Utils().download_image(random.choice(list_of_url))
     
     def random_file(self, path: str) -> str:
         """This method is designed to get a random file.
@@ -80,3 +79,15 @@ class Utils():
             str: The random file.
         """
         return path + "/" + random.choice(os.listdir(path))
+    
+    def download_image(self, url: str) -> BytesIO:
+        """This method is designed to download an image.
+
+        Args:
+            url (str): The url of the image.
+
+        Returns:
+            BytesIO: The image.
+        """
+        response_url = requests.get(url)
+        return BytesIO(response_url.content)

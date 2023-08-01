@@ -213,6 +213,11 @@ class User:
             raise NotEnougtSmartcoinException
         self.remove_smartcoin(wallpaper_price)
         self.add_posseded_wallpaper(wallpaper)
+        
+    def increase_number_of_buy(self) -> None:
+        """This method is designed to increase the number of buy of the user.
+        """
+        self.__db_access.increase_number_of_buy(self.__discord_id)
 
     def __check_color(self, color: str) -> str:
         """This method is designed to check if a color is correct.

@@ -62,12 +62,8 @@ class ProfilMaker():
         """
         
         # region [background]
-        img = None
-        try:
-            response_background_url = requests.get(background_url)
-            img = Image.open(BytesIO(response_background_url.content)).convert('RGBA').resize((500, 281))
-        except: 
-            raise UnableToDownloadImageException
+        img = Image.open(Utils().download_image(background_url)).convert('RGBA').resize((500, 281))
+
         # endregion
         
         # region [bar and name color]
