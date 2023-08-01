@@ -40,8 +40,7 @@ CREATE TABLE IF NOT EXISTS usersHaveBadge (
   usersId INTEGER NOT NULL,
   badgesId INTEGER NOT NULL,
   CONSTRAINT badges_id_foreign_key FOREIGN KEY (badgesId) REFERENCES badges (id),
-  CONSTRAINT users_id_foreign_key FOREIGN KEY (usersId) REFERENCES users (id),
-  UNIQUE (usersId, badgesId)
+  CONSTRAINT users_id_foreign_key FOREIGN KEY (usersId) REFERENCES users (id)
 );
 
 INSERT INTO wallpapers (id, name, url, level, price) VALUES 
