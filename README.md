@@ -1,3 +1,5 @@
+# Jinx is the best waifu
+
 # Compagnie Hydromel
 
 ## Directory
