@@ -6,18 +6,23 @@
 
 ```
 .
-├── cogs                # Collection of commands
-│   └── Music.py
-├── data                # All things that's not code
+├── cogs                    # Collection of commands
+│   ├── archiveuse          # Archiveuse cog
+│   |   └── profile.py
+│   ├── menestrel           # Menestrel cog 
+│   |   └── play.py
+│   └── barman              # Barman cog
+│       └── bar_commands.py
+├── data                    # All things that's not code
 │   ├── databases
 │   ├── font
 │   └── img
-├── docs                # Folder with the documentation
-├── libs                # Personnal librairies
-├── tests               # Folder containing automated tests
-├── bot.py              # Bot base file, used to start the bot
-├── requirements.txt    # File containing all required dependencies.
-├── databases.db        # Databases containing user, wallpaper, badge, ect... (if using sqlite)
+├── docs                    # Folder with the documentation
+├── libs                    # Personnal librairies
+├── tests                   # Folder containing automated tests
+├── bot.py                  # Bot base file, used to start the bot
+├── requirements.txt        # File containing all required dependencies.
+├── databases.db            # Databases containing user, wallpaper, badge, ect... (if using sqlite)
 ├── LICENSE
 └── README.md
 ```
@@ -75,53 +80,38 @@ now you can install the dependency with
 python3 -m pip install -r requirements.txt
 ```
 
-`WARNING`: check that python3 is the good version of python you want to use, if not replace it with the good one by exemple using directly.
+`WARNING`: check that python3 is the good version of python you want to use. Don't hesitate to specifies the version with python3.* commands
+
+## Usage
 ```bash
-python3.11
+# To start the bot
+./bot.sh
+
+# If doesn't work in like a screen session
+bash bot.sh
+# or 
+zsh bot.sh
 ```
 
-## TODO 
+You can also use the command below to start the bot on by one
+```bash
+# To start the barman
+python3 barman.py
 
-- [ ] Archiveuse
-  - [x] Add point when texting 
-  - [x] Add point when in vocal
-  - [x] Level up
-  - [x] Profile
-    - [x] Dynamic name 
-    - [x] Dynamic username
-    - [x] Dynamic pp
-    - [x] Wallpaper show by selecting
-    - [x] change text color
-    - [x] change bar color
-    - [x] display badge
-  - [x] Buy wallpaper 
-  - [ ] Add wallpaper as admin 
-  - [ ] Add money as admin
-  - [x] List wallpaper obtain 
-  - [x] Pagination wallpaper list
-  - [x] List all wallpaper
-  - [x] Obtain wallpaper passing level
-  - [x] Get smartcoin
-  - [x] most level up player commands
-- [ ] Barman 
-  - [x] log almost everything 
-  - [ ] help command
-  - [x] beer command
-  - [x] hydromel command
-  - [x] water command
-  - [x] non alholic beer
-  - [x] sex command
-  - [ ] root command 
-    - [ ] clear 
-    - [ ] add root
-    - [ ] broacast 
-    - [ ] authorize command in channel
-  - [x] meme commands 
-  - [x] dynamic server banner with vocal channel
-  - [x] reaction add role
-- [ ] Menestrel 
-  - [ ] Play
-  - [ ] Stop
-  - [ ] Wait list 
-  - [ ] Next
-  - [ ] Admin lock
+# To start the menestrel
+python3 menestrel.py
+
+# To start the archiveuse
+python3 archiveuse.py
+```
+
+## Usefull links
+- https://docs.pycord.dev/en/stable/
+- https://discordpy.readthedocs.io/en/stable/
+- https://docs.python.org/3/
+
+## Contributing
+Please open an issue first to discuss what you would like to change.
+
+## License
+[MIT](LICENSE)
