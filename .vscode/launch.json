@@ -8,7 +8,7 @@
             "name": "Archiveuse debug",
             "type": "python",
             "request": "launch",
-            "program": "archiveuser.py",
+            "program": "archiveuse.py",
             "console": "integratedTerminal",
             "justMyCode": true
         },
