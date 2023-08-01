@@ -33,6 +33,15 @@ class Listener(discord.Cog):
     @discord.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         Log(member.name + " left the server " + member.guild.name, LogType.INFO)
+        
+    @discord.Cog.listener()
+    async def on_raw_reaction_add(self, added_reaction: discord.RawReactionActionEvent) -> None:
+        Log("Reaction added by " + added_reaction.member.name, LogType.INFO)
+    
+    @discord.Cog.listener()
+    async def on_raw_reaction_remove(self, added_reaction: discord.RawReactionActionEvent) -> None:
+        username = self._bot.get_user(added_reaction.user_id).name
+        Log("Reaction removed by " + username, LogType.INFO)
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(Listener(bot))
