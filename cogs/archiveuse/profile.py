@@ -20,14 +20,14 @@ class Profile(discord.Cog):
 
             user = User(str(ctx.author.id))
 
-            coords = {
-                'profilPicture': {'x': 186, 'y': 35},
-                'name': {'x': 186, 'y': 155},
-                'userName': {'x': 190, 'y': 195},
-                'level': {'x': 250, 'y': 224},
-                'badge': {'x': 150, 'y': 5},
-                'levelBar': {'x': 0, 'y': 254}
-            }
+            #coords = {
+            #    'profilPicture': {'x': 186, 'y': 35},
+            #    'name': {'x': 186, 'y': 155},
+            #    'userName': {'x': 190, 'y': 195},
+            #    'level': {'x': 250, 'y': 224},
+            #    'badge': {'x': 150, 'y': 5},
+            #    'levelBar': {'x': 0, 'y': 254}
+            #}
 
             Utils().createDirectoryIfNotExist(".profile")
             pro = ProfilMaker(
@@ -41,7 +41,7 @@ class Profile(discord.Cog):
                 bar_color = "#"+user.bar_color(),
                 name_color = "#"+user.name_color(),
                 badges = user.badges_list(),
-                coords = coords
+                #coords = coords
             )
 
             await ctx.respond(file=discord.File(pro.profil_path()))
