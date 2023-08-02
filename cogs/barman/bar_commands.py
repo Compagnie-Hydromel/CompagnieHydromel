@@ -10,7 +10,7 @@ from libs.utils import Utils
 
 class BarCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
         self.__config = Config()
 
     @discord.slash_command(name="beer", description="Buy your beer with smartcoin")
@@ -64,7 +64,7 @@ class BarCommands(discord.Cog):
         ) 
     
     def __payement_process(self, user: User, price: int):
-        barman = User(str(self._bot.user.id))
+        barman = User(str(self.__bot.user.id))
         
         user.remove_smartcoin(price)
         barman.add_smartcoin(price) 

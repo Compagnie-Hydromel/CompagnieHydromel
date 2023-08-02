@@ -6,7 +6,7 @@ from libs.log import Log, LogType
 
 class Smartcoin(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
 
     async def __smartcoin(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching smartcoin commands", LogType.COMMAND)

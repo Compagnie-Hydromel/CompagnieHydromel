@@ -9,7 +9,7 @@ load_dotenv()
 
 class FunCommands(discord.Cog):
     def __init__(self, bot) -> None:
-        self.__bot = bot
+        self.___bot = bot
         
     @discord.slash_command(description="Command to play *Rock, Paper, Scissors*.")
     @discord.option(name="choice", choices=["Rock", "Paper", "Scissors"])

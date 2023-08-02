@@ -9,7 +9,7 @@ from libs.utils import Utils
 
 class SexCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
         self.__config = Config()
 
     @discord.slash_command(name="porn", description="Get some porn in NSFW channel only")
