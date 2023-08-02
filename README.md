@@ -44,6 +44,11 @@ BLAGUES_API_KEY = "COMPLETE_IT"
 # https://github.com/praw-dev/praw
 REDDIT_CLIENT_ID = "COMPLETE_IT"
 REDDIT_CLIENT_SECRET = "COMPLETE_IT"
+
+# Use it only if you wanna use menestrel as a music player in voice channel
+# Need activate music in configuration
+# https://dsharpplus.github.io/DSharpPlus/articles/audio/lavalink/setup.html
+LAVALINK_PASSWORD = "COMPLETE_IT"
 ```
 
 After this, let's create a basic Discord Server:
@@ -109,6 +114,7 @@ python3 archiveuse.py
 - https://docs.pycord.dev/en/stable/
 - https://discordpy.readthedocs.io/en/stable/
 - https://docs.python.org/3/
+- https://wavelink.dev/en/v1.3.5/index.html
 
 ## Contributing
 Please open an issue first to discuss what you would like to change.
