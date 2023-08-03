@@ -1,12 +1,12 @@
 from libs.music_manager import MusicManager
 
-class ServerMusicManager:
-    """Class that manage the music for each server.
+class GuildMusicManager:
+    """Class that manage the music for each guild.
     """
-    server: dict[int, MusicManager] = {}
+    guild: dict[int, MusicManager] = {}
     
     def __init__(self) -> None:
-        """Constructor of ServerMusicManager class."""
+        """Constructor of GuildMusicManager class."""
         pass
     
     def get(self, guild_id: int) -> MusicManager:
@@ -18,9 +18,9 @@ class ServerMusicManager:
         Returns:
             MusicManager: _description_
         """
-        if guild_id not in self.server:
+        if guild_id not in self.guild:
             self.add(guild_id)
-        return self.server[guild_id]
+        return self.guild[guild_id]
     
     def add(self, guild_id: int):
         """Add a MusicManager for the guild.
@@ -28,4 +28,4 @@ class ServerMusicManager:
         Args:
             guild_id (int): The guild id where we want the MusicManager to play music.
         """
-        self.server[guild_id] = MusicManager()
+        self.guild[guild_id] = MusicManager()
