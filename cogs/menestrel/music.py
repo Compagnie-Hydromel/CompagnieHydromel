@@ -169,23 +169,6 @@ class Music(discord.Cog):
         except:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured!")
-    
-    def __message_musics_in_queue(self) -> discord.Embed:
-        message = discord.Embed(
-            title="Liste d'attente",
-            colour=0xffffff
-        )
-        
-        for idx, music in enumerate(self.__music_queue[1:], start=1):
-            if idx > 6:
-                break
-            
-            message.add_field(
-                name=f"{idx}:",
-                value=f"[{music[0].title}]({music[0].uri})",
-            )
-        
-        return message
 
 def setup(bot):
     if Config().value["music"]["enable"]:
