@@ -1,4 +1,4 @@
 from libs.exception.music.music_exception import MusicException
 
-class NothingLeftInQueueException(MusicException):
+class NotConnectedToVoiceChannelException(MusicException):
     pass

@@ -1,18 +1,21 @@
+import traceback
 import discord
-from time import sleep
-from libs.config import Config
-from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
-from libs.log import Log
-import wavelink
 import os
+from discord.components import Component
+from discord.ui.item import Item
+import wavelink
 
-class Music(discord.Cog):
-    voice_clients: dict[int: discord.voice_client.VoiceClient] = {}
-    voice_queues: dict[int: list[wavelink.Queue]] = {}
-    
+from libs.config import Config
+from libs.exception.music.not_connected_to_voice_channel_exception import NotConnectedToVoiceChannelException
+from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
+from libs.server_music_manger import ServerMusicManager
+from libs.log import Log, LogType
+
+class Music(discord.Cog):    
     def __init__(self, bot) -> None:
         self.__bot = bot
         self.__music_config = Config().value["music"]
+        self.__server_music_manager = ServerMusicManager()
     
     @discord.Cog.listener()
     async def on_ready(self):
@@ -30,32 +33,58 @@ class Music(discord.Cog):
 
     @discord.Cog.listener()
     async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.Track, reason):
+        music_manager = self.__server_music_manager.get(player.guild.id)
         try:
-            await self.__skip(player.guild.id)
-        except(NothingLeftInQueueException):
-            await self.__disconnect(player.guild.id)
+            if reason != "REPLACED":
+                await music_manager.skip()
+        except NothingLeftInQueueException:
+            await music_manager.disconnect()
+        except:
+            Log(traceback.format_exc(), LogType.ERROR)
 
     @discord.slash_command(description="Command that can play music that we want.")
     @discord.option("search", description="Search or youtube link")
     async def play(self, ctx : discord.ApplicationContext, *, search: str):
-        song = await self.__search(ctx.guild.id, search)
-        await self.__play(ctx.guild.id, ctx.author.voice.channel, song)
+        try:
+            music_manager = self.__server_music_manager.get(ctx.guild.id)
+            song = await music_manager.search(search)
+            player_displayer = PlayerDisplayer()
+            await music_manager.play(ctx.author.voice, song)
+            await ctx.respond(embed=player_displayer.embed, view=player_displayer)
+        except NotConnectedToVoiceChannelException:
+            pass
+        except:
+            Log(traceback.format_exc(), LogType.ERROR)
 
     @discord.slash_command(description="Command that stop the music and make the bot leave the channel.")
     async def stop(self, ctx : discord.ApplicationContext):
-        await self.__stop(ctx.guild.id)
-    
+        try: 
+            await self.__server_music_manager.get(ctx.guild.id).stop()
+        except:
+            Log(traceback.format_exc(), LogType.ERROR)
+            
     @discord.slash_command(description="Command that pause the music.")
     async def pause(self, ctx : discord.ApplicationContext):
-        await self.__pause(ctx.guild.id)
+        try:
+            await self.__server_music_manager.get(ctx.guild.id).pause()
+        except:
+            Log(traceback.format_exc(), LogType.ERROR)
         
     @discord.slash_command(description="Command that resume the music.")
     async def resume(self, ctx : discord.ApplicationContext):
-        await self.__resume(ctx.guild.id)
-    
+        try:
+            await self.__server_music_manager.get(ctx.guild.id).resume()
+        except:
+            Log(traceback.format_exc(), LogType.ERROR)
+            
     @discord.slash_command(description="Command that skip the music.")
     async def skip(self, ctx : discord.ApplicationContext):
-        await self.__skip(ctx.guild.id)
+        try:
+            await self.__server_music_manager.get(ctx.guild.id).skip()
+        except NothingLeftInQueueException:
+            pass
+        except:
+            Log(traceback.format_exc(), LogType.ERROR)
     
     @discord.slash_command(description="Command that get the queue. (max 6 music show)")
     async def queue(self, ctx : discord.ApplicationContext):
@@ -64,53 +93,6 @@ class Music(discord.Cog):
     @discord.slash_command(description="Command to get the current music.")
     async def now(self, ctx : discord.ApplicationContext):
         pass
-    
-    async def __play(self, guild_id: int, voice_channel: discord.VoiceChannel, song: wavelink.abc.Playable):
-        self.__add_voice_client_if_not_exist(guild_id)
-        
-        await self.__connect_if_not_connected(guild_id, voice_channel)
-        
-        self.voice_queues[guild_id].put(song)
-        if not self.voice_clients[guild_id].is_playing():
-            await self.__play_next_in_queue(guild_id)
-    
-    async def __skip(self, guild_id: int):
-        await self.__play_next_in_queue(guild_id)
-    
-    async def __resume(self, guild_id: int):
-        if self.voice_clients[guild_id].is_paused():
-            await self.voice_clients[guild_id].resume()
-    
-    async def __search(self, guild_id: int, search: str) -> wavelink.abc.Playable:
-        return await wavelink.YouTubeTrack.search(query=search, return_first=True)
-    
-    async def __play_next_in_queue(self, guild_id: int):
-        if self.voice_queues[guild_id].is_empty:
-            raise NothingLeftInQueueException
-        await self.voice_clients[guild_id].play(self.voice_queues[guild_id].pop())
-        
-    async def __connect_if_not_connected(self, guild_id: int, voice_channel: discord.VoiceChannel):
-        if not self.voice_clients[guild_id]:
-            self.voice_clients[guild_id] = await voice_channel.connect(cls=wavelink.Player)
-        
-    async def __stop(self, guild_id: int):
-        await self.voice_clients[guild_id].stop()
-        await self.__disconnect(guild_id)
-    
-    async def __disconnect(self, guild_id: int):
-        await self.voice_clients[guild_id].disconnect()
-        self.voice_queues[guild_id].clear()
-        self.voice_clients[guild_id] = None
-    
-    async def __pause(self, guild_id: int):
-        if not self.voice_clients[guild_id].is_paused():
-            await self.voice_clients[guild_id].pause()
-        
-    def __add_voice_client_if_not_exist(self, guild_id: int):
-        if guild_id not in self.voice_clients:
-            self.voice_clients[guild_id] = None
-        if guild_id not in self.voice_queues:
-            self.voice_queues[guild_id] = wavelink.Queue()       
 
 def setup(bot):
     if Config().value["music"]["enable"]:
@@ -118,3 +100,29 @@ def setup(bot):
             Log("No lavalink password found.")
         else: 
             bot.add_cog(Music(bot))
+            
+class PlayerDisplayer(discord.ui.View):
+    message = None
+    def __init__(self) -> None:
+        super().__init__()
+    
+    @property
+    def embed(self) -> discord.Embed:
+        embed = discord.Embed(title="Player", description="", color=0x2F3136)
+        embed.set_footer(text="Music player")
+        return embed
+    
+    @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="⏮") 
+    async def back(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
+        await self.refresh(interaction.response)
+    
+    @discord.ui.button(style=discord.ButtonStyle.primary, emoji="⏯") 
+    async def play(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
+        await self.refresh(interaction.response)
+    
+    @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="⏭") 
+    async def skip(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
+        await self.refresh(interaction.response)
+    
+    async def refresh(self, response: discord.message.Message):
+        await response.edit_message(embed=self.embed)
