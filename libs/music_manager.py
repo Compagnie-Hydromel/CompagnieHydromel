@@ -52,9 +52,12 @@ class MusicManager:
                 raise NotConnectedToVoiceChannelException
             self.voice_clients = await voice_state.channel.connect(cls=wavelink.Player)
     
-    async def skip(self):
+    async def skip(self, old_song: wavelink.abc.Playable = None):
         """Skip the current song.
 
+        Args:
+            old_song (wavelink.abc.Playable, optional): The old song to put in the back queue. Used for the callback on_wavelink_track_end. Defaults to None. 
+        
         Raises:
             NothingLeftInQueueException: if the queue is empty.
             NoPlayingInstanceException: if there is no playing instance.            
@@ -67,6 +70,8 @@ class MusicManager:
         current_song = self.voice_clients.source
         if current_song != None:
             self.voice_back.put(current_song)
+        elif old_song != None:
+            self.voice_back.put(old_song)
         
         await self.voice_clients.play(self.voice_queues.pop())
     
@@ -186,8 +191,12 @@ class MusicManager:
     
     @property
     def queue(self) -> list[wavelink.abc.Playable]:
-        # TODO: WIP
-        pass
+        if self.voice_queues.is_empty:
+            raise NothingLeftInQueueException
+        songs = []
+        for song in self.voice_queues:
+            songs.append(song)
+        return songs
     
     def __raise_if_there_no_playing_instance(self):
         """Raise an exception if there is no playing instance.

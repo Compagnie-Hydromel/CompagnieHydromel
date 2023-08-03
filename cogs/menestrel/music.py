@@ -17,6 +17,7 @@ from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQu
 from libs.guild_music_manger import GuildMusicManager
 from libs.log import Log, LogType
 from libs.music_manager import MusicManager
+from libs.paginator import Paginator
 
 class Music(discord.Cog):    
     def __init__(self, bot) -> None:
@@ -45,8 +46,10 @@ class Music(discord.Cog):
             match reason:
                 case "REPLACED":
                     pass
+                case "LOAD_FAILED":
+                    Log("Load failed in " + player.channel.name)
                 case _:
-                    await music_manager.skip()
+                    await music_manager.skip(old_song=track)
                     Log("Skipping music in " + player.channel.name)
         except NothingLeftInQueueException:
             await music_manager.disconnect()
@@ -145,13 +148,18 @@ class Music(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured!")
     
-    @discord.slash_command(description="Command that get the queue. (max 6 music show)")
+    @discord.slash_command(description="Command that get the queue.")
     async def queue(self, ctx : discord.ApplicationContext):
         Log(ctx.author.name + " is launching queue commands", LogType.COMMAND)
         try:
-            raise NotImplementedError
+            songs =  self.__guild_music_manager.get(ctx.guild.id).queue
+            
+            paginator = Paginator(self.__generate_pages(songs), "Queues")
+            await ctx.respond(embed=paginator.embed, view=paginator)
         except NoPlayingInstanceException:
             await ctx.respond("The bot not playing music.")
+        except NothingLeftInQueueException:
+            await ctx.respond("Nothing left in queue.")
         except:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured!")
@@ -160,8 +168,7 @@ class Music(discord.Cog):
     async def now(self, ctx : discord.ApplicationContext):
         Log(ctx.author.name + " is launching now commands", LogType.COMMAND)
         try:
-            current_music = self.__guild_music_manager.get(ctx.guild.id).now
-            await ctx.respond(current_music.info)
+            raise NotImplementedError
         except NoMusicPlaying:
             await ctx.respond("No music playing.")
         except NoPlayingInstanceException:
@@ -169,6 +176,26 @@ class Music(discord.Cog):
         except:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured!")
+            
+
+    def __generate_pages(self, songs: list[wavelink.abc.Playable]) -> list:
+        pages = []
+        song_per_page = 3
+        counter = 0
+        content = ""
+        songs.reverse()
+        for song in songs:
+            content += ("**[" + str(song) + "](" + song.info["uri"] + ")**\n" + song.info["author"] + "\n\n")
+            
+            counter += 1
+            if counter > song_per_page:
+                pages.append(content)
+                content = ""
+                counter = 0
+            
+        if content != "":
+            pages.append(content)
+        return pages
 
 def setup(bot):
     if Config().value["music"]["enable"]:

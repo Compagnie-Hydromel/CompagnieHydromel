@@ -75,7 +75,7 @@ class ProfileManager(discord.Cog):
         
         await ctx.respond(
             view = paginator, 
-            embed = paginator.embeb
+            embed = paginator.embed
         )
 
     def __generate_pages(self, wallpapers: list[Wallpaper]) -> list:
@@ -100,8 +100,8 @@ class ProfileManager(discord.Cog):
                 pages.append(content)
                 content = ""
                 counter = 0
-                
-        pages.append(content)
+        if content != "":
+            pages.append(content)
         return pages
     
 def setup(bot: discord.bot.Bot):

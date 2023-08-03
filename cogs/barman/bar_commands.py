@@ -60,7 +60,7 @@ class BarCommands(discord.Cog):
         
         await ctx.respond(
             view = paginator, 
-            embed = paginator.embeb
+            embed = paginator.embed
         ) 
     
     def __payement_process(self, user: User, price: int):
