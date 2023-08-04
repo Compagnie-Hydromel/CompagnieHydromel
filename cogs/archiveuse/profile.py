@@ -10,7 +10,7 @@ import traceback
 
 class Profile(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
 
     @discord.slash_command(name="profile", description="To get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):

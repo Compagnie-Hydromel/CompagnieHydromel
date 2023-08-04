@@ -1,0 +1,2 @@
+class MusicException(Exception):
+    pass

@@ -6,14 +6,14 @@ from libs.log import Log, LogType
 
 class BannerUpdater(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
         self.__config = Config()
         
     def __get_bar_image(self) -> str:
         guild_id = self.__config.value["banner"]["guild_id"]
         coords = self.__config.value["banner"]["coords"]
         people = {}
-        guild = self._bot.get_guild(guild_id)
+        guild = self.__bot.get_guild(guild_id)
         
         """
         To generate people info like this:
@@ -52,7 +52,7 @@ class BannerUpdater(discord.Cog):
                 image_url = self.__get_bar_image()
                 with open(image_url, "rb") as image:
                     Log("Banner updated in " + image_url, LogType.INFO)
-                    await self._bot.get_guild(self.__config.value["banner"]["guild_id"]).edit(banner=image.read())
+                    await self.__bot.get_guild(self.__config.value["banner"]["guild_id"]).edit(banner=image.read())
         except:
             Log(traceback.format_exc(), LogType.ERROR)
 

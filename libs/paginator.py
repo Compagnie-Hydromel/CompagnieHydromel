@@ -72,10 +72,10 @@ class Paginator(discord.ui.View):
         Args:
             interaction (discord.interactions.Interaction): The discord interaction.
         """
-        await interaction.response.edit_message(embed = self.embeb)
+        await interaction.response.edit_message(embed = self.embed)
         
     @property
-    def embeb(self) -> discord.Embed:
+    def embed(self) -> discord.Embed:
         """This method is designed to get the embed.
 
         Returns:

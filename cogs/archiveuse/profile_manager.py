@@ -17,7 +17,7 @@ from libs.utils import Utils
 
 class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
 
     @discord.slash_command(name="profile-manager", description="To manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color"])
@@ -75,7 +75,7 @@ class ProfileManager(discord.Cog):
         
         await ctx.respond(
             view = paginator, 
-            embed = paginator.embeb
+            embed = paginator.embed
         )
 
     def __generate_pages(self, wallpapers: list[Wallpaper]) -> list:
@@ -100,8 +100,8 @@ class ProfileManager(discord.Cog):
                 pages.append(content)
                 content = ""
                 counter = 0
-                
-        pages.append(content)
+        if content != "":
+            pages.append(content)
         return pages
     
 def setup(bot: discord.bot.Bot):

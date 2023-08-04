@@ -72,6 +72,11 @@ class Config():
                     "message_id": 0,
                 }
             ]
+        },
+        "music": {
+            "enable": False,
+            "lavalink_ip": "127.0.0.1",
+            "lavalink_port": 2333,
         }
     }
     __config_file = "config.yml"

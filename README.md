@@ -29,7 +29,7 @@
 
 ## Prerequisites
 
-Before starting the Bot, you'll need to modify/create some files, create a Bot on Discord Developer Portal and make a basic discord server to make it work and to use it.
+Before starting the Bot, you'll need to modify/create some files, create the 3 Bot on Discord Developer Portal and make a basic discord test server to make it work and to use it.
 
 First, let's start with the files needed to be modified:
 - In the root folder of the discord bot, create a file named **.env** with the informations below (remember to replace where it says **COMPLETE_IT** with the real informations)
@@ -44,13 +44,20 @@ BLAGUES_API_KEY = "COMPLETE_IT"
 # https://github.com/praw-dev/praw
 REDDIT_CLIENT_ID = "COMPLETE_IT"
 REDDIT_CLIENT_SECRET = "COMPLETE_IT"
+
+# Use it only if you wanna use menestrel as a music player in voice channel
+# Need activate music in configuration
+# https://dsharpplus.github.io/DSharpPlus/articles/audio/lavalink/setup.html
+LAVALINK_PASSWORD = "COMPLETE_IT"
 ```
 
 After this, let's create a basic Discord Server:
 - Open Discord App or use [Discord Web](https://discord.com/app)
 - Click on the **+** icon then click on **Create My Own** and after **For me and my friends**. Now give it a name and after click on **Create**.
 
-Let's now create the Bot on Discord Developer Portal and invite it on the Discord Server created before. For this, follow [this tutorial](https://docs.pycord.dev/en/stable/discord.html).
+Let's now create the 3 Bot on Discord Developer Portal and invite it on the Discord Server created before. For this, follow [this tutorial](https://docs.pycord.dev/en/stable/discord.html).
+
+`WARNING`: Create 3 bot to have 3 individual token
 
 ## Installation
 
@@ -105,10 +112,39 @@ python3 menestrel.py
 python3 archiveuse.py
 ```
 
+## Configuration
+You can configure the bot with the **config.yml** file in the root folder of the bot. You can change the prefix, the language, the music, the reddit and the database. The file is generate automatically if it doesn't exist.
+
+`WARNING`: if you delete a field the bot don't check if he still exist 
+
+exemple of config.yml
+```yaml
+...
+music:
+  enable: false
+  lavalink_ip: 127.0.0.1
+  lavalink_port: 2333
+reactions:
+  enable: false
+  list:
+  - emoji: "\u2705" # means ✅
+    message_id: 0
+    role_id: 0
+...
+```
+
+### Music
+
+To use the music feature you need to install [Lavalink](https://github.com/lavalink-devs/Lavalink)
+
+and then you need to configure the config.yml file with the ip and port of the lavalink server
+the password need to be in the .env file with the key LAVALINK_PASSWORD seen before
+
 ## Usefull links
 - https://docs.pycord.dev/en/stable/
 - https://discordpy.readthedocs.io/en/stable/
 - https://docs.python.org/3/
+- https://wavelink.dev/en/v1.3.5/index.html
 
 ## Contributing
 Please open an issue first to discuss what you would like to change.
