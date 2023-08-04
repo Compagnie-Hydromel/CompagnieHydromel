@@ -1,10 +1,7 @@
 import traceback
 import discord
 import os
-from discord.components import Component
-from discord.ui.item import Item
 import wavelink
-from math import floor
 
 from libs.config import Config
 from libs.exception.music.already_playing_exception import AlreadyPlayingException
@@ -16,8 +13,8 @@ from libs.exception.music.nothing_left_in_back_queue import NothingLeftInBackQue
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
 from libs.guild_music_manger import GuildMusicManager
 from libs.log import Log, LogType
-from libs.music_manager import MusicManager
 from libs.paginator import Paginator
+from libs.music_player_displayer import MusicPlayerDisplayer
 
 class Music(discord.Cog):    
     def __init__(self, bot) -> None:
@@ -71,7 +68,7 @@ class Music(discord.Cog):
             
             music_manager = self.__guild_music_manager.get(ctx.guild.id)
             song = await music_manager.search(search)
-            player_displayer = PlayerDisplayer(music_manager)
+            player_displayer = MusicPlayerDisplayer(music_manager)
             
             await music_manager.play(ctx.author.voice, song)
             await ctx.respond(embed=player_displayer.embed, view=player_displayer)
@@ -174,7 +171,7 @@ class Music(discord.Cog):
         Log(ctx.author.name + " is launching now commands", LogType.COMMAND)
         try:
             music_manager = self.__guild_music_manager.get(ctx.guild.id)
-            player_displayer = PlayerDisplayer(music_manager)
+            player_displayer = MusicPlayerDisplayer(music_manager)
             
             await ctx.respond(embed=player_displayer.embed, view=player_displayer)
         except NoMusicPlaying:
@@ -211,83 +208,3 @@ def setup(bot):
             Log("No lavalink password found.")
         else: 
             bot.add_cog(Music(bot))
-            
-class PlayerDisplayer(discord.ui.View):
-    message = None
-    def __init__(self, music_manager: MusicManager) -> None:
-        self.__music_manager = music_manager
-        super().__init__()
-    
-    @property
-    def embed(self) -> discord.Embed: 
-        current_music_info = self.__music_manager.now.info
-        embed = discord.Embed(
-            title="Now playing 🎶",  
-            color=0x2F3136
-        )
-        duration_minutes = self.__music_manager.now.duration / 60
-        duration_seconds = (duration_minutes - floor(duration_minutes)) * 60
-        duration = str(floor(duration_minutes)) + ":" + str(floor(duration_seconds))
-        
-        embed.add_field(name="Title", value="[" + current_music_info["title"] + "](" + current_music_info["uri"] + ")", inline=True)
-        embed.add_field(name="Author", value=current_music_info["author"], inline=True)
-        embed.add_field(name="Duration", value=duration, inline=True)
-        embed.set_footer(text="source: " + current_music_info["sourceName"])
-        return embed
-        
-        
-    @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="⏮") 
-    async def back(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
-        try:
-            await self.__music_manager.back()
-        except NoPlayingInstanceException:
-            pass
-        except NothingLeftInBackQueueException:
-            pass
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-        finally:
-            await self.refresh(interaction.response)
-                        
-    @discord.ui.button(style=discord.ButtonStyle.primary, emoji="⏯") 
-    async def play(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
-        try: 
-            if self.__music_manager.is_paused:
-                await self.__music_manager.resume()
-            else:
-                await self.__music_manager.pause()
-            await self.refresh(interaction.response)
-        except NoPlayingInstanceException:
-            pass
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-    
-    @discord.ui.button(style=discord.ButtonStyle.danger, emoji="⏹")
-    async def stop(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
-        try: 
-            await self.__music_manager.stop()
-        except NoPlayingInstanceException:
-            pass
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-        finally:
-            await self.refresh(interaction.response)
-            
-    @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="⏭") 
-    async def skip(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
-        try:
-            await self.__music_manager.skip()
-        except NothingLeftInQueueException:
-            pass
-        except NoPlayingInstanceException:
-            pass
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-        finally:
-            await self.refresh(interaction.response)
-    
-    async def refresh(self, response: discord.message.Message):
-        try: 
-            await response.edit_message(embed=self.embed)
-        except NoPlayingInstanceException:
-            await response.edit_message(content="No music playing.", embed=None, view=None)
