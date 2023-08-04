@@ -21,6 +21,9 @@ class Wallpaper:
         self.__wallpaper_name = wallpaper_name
         self.__db_access = SqliteAccess()
 
+        if wallpaper_name == None:
+            self.__wallpaper_name = ""
+
         if not self.__db_access.is_wallpaper_exist(self.__wallpaper_name):
             raise WallpaperNotExistException
 

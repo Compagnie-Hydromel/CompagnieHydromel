@@ -31,8 +31,6 @@ class ProfileManager(discord.Cog):
 
             match option:
                 case "set wallpaper":
-                    if options_specifies == None:
-                        options_specifies = ""
                     user.change_current_wallpapers(Wallpaper(options_specifies))
                     await ctx.respond("Wallpaper changed!")
                 case "buy wallpaper":

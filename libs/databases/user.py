@@ -244,6 +244,10 @@ class User:
         Returns:
             str: The color as Hex RGB (example: 00ff00, ff00ffaf, etc..).
         """
+        
+        if color == None: 
+            color = ""
+        
         hex_regex_check=re.findall(r'^#(?:[0-9a-fA-F]{3}){1,2}$|^#(?:[0-9a-fA-F]{3,4}){1,2}$',color)
     
         color_list = {
