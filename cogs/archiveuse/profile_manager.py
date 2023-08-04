@@ -22,7 +22,7 @@ class ProfileManager(discord.Cog):
     @discord.slash_command(name="profile-manager", description="To manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color"])
     @discord.option("options_specifies", description="Specifies wallpaper or name color and bar color", required=False)
-    async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option : str, options_specifies : str = None):
+    async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option : str, options_specifies : str = ""):
         Log(ctx.author.name + " is launching wallpaper commands with " + option + " " + str(options_specifies), LogType.COMMAND)
         try:
             await ctx.defer()
