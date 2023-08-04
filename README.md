@@ -29,7 +29,7 @@
 
 ## Prerequisites
 
-Before starting the Bot, you'll need to modify/create some files, create a Bot on Discord Developer Portal and make a basic discord server to make it work and to use it.
+Before starting the Bot, you'll need to modify/create some files, create the 3 Bot on Discord Developer Portal and make a basic discord test server to make it work and to use it.
 
 First, let's start with the files needed to be modified:
 - In the root folder of the discord bot, create a file named **.env** with the informations below (remember to replace where it says **COMPLETE_IT** with the real informations)
@@ -55,7 +55,9 @@ After this, let's create a basic Discord Server:
 - Open Discord App or use [Discord Web](https://discord.com/app)
 - Click on the **+** icon then click on **Create My Own** and after **For me and my friends**. Now give it a name and after click on **Create**.
 
-Let's now create the Bot on Discord Developer Portal and invite it on the Discord Server created before. For this, follow [this tutorial](https://docs.pycord.dev/en/stable/discord.html).
+Let's now create the 3 Bot on Discord Developer Portal and invite it on the Discord Server created before. For this, follow [this tutorial](https://docs.pycord.dev/en/stable/discord.html).
+
+`WARNING`: Create 3 bot to have 3 individual token
 
 ## Installation
 
