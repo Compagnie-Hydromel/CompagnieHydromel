@@ -191,6 +191,14 @@ class MusicManager:
     
     @property
     def queue(self) -> list[wavelink.abc.Playable]:
+        """Get the queue.
+
+        Raises:
+            NothingLeftInQueueException: if the queue is empty.
+
+        Returns:
+            list[wavelink.abc.Playable]: the queue.
+        """
         if self.voice_queues.is_empty:
             raise NothingLeftInQueueException
         songs = []
