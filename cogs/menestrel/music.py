@@ -40,19 +40,24 @@ class Music(discord.Cog):
         ) 
 
     @discord.Cog.listener()
-    async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.Track, reason):
+    async def on_wavelink_track_start(self, player: wavelink.Player, track: wavelink.Track):
         music_manager = self.__guild_music_manager.get(player.guild.id)
+        try: 
+            Log("Playing " + track.info['uri'] + " in " + player.channel.name)
+        except:
+            Log(traceback.format_exc(), LogType.ERROR)
+
+    @discord.Cog.listener()
+    async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.Track, reason):
         try:
             match reason:
-                case "REPLACED":
-                    pass
                 case "LOAD_FAILED":
-                    Log("Load failed in " + player.channel.name)
-                case _:
-                    await music_manager.skip(old_song=track)
+                    Log("Load failed in " + player.channel.name, LogType.ERROR)
+                case "FINISHED":
+                    await self.__guild_music_manager.get(player.guild.id).skip(old_song=track)
                     Log("Skipping music in " + player.channel.name)
         except NothingLeftInQueueException:
-            await music_manager.disconnect()
+            await self.__guild_music_manager.get(player.guild.id).disconnect()
             Log("Disconnect bot in " + player.channel.name)
         except:
             Log(traceback.format_exc(), LogType.ERROR)
@@ -168,7 +173,10 @@ class Music(discord.Cog):
     async def now(self, ctx : discord.ApplicationContext):
         Log(ctx.author.name + " is launching now commands", LogType.COMMAND)
         try:
-            raise NotImplementedError
+            music_manager = self.__guild_music_manager.get(ctx.guild.id)
+            player_displayer = PlayerDisplayer(music_manager)
+            
+            await ctx.respond(embed=player_displayer.embed, view=player_displayer)
         except NoMusicPlaying:
             await ctx.respond("No music playing.")
         except NoPlayingInstanceException:

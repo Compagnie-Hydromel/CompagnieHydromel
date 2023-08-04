@@ -73,7 +73,7 @@ class MusicManager:
         elif old_song != None:
             self.voice_back.put(old_song)
         
-        await self.voice_clients.play(self.voice_queues.pop())
+        await self.voice_clients.play(self.voice_queues.pop(), replace=True)
     
     async def back(self):
         """Play the previous song.
@@ -91,7 +91,7 @@ class MusicManager:
         if current_song != None:
             self.voice_queues.put(current_song)
             
-        await self.voice_clients.play(self.voice_back.pop())
+        await self.voice_clients.play(self.voice_back.pop(), replace=True)
     
     async def resume(self):
         """Resume the current song.
