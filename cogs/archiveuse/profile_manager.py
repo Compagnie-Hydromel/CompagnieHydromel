@@ -17,12 +17,12 @@ from libs.utils import Utils
 
 class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
 
     @discord.slash_command(name="profile-manager", description="To manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color"])
     @discord.option("options_specifies", description="Specifies wallpaper or name color and bar color", required=False)
-    async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option : str, options_specifies : str = None):
+    async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option : str, options_specifies : str = ""):
         Log(ctx.author.name + " is launching wallpaper commands with " + option + " " + str(options_specifies), LogType.COMMAND)
         try:
             await ctx.defer()
@@ -31,8 +31,6 @@ class ProfileManager(discord.Cog):
 
             match option:
                 case "set wallpaper":
-                    if options_specifies == None:
-                        options_specifies = ""
                     user.change_current_wallpapers(Wallpaper(options_specifies))
                     await ctx.respond("Wallpaper changed!")
                 case "buy wallpaper":
@@ -75,7 +73,7 @@ class ProfileManager(discord.Cog):
         
         await ctx.respond(
             view = paginator, 
-            embed = paginator.embeb
+            embed = paginator.embed
         )
 
     def __generate_pages(self, wallpapers: list[Wallpaper]) -> list:
@@ -100,8 +98,8 @@ class ProfileManager(discord.Cog):
                 pages.append(content)
                 content = ""
                 counter = 0
-                
-        pages.append(content)
+        if content != "":
+            pages.append(content)
         return pages
     
 def setup(bot: discord.bot.Bot):

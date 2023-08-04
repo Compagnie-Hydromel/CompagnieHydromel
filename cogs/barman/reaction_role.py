@@ -5,7 +5,7 @@ from libs.config import Config
 
 class ReactionRole(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
         self.__config = Config()
         
     @discord.Cog.listener()
@@ -42,7 +42,7 @@ class ReactionRole(discord.Cog):
             emoji (str): The attended emoji.
             role_id (int): The role id to remove.
         """
-        guild = self._bot.get_guild(reaction.guild_id)
+        guild = self.__bot.get_guild(reaction.guild_id)
         if(reaction.message_id == message_id and reaction.emoji.name == emoji):
             role = discord.utils.get(guild.roles, id=role_id)
             member = discord.utils.get(guild.members, id=reaction.user_id)

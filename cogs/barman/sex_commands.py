@@ -9,12 +9,13 @@ from libs.utils import Utils
 
 class SexCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot
+        self.__bot = bot
         self.__config = Config()
 
     @discord.slash_command(name="porn", description="Get some porn in NSFW channel only")
     @discord.option("choose", description="", choices=["porn", "hentai", "jinx", "002", "overwatch"])
     async def porn(self, ctx: discord.commands.context.ApplicationContext, choose : str):
+        Log(ctx.author.name + " is launching sex commands with " + choose, LogType.COMMAND)
         try:
             if not ctx.channel.nsfw:
                 await ctx.respond("This command can only be used in a NSFW channel")

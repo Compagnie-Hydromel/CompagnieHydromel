@@ -6,7 +6,7 @@ from libs.log import Log, LogType
 
 class Top(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self._bot = bot        
+        self.__bot = bot        
 
     @discord.slash_command(name="top", description="get the top player")
     async def top(self, ctx: discord.commands.context.ApplicationContext):
@@ -15,7 +15,7 @@ class Top(discord.Cog):
             list_of_best_users = Users().get_top_users()
             message = ""
             for user in list_of_best_users:
-                discord_user = self._bot.get_user(int(user.discord_id()))
+                discord_user = self.__bot.get_user(int(user.discord_id()))
                 if discord_user is None:
                     username = "Unknown Username"
                 else:
