@@ -110,6 +110,34 @@ python3 menestrel.py
 python3 archiveuse.py
 ```
 
+## Configuration
+You can configure the bot with the **config.yml** file in the root folder of the bot. You can change the prefix, the language, the music, the reddit and the database. The file is generate automatically if it doesn't exist.
+
+`WARNING`: if you delete a field the bot don't check if he still exist 
+
+exemple of config.yml
+```yaml
+...
+music:
+  enable: false
+  lavalink_ip: 127.0.0.1
+  lavalink_port: 2333
+reactions:
+  enable: false
+  list:
+  - emoji: "\u2705" # means ✅
+    message_id: 0
+    role_id: 0
+...
+```
+
+### Music
+
+To use the music feature you need to install [Lavalink](https://github.com/lavalink-devs/Lavalink)
+
+and then you need to configure the config.yml file with the ip and port of the lavalink server
+the password need to be in the .env file with the key LAVALINK_PASSWORD seen before
+
 ## Usefull links
 - https://docs.pycord.dev/en/stable/
 - https://discordpy.readthedocs.io/en/stable/
