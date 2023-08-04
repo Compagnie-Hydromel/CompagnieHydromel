@@ -11,7 +11,7 @@ from libs.exception.music.no_result_found_exception import NoResultsFoundExcepti
 from libs.exception.music.not_connected_to_voice_channel_exception import NotConnectedToVoiceChannelException
 from libs.exception.music.nothing_left_in_back_queue import NothingLeftInBackQueueException
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
-from libs.guild_music_manger import GuildMusicManager
+from libs.guild_music_manager import GuildMusicManager
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 from libs.music_player_displayer import MusicPlayerDisplayer
