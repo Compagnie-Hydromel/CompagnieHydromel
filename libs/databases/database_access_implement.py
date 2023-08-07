@@ -121,6 +121,15 @@ class DatabaseAccessImplement:
             bool: True if the user is root, False if not.
         """
         pass
+    
+    def set_user_root(self, discord_id: str, is_root: bool) -> None:
+        """This method is designed to set a user root.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            is_root (bool): True if the user is root, False if not.
+        """
+        pass
 
     def get_user_current_wallpaper(self, discord_id: str) -> str:
         """This method is designed to get a user current wallpaper name.
@@ -231,6 +240,14 @@ class DatabaseAccessImplement:
 
         Returns:
             list[str]: The top users list (example: ['discord_id', 'discord_id']).
+        """
+        pass
+    
+    def get_root_users(self) -> list[str]:
+        """This method is designed to get the root users.
+
+        Returns:
+            list[str]: The root users list (example: ['discord_id', 'discord_id']).
         """
         pass
 

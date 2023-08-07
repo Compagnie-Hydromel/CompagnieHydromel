@@ -124,6 +124,15 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         return bool(self.__select_user(discord_id, "isRoot")[0][0])
 
+    def set_user_root(self, discord_id: str, is_root: bool) -> None:
+        """This method is designed to set a user root.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            is_root (bool): True if the user is root, False if not.
+        """
+        self.__sqliteDB.modify("UPDATE users SET isRoot = " + str(int(is_root)) + " WHERE discordId = '" + discord_id + "';")
+
     def get_user_current_wallpaper(self, discord_id: str) -> str:
         """This method is designed to get a user current wallpaper name.
 
@@ -247,6 +256,14 @@ class SqliteAccess(DatabaseAccessImplement):
             list[str]: The top users list (example: ['discord_id', 'discord_id']).
         """
         return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users ORDER BY level DESC, point DESC LIMIT 10"))
+    
+    def get_root_users(self) -> list[str]:
+        """This method is designed to get the root users.
+
+        Returns:
+            list[str]: The root users list (example: ['discord_id', 'discord_id']).
+        """
+        return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users WHERE isRoot = 1"))
     
     def add_posseded_wallpaper(self, discordId: str, wallpaper_name: str) -> None:
         """This method is designed to add a wallpaper to a user's possession.

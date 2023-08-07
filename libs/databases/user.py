@@ -106,6 +106,16 @@ class User:
         """
         return self.__db_access.get_if_user_is_root(self.__discord_id)
     
+    def toggle_root(self, root: bool | None = None) -> None:
+        """This method is designed to toggle the root of the user.
+
+        Args:
+            root (bool | None, optional): if bool set the bool if none toggle. Defaults to None.
+        """
+        if root is None:
+            root = not self.is_root()
+        self.__db_access.set_user_root(self.__discord_id, root)
+    
     def current_wallpaper(self) -> Wallpaper:
         """This method is designed to get the current wallpaper of the user.
 
