@@ -121,6 +121,15 @@ class DatabaseAccessImplement:
             bool: True if the user is root, False if not.
         """
         pass
+    
+    def set_user_root(self, discord_id: str, is_root: bool) -> None:
+        """This method is designed to set a user root.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            is_root (bool): True if the user is root, False if not.
+        """
+        pass
 
     def get_user_current_wallpaper(self, discord_id: str) -> str:
         """This method is designed to get a user current wallpaper name.
@@ -129,7 +138,7 @@ class DatabaseAccessImplement:
             discord_id (str): Discord user id as a string.
 
         Returns:
-            str: The user current wallpaper name.
+            str: The user current wallpaper name. Return "default" if the user has a deleted wallpaper put on.
         """
         pass
 
@@ -233,6 +242,14 @@ class DatabaseAccessImplement:
             list[str]: The top users list (example: ['discord_id', 'discord_id']).
         """
         pass
+    
+    def get_root_users(self) -> list[str]:
+        """This method is designed to get the root users.
+
+        Returns:
+            list[str]: The root users list (example: ['discord_id', 'discord_id']).
+        """
+        pass
 
     def add_posseded_wallpaper(self, discordId: str, wallpaper_name: str) -> None:
         """This method is designed to add a wallpaper to a user's possession.
@@ -270,6 +287,25 @@ class DatabaseAccessImplement:
 
         Args:
             discord_id (str): Discord user id as a string.
+        """
+        pass
+    
+    def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
+        """This method is designed to add a wallpaper to the database.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+            url (str): The url of the wallpaper.
+            price (int): The price of the wallpaper.
+            level (int): The level of the wallpaper.
+        """
+        pass
+    
+    def remove_wallpaper(self, wallpaper_name: str) -> None:
+        """This method is designed to remove a wallpaper from the database.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
         """
         pass
 

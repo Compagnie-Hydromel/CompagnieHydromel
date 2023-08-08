@@ -1,4 +1,4 @@
-from distutils.log import Log
+from libs.log import Log
 import traceback
 import discord
 import os
@@ -12,7 +12,7 @@ class SexCommands(discord.Cog):
         self.__bot = bot
         self.__config = Config()
 
-    @discord.slash_command(name="porn", description="Get some porn in NSFW channel only")
+    @discord.slash_command(description="Get some porn in NSFW channel only")
     @discord.option("choose", description="", choices=["porn", "hentai", "jinx", "002", "overwatch"])
     async def porn(self, ctx: discord.commands.context.ApplicationContext, choose : str):
         Log(ctx.author.name + " is launching sex commands with " + choose, LogType.COMMAND)

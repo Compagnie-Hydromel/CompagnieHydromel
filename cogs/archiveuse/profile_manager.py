@@ -19,7 +19,7 @@ class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
 
-    @discord.slash_command(name="profile-manager", description="To manage your profile")
+    @discord.slash_command(description="To manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color"])
     @discord.option("options_specifies", description="Specifies wallpaper or name color and bar color", required=False)
     async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option : str, options_specifies : str = ""):
