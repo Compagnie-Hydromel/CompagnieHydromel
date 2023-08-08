@@ -103,6 +103,54 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot clear messages now.")
             Log(traceback.format_exc(), LogType.ERROR)
     
+    @discord.slash_command(description="Send a message to a user")
+    @discord.option("user", discord.User, require=True)
+    @discord.option("message", require=True)
+    async def message_user(self, ctx: discord.commands.context.ApplicationContext, user: discord.User, message: str):
+        Log(ctx.author.name + " is launching send commands", LogType.COMMAND)
+        try:
+            if not await self.__check_if_root(ctx):
+                return
+            if not isinstance(user, discord.abc.Messageable):
+                await ctx.respond("This user is not messageable!")
+                return
+            
+            await user.send(message.replace("\\n", "\n"))
+            await ctx.respond("Message sent!")
+        except discord.Forbidden:
+            await ctx.respond("Cannot send message to this user!")
+        except:
+            await ctx.respond("An error has occurred, cannot send message to this user!")
+            Log(traceback.format_exc(), LogType.ERROR)
+    
+    @discord.slash_command(description="Manage smartcoin")
+    @discord.option("option", description="add/remove/list", choices=["add", "remove", "show"])
+    @discord.option("user", discord.User, require=True)
+    @discord.option("amount", int, require=False)
+    async def manage_smartcoin(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User, amount: int = 0):
+        Log(ctx.author.name + " is launching manage smartcoin commands with " + option, LogType.COMMAND)
+        try:
+            if not await self.__check_if_root(ctx):
+                return
+            
+            user_in_db = User(str(user.id))
+            
+            match option:
+                case "show":
+                    await ctx.respond(user.display_name + " smartcoin: " + str(user_in_db.get_smartcoin()))
+                case "add":
+                    user_in_db.add_smartcoin(amount)
+                    await ctx.respond("Smartcoin added!")
+                case "remove":
+                    user_in_db.remove_smartcoin(amount)
+                    await ctx.respond("Smartcoin removed!")
+                case _:
+                    await ctx.respond("Option not found!")
+        except:
+            await ctx.respond("An error has occurred! please try again later.")
+            Log(traceback.format_exc(), LogType.ERROR)
+                    
+    
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
         if not User(str(ctx.author.id)).is_root():
             await ctx.respond("You are not root!")
