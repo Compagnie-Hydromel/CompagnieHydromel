@@ -124,7 +124,7 @@ class RootCommands(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
     
     @discord.slash_command(description="Manage smartcoin")
-    @discord.option("option", description="add/remove/list", choices=["add", "remove", "show"])
+    @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
     @discord.option("user", discord.User, require=True)
     @discord.option("amount", int, require=False)
     async def manage_smartcoin(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User, amount: int = 0):
@@ -138,18 +138,21 @@ class RootCommands(discord.Cog):
             match option:
                 case "show":
                     await ctx.respond(user.display_name + " smartcoin: " + str(user_in_db.get_smartcoin()))
-                case "add":
-                    user_in_db.add_smartcoin(amount)
-                    await ctx.respond("Smartcoin added!")
-                case "remove":
-                    user_in_db.remove_smartcoin(amount)
-                    await ctx.respond("Smartcoin removed!")
+                case "add" | "remove":
+                    if amount < 1:
+                        await ctx.respond("Please enter an amount!")
+                        return
+                    if option == "add":
+                        user_in_db.add_smartcoin(amount)
+                        await ctx.respond("Smartcoin added!")
+                    else:
+                        user_in_db.remove_smartcoin(amount)
+                        await ctx.respond("Smartcoin removed!")
                 case _:
                     await ctx.respond("Option not found!")
         except:
             await ctx.respond("An error has occurred! please try again later.")
             Log(traceback.format_exc(), LogType.ERROR)
-                    
     
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
         if not User(str(ctx.author.id)).is_root():
