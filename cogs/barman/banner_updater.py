@@ -29,7 +29,11 @@ class BannerUpdater(discord.Cog):
         """
         for coord in coords:
             people[coord] = []
-            vocal = self.__get_voice_channel(coords[coord]["id"], guild)
+            vocal_id = coords[coord]["id"]
+            if vocal_id == 0:
+                Log("BannerUpdater: The vocal id of " + coord + " is 0, so it will be ignored.", LogType.WARNING)
+                continue
+            vocal = self.__get_voice_channel(vocal_id, guild)
             for member in vocal.members:
                 avatar = member.avatar.url
                 if member.guild_avatar != None:
