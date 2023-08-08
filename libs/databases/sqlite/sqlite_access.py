@@ -140,10 +140,13 @@ class SqliteAccess(DatabaseAccessImplement):
             discord_id (str): Discord user id as a string.
 
         Returns:
-            str: The user current wallpaper name.
+            str: The user current wallpaper name. Return "default" if the user has a deleted wallpaper put on.
         """
-        return self.__sqliteDB.select("SELECT wallpapers.name FROM users INNER JOIN wallpapers ON users.wallpapersId = wallpapers.id WHERE discordId = '" + discord_id + "';")[0][0]
-
+        query_result = self.__sqliteDB.select("SELECT wallpapers.name FROM users INNER JOIN wallpapers ON users.wallpapersId = wallpapers.id WHERE discordId = '" + discord_id + "';")
+        if len(query_result) > 0:
+            return query_result[0][0]
+        return "default"
+        
     def get_list_posseded_wallpapers(self, discord_id: str) -> list[str]:
         """This method is designed to get a user posseded wallpapers list.
 
@@ -309,6 +312,25 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         self.__sqliteDB.modify("UPDATE users SET numberOfBuy = numberOfBuy + 1 WHERE discordId = '" + discord_id + "';")
 
+    def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
+        """This method is designed to add a wallpaper to the database.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+            url (str): The url of the wallpaper.
+            price (int): The price of the wallpaper.
+            level (int): The level of the wallpaper.
+        """
+        self.__sqliteDB.modify("INSERT INTO wallpapers(name, url, price, level) VALUES ('" + wallpaper_name + "', '" + url + "', " + str(price) + ", " + str(level) + ");")
+    
+    def remove_wallpaper(self, wallpaper_name: str) -> None:
+        """This method is designed to remove a wallpaper from the database.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+        """
+        self.__sqliteDB.modify("DELETE FROM wallpapers WHERE name = '" + wallpaper_name + "';")
+
     # Public
 
     # Private
@@ -357,5 +379,4 @@ class SqliteAccess(DatabaseAccessImplement):
         for item in list_to_reorder:
             list_reorder.append(item[0])
         return list_reorder
-
     # Private

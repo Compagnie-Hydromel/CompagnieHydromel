@@ -138,7 +138,7 @@ class DatabaseAccessImplement:
             discord_id (str): Discord user id as a string.
 
         Returns:
-            str: The user current wallpaper name.
+            str: The user current wallpaper name. Return "default" if the user has a deleted wallpaper put on.
         """
         pass
 
@@ -287,6 +287,25 @@ class DatabaseAccessImplement:
 
         Args:
             discord_id (str): Discord user id as a string.
+        """
+        pass
+    
+    def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
+        """This method is designed to add a wallpaper to the database.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+            url (str): The url of the wallpaper.
+            price (int): The price of the wallpaper.
+            level (int): The level of the wallpaper.
+        """
+        pass
+    
+    def remove_wallpaper(self, wallpaper_name: str) -> None:
+        """This method is designed to remove a wallpaper from the database.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
         """
         pass
 

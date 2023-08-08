@@ -1,6 +1,8 @@
 from libs.databases.database_access_implement import DatabaseAccessImplement
 from libs.databases.sqlite.sqlite_access import SqliteAccess
 from libs.databases.wallpaper import Wallpaper
+from libs.exception.wallpaper_already_exist_exception import WallpaperAlreadyExistException
+from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
 
 class Wallpapers:
     """This class is designed to manage wallpapers.
@@ -35,3 +37,29 @@ class Wallpapers:
             list_of_wallpapers.append(Wallpaper(wallpaper))
 
         return list_of_wallpapers
+    
+    def add(self, wallpaper_name: str, url: str, price: int = 0, level: int = 0) -> None:
+        """This method is designed to add a wallpaper to the database.
+
+        Args:
+            wallpaper_name (str): the wallpaper name.
+            url (str): the url of the wallpaper
+            price (int, optional): the price of the wallpaper. Defaults to 0.
+            level (int, optional): the level of the wallpaper. Defaults to 0.
+    
+        Raises:
+            WallpaperAlreadyExistException: If the wallpaper already exist.
+        """
+        try: 
+            Wallpaper(wallpaper_name)
+            raise WallpaperAlreadyExistException
+        except WallpaperNotExistException:
+            self.__db_access.add_wallpaper(wallpaper_name, url, price, level)
+        
+    def remove(self, wallpaper: Wallpaper):
+        """This method is designed to remove a wallpaper from the database.
+
+        Args:
+            wallpaper (Wallpaper): The wallpaper to remove.
+        """
+        self.__db_access.remove_wallpaper(wallpaper.name())

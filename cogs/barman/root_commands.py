@@ -1,9 +1,14 @@
 import traceback
 import discord
+import requests
 from libs.config import Config
 from libs.databases.user import User
 from libs.databases.users import Users
+from libs.databases.wallpaper import Wallpaper
+from libs.databases.wallpapers import Wallpapers
 from libs.exception.color_not_correct_exception import ColorNotCorrectException
+from libs.exception.wallpaper_already_exist_exception import WallpaperAlreadyExistException
+from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 from libs.utils import Utils
@@ -153,7 +158,49 @@ class RootCommands(discord.Cog):
         except:
             await ctx.respond("An error has occurred! please try again later.")
             Log(traceback.format_exc(), LogType.ERROR)
-    
+
+    @discord.slash_command(description="Manage wallpaper")
+    @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
+    @discord.option("wallpaper_name", require=True)
+    @discord.option("url", require=False)
+    @discord.option("price", int, require=False)
+    @discord.option("level", int, require=False)
+    async def manage_wallpaper(self, ctx: discord.commands.context.ApplicationContext, option: str, wallpaper_name: str, url: str = "", price: int = 0, level: int = 0):
+        Log(ctx.author.name + " is launching manage wallpaper commands with " + option, LogType.COMMAND)
+        try:
+            if not await self.__check_if_root(ctx):
+                return
+
+            wallpapers = Wallpapers()
+            
+            match option:
+                case "show":
+                    wallpaper = Wallpaper(wallpaper_name)
+                    await ctx.respond("**Name** " + wallpaper.name() + 
+                                      "\n**url** " + wallpaper.url() + 
+                                      "\n**price** " + str(wallpaper.price()) + " smartcoin" + 
+                                      "\n**level to obtain** " + str(wallpaper.level()))
+                case "add":
+                    if not self.__is_url_image(url):
+                        await ctx.respond("Please make sure url is an image!")
+                        return
+                    wallpapers.add(wallpaper_name, url, price, level)
+                    await ctx.respond("Added!")
+                case "remove":
+                    wallpapers.remove(Wallpaper(wallpaper_name))
+                    await ctx.respond("Removed!")
+                case _:
+                    await ctx.respond("Option not found!")
+        except requests.exceptions.MissingSchema:
+            await ctx.respond("Please enter an valid url!")
+        except WallpaperAlreadyExistException: 
+            await ctx.respond("Wallpaper already exist!")
+        except WallpaperNotExistException:
+            await ctx.respond("Wallpaper not found!")
+        except:
+            await ctx.respond("An error has occurred! please try again later.")
+            Log(traceback.format_exc(), LogType.ERROR)
+        
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
         if not User(str(ctx.author.id)).is_root():
             await ctx.respond("You are not root!")
@@ -177,6 +224,14 @@ class RootCommands(discord.Cog):
         if content != "":
             pages.append(content)
         return pages
+    
+    def __is_url_image(self, image_url):
+        image_formats = ("image/png", "image/jpeg", "image/jpg")
+        r = requests.head(image_url)
+        if r.headers["content-type"] in image_formats:
+            return True
+        return False
+
     
 def setup(bot: discord.bot.Bot):
     bot.add_cog(RootCommands(bot))
