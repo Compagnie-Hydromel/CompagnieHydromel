@@ -77,7 +77,8 @@ class Config():
             "enable": False,
             "lavalink_ip": "127.0.0.1",
             "lavalink_port": 2333,
-        }
+        },
+        "information_channel_id": 0
     }
     __config_file = "config.yml"
     

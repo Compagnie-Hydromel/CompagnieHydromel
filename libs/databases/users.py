@@ -21,6 +21,14 @@ class Users:
         """
         return self.__create_list_of_users_by_list_user_name(self.__db_access.get_top_users())
     
+    def get_root_users(self) -> list[User]:
+        """This method is designed to get the root users.
+
+        Returns:
+            list[User]: The list of root users.
+        """
+        return self.__create_list_of_users_by_list_user_name(self.__db_access.get_root_users())
+    
     def __create_list_of_users_by_list_user_name(self, list_name: list[str]) -> list[User]:
         """This method is designed to create a list of User object by a list of user name.
 

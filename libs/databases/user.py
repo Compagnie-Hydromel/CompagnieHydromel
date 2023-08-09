@@ -10,6 +10,7 @@ from libs.exception.wallpaper_already_posseded_exception import WallpaperAlready
 from libs.exception.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
 from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper_not_posseded_exception import WallpaperNotPossededException
+from libs.utils import Utils
 
 class User:
     """This class is designed to manage a single user.
@@ -105,6 +106,16 @@ class User:
         """
         return self.__db_access.get_if_user_is_root(self.__discord_id)
     
+    def toggle_root(self, root: bool | None = None) -> None:
+        """This method is designed to toggle the root of the user.
+
+        Args:
+            root (bool | None, optional): if bool set the bool if none toggle. Defaults to None.
+        """
+        if root is None:
+            root = not self.is_root()
+        self.__db_access.set_user_root(self.__discord_id, root)
+    
     def current_wallpaper(self) -> Wallpaper:
         """This method is designed to get the current wallpaper of the user.
 
@@ -154,7 +165,7 @@ class User:
         Args:
             color (str): The new color as Hex RGB or color name (example: 00ff00, ff00ffaf, red, orange, etc..).
         """
-        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor, self.__check_color(color))
+        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor, Utils().check_color(color))
 
     def change_bar_color(self, color: str) -> None:
         """This method is designed to change the bar color of the user.
@@ -162,7 +173,7 @@ class User:
         Args:
             color (str): The new color as Hex RGB or color name (example: 00ff00, ff00ffaf, red, orange, etc..).
         """        
-        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, self.__check_color(color))
+        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, Utils().check_color(color))
 
     def badges_list(self) -> list[str]:
         """This method is designed to get the badges list of the user.
@@ -218,54 +229,6 @@ class User:
         """This method is designed to increase the number of buy of the user.
         """
         self.__db_access.increase_number_of_buy(self.__discord_id)
-
-    def __check_color(self, color: str) -> str:
-        """This method is designed to check if a color is correct.
-        
-        Color list:
-            - blue - 0000FF
-            - white - FFFFFF
-            - black - 000000
-            - green - 00FF00
-            - yellow - E6E600
-            - pink - FF00FF
-            - red - FF0000
-            - orange - FF9900
-            - purple - 990099
-            - brown - D2691E
-            - grey - 808080
-
-        Args:
-            color (str): The color to check as Hex RGB or color name (example: 00ff00, ff00ffaf, blue, white, etc..).
-
-        Raises:
-            ColorNotCorrectException: Raise when the color is not correct.
-
-        Returns:
-            str: The color as Hex RGB (example: 00ff00, ff00ffaf, etc..).
-        """
-        hex_regex_check=re.findall(r'^#(?:[0-9a-fA-F]{3}){1,2}$|^#(?:[0-9a-fA-F]{3,4}){1,2}$',color)
-    
-        color_list = {
-            "blue":"0000FF",
-            "white":"FFFFFF",
-            "black":"000000",
-            "green":"00FF00",
-            "yellow":"E6E600",
-            "pink":"FF00FF",
-            "red":"FF0000",
-            "orange":"FF9900",
-            "purple":"990099",
-            "brown":"D2691E",
-            "grey":"808080"
-        }
-        
-        if hex_regex_check:
-            return hex_regex_check[0].replace("#","")
-        elif color in color_list:
-            return color_list[color]
-        else:
-            raise ColorNotCorrectException
 
     def __is_wallpaper_posseded(self, wallpaper: Wallpaper) -> bool:
         """This method is designed to check if a wallpaper is posseded by the user.

@@ -124,6 +124,15 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         return bool(self.__select_user(discord_id, "isRoot")[0][0])
 
+    def set_user_root(self, discord_id: str, is_root: bool) -> None:
+        """This method is designed to set a user root.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            is_root (bool): True if the user is root, False if not.
+        """
+        self.__sqliteDB.modify("UPDATE users SET isRoot = " + str(int(is_root)) + " WHERE discordId = '" + discord_id + "';")
+
     def get_user_current_wallpaper(self, discord_id: str) -> str:
         """This method is designed to get a user current wallpaper name.
 
@@ -131,10 +140,13 @@ class SqliteAccess(DatabaseAccessImplement):
             discord_id (str): Discord user id as a string.
 
         Returns:
-            str: The user current wallpaper name.
+            str: The user current wallpaper name. Return "default" if the user has a deleted wallpaper put on.
         """
-        return self.__sqliteDB.select("SELECT wallpapers.name FROM users INNER JOIN wallpapers ON users.wallpapersId = wallpapers.id WHERE discordId = '" + discord_id + "';")[0][0]
-
+        query_result = self.__sqliteDB.select("SELECT wallpapers.name FROM users INNER JOIN wallpapers ON users.wallpapersId = wallpapers.id WHERE discordId = '" + discord_id + "';")
+        if len(query_result) > 0:
+            return query_result[0][0]
+        return "default"
+        
     def get_list_posseded_wallpapers(self, discord_id: str) -> list[str]:
         """This method is designed to get a user posseded wallpapers list.
 
@@ -248,6 +260,14 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users ORDER BY level DESC, point DESC LIMIT 10"))
     
+    def get_root_users(self) -> list[str]:
+        """This method is designed to get the root users.
+
+        Returns:
+            list[str]: The root users list (example: ['discord_id', 'discord_id']).
+        """
+        return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users WHERE isRoot = 1"))
+    
     def add_posseded_wallpaper(self, discordId: str, wallpaper_name: str) -> None:
         """This method is designed to add a wallpaper to a user's possession.
 
@@ -291,6 +311,25 @@ class SqliteAccess(DatabaseAccessImplement):
             discord_id (str): Discord user id as a string.
         """
         self.__sqliteDB.modify("UPDATE users SET numberOfBuy = numberOfBuy + 1 WHERE discordId = '" + discord_id + "';")
+
+    def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
+        """This method is designed to add a wallpaper to the database.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+            url (str): The url of the wallpaper.
+            price (int): The price of the wallpaper.
+            level (int): The level of the wallpaper.
+        """
+        self.__sqliteDB.modify("INSERT INTO wallpapers(name, url, price, level) VALUES ('" + wallpaper_name + "', '" + url + "', " + str(price) + ", " + str(level) + ");")
+    
+    def remove_wallpaper(self, wallpaper_name: str) -> None:
+        """This method is designed to remove a wallpaper from the database.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+        """
+        self.__sqliteDB.modify("DELETE FROM wallpapers WHERE name = '" + wallpaper_name + "';")
 
     # Public
 
@@ -340,5 +379,4 @@ class SqliteAccess(DatabaseAccessImplement):
         for item in list_to_reorder:
             list_reorder.append(item[0])
         return list_reorder
-
     # Private
