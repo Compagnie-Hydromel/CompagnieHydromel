@@ -56,9 +56,7 @@ class ProfilMaker():
         }
 
         Raises:
-            UnableToDownloadImageException: _description_
-            UnableToDownloadImageException: _description_
-            UnableToDownloadImageException: _description_
+            UnableToDownloadImageException: If one of the image can't be downloaded.
         """
         
         # region [background]

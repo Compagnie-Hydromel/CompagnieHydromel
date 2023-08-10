@@ -6,7 +6,7 @@ from libs.exception.music.nothing_left_in_back_queue import NothingLeftInBackQue
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
 from libs.log import Log, LogType
 
-from libs.music_manager import MusicManager
+from libs.music.music_manager import MusicManager
 
 class MusicPlayerDisplayer(discord.ui.View):
     message = None
