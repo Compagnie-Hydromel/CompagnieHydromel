@@ -61,6 +61,24 @@ class User:
         self.__db_access.add_user_point(self.__discord_id, point)
         self.__check_add_level_up()
 
+    def number_of_buy(self) -> int:
+        """This method is designed to get the number of buy of the user.
+
+        Returns:
+            int: The number of buy of the user.
+        """
+        return self.__db_access.get_number_of_buy(self.__discord_id)
+
+    def reset_point(self) -> None:
+        """This method is designed to reset the point of the user.
+        """
+        self.__db_access.reset_point(self.__discord_id)
+        
+    def reset_level(self) -> None:
+        """This method is designed to reset the level of the user. (WARNING essentially for test)
+        """
+        self.__db_access.reset_level(self.__discord_id)
+
     def add_smartcoin(self, amount : int = 1) -> None: 
         """This method is designed to add smartcoin to the user.
 
@@ -86,17 +104,17 @@ class User:
         """This method is designed to get the name color of the user.
 
         Returns:
-            str: The name color of the user as Hex RGB (example: 00ff00, ff00ffaf, etc..).
+            str: The name color of the user as Hex RGB (example: #00ff00, #ff00ffaf, etc..).
         """
-        return self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor)
+        return "#" + self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor)
     
     def bar_color(self) -> str:
         """This method is designed to get the bar color of the user.
 
         Returns:
-            str: The bar color of the user as Hex RGB (example: 00ff00, ff00ffaf, etc..).
+            str: The bar color of the user as Hex RGB (example: #00ff00, #ff00ffaf, etc..).
         """
-        return self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor)
+        return "#" + self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor)
     
     def is_root(self) -> bool:
         """This method is designed to check if the user is root.
@@ -150,28 +168,41 @@ class User:
         """This method is designed to change the name color of the user.
 
         Color list:
-            - blue - 0000FF
-            - white - FFFFFF
-            - black - 000000
-            - green - 00FF00
-            - yellow - E6E600
-            - pink - FF00FF
-            - red - FF0000
-            - orange - FF9900
-            - purple - 990099
-            - brown - D2691E
-            - grey - 808080
+            - blue - #0000FF
+            - white - #FFFFFF
+            - black - #000000
+            - green - #00FF00
+            - yellow - #E6E600
+            - pink - #FF00FF
+            - red - #FF0000
+            - orange - #FF9900
+            - purple - #990099
+            - brown - #D2691E
+            - grey - #808080
 
         Args:
-            color (str): The new color as Hex RGB or color name (example: 00ff00, ff00ffaf, red, orange, etc..).
+            color (str): The new color as Hex RGB or color name (example: #00ff00, #ff00ffaf, red, orange, etc..).
         """
         self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor, Utils().check_color(color))
 
     def change_bar_color(self, color: str) -> None:
         """This method is designed to change the bar color of the user.
-
+        
+        Color list:
+            - blue - #0000FF
+            - white - #FFFFFF
+            - black - #000000
+            - green - #00FF00
+            - yellow - #E6E600
+            - pink - #FF00FF
+            - red - #FF0000
+            - orange - #FF9900
+            - purple - #990099
+            - brown - #D2691E
+            - grey - #808080
+        
         Args:
-            color (str): The new color as Hex RGB or color name (example: 00ff00, ff00ffaf, red, orange, etc..).
+            color (str): The new color as Hex RGB or color name (example: #00ff00, #ff00ffaf, red, orange, etc..).
         """        
         self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, Utils().check_color(color))
 
@@ -229,6 +260,11 @@ class User:
         """This method is designed to increase the number of buy of the user.
         """
         self.__db_access.increase_number_of_buy(self.__discord_id)
+    
+    def reset_number_of_buy(self) -> None:
+        """This method is designed to reset the number of buy of the user.
+        """
+        self.__db_access.reset_number_of_buy(self.__discord_id)
 
     def __is_wallpaper_posseded(self, wallpaper: Wallpaper) -> bool:
         """This method is designed to check if a wallpaper is posseded by the user.
@@ -257,7 +293,7 @@ class User:
         
         if point >= calculated_point_per_level:
             self.__db_access.add_user_level(self.__discord_id)
-            self.__db_access.reset_point(self.__discord_id)
+            self.reset_point()
             self.__db_access.add_user_point(self.__discord_id, point - (calculated_point_per_level))
             self.add_smartcoin(calculated_money_per_level)
             self.__check_add_if_wallpaper_at_this_level()

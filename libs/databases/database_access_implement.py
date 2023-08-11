@@ -47,6 +47,17 @@ class DatabaseAccessImplement:
         """
         pass
     
+    def get_number_of_buy(self, discord_id: str) -> int:
+        """This method is designed to get a user number of buy.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+
+        Returns:
+            int: The user number of buy.
+        """
+        pass
+    
     def add_user_point(self, discord_id: str, point: int = 1) -> None:
         """This method is designed to add point to a user.
 
@@ -93,6 +104,14 @@ class DatabaseAccessImplement:
 
     def reset_point(self, discord_id: str) -> None:
         """This method is designed to reset a user point to 0.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        pass
+    
+    def reset_level(self, discord_id: str) -> None:
+        """This method is designed to reset a user level to 1.
 
         Args:
             discord_id (str): Discord user id as a string.
@@ -284,6 +303,14 @@ class DatabaseAccessImplement:
     
     def increase_number_of_buy(self, discord_id: str) -> None:
         """This method is designed to increase the number of buy of a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        pass
+
+    def reset_number_of_buy(self, discord_id: str) -> None:
+        """This method is designed to reset the number of buy of a user.
 
         Args:
             discord_id (str): Discord user id as a string.

@@ -38,8 +38,8 @@ class Profile(discord.Cog):
                 user.point(),
                 ctx.author.display_name,
                 user.current_wallpaper().url(),
-                bar_color = "#"+user.bar_color(),
-                name_color = "#"+user.name_color(),
+                bar_color = user.bar_color(),
+                name_color = user.name_color(),
                 badges = user.badges_list(),
                 #coords = coords
             )
