@@ -18,11 +18,11 @@ class Smartcoin(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured while getting your smartcoin level")
 
-    @discord.slash_command(description="To get your number of smartcoin")
+    @discord.slash_command(description="Get your number of smartcoin")
     async def smartcoin(self, ctx: discord.commands.context.ApplicationContext):
         await self.__smartcoin(ctx)
 
-    @discord.slash_command(description="To get your number of smartcoin")
+    @discord.slash_command(description="Get your number of smartcoin")
     async def iq(self, ctx: discord.commands.context.ApplicationContext):
         await self.__smartcoin(ctx)
 

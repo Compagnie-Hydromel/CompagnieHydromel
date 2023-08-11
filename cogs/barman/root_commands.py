@@ -65,7 +65,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot send message now.")
             Log(traceback.format_exc(), LogType.ERROR)
             
-    @discord.slash_command(description="clear message in a channel as root")
+    @discord.slash_command(description="Clear message in a channel as root")
     async def clear(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching clear commands", LogType.COMMAND)
         try:
