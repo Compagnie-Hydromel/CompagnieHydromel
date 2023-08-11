@@ -18,7 +18,7 @@ class RootCommands(discord.Cog):
         self.__bot = bot
         self.__config = Config()
 
-    @discord.slash_command(description="Broadcast a message to a any channel")
+    @discord.slash_command(description="Broadcast a message to a any channel as root")
     @discord.option("channel", discord.abc.GuildChannel, require=True)
     @discord.option("message", require=True)
     async def broadcast(self, ctx: discord.commands.context.ApplicationContext, channel: discord.abc.GuildChannel, message: str):
@@ -36,7 +36,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot send message now.")
             Log(traceback.format_exc(), LogType.ERROR)
             
-    @discord.slash_command(description="Send informations in information channel")
+    @discord.slash_command(description="Send informations in information channel as root")
     @discord.option("message", require=True)
     @discord.option("title", require=False)
     @discord.option("color", require=False)
@@ -65,7 +65,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot send message now.")
             Log(traceback.format_exc(), LogType.ERROR)
             
-    @discord.slash_command(description="clear message in a channel")
+    @discord.slash_command(description="clear message in a channel as root")
     async def clear(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching clear commands", LogType.COMMAND)
         try:
@@ -78,7 +78,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot clear messages now.")
             Log(traceback.format_exc(), LogType.ERROR)
     
-    @discord.slash_command(description="")
+    @discord.slash_command(description="Manage root users as root")
     @discord.option("option", description="list/add/remove", choices=["list", "add", "remove"])
     @discord.option("user", discord.User, require=False)
     async def root(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User = None):
@@ -108,7 +108,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot clear messages now.")
             Log(traceback.format_exc(), LogType.ERROR)
     
-    @discord.slash_command(description="Send a message to a user")
+    @discord.slash_command(description="Send a message to a user as root")
     @discord.option("user", discord.User, require=True)
     @discord.option("message", require=True)
     async def message_user(self, ctx: discord.commands.context.ApplicationContext, user: discord.User, message: str):
@@ -128,7 +128,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot send message to this user!")
             Log(traceback.format_exc(), LogType.ERROR)
     
-    @discord.slash_command(description="Manage smartcoin")
+    @discord.slash_command(description="Manage smartcoin as root")
     @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
     @discord.option("user", discord.User, require=True)
     @discord.option("amount", int, require=False)
@@ -159,7 +159,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred! please try again later.")
             Log(traceback.format_exc(), LogType.ERROR)
 
-    @discord.slash_command(description="Manage wallpaper")
+    @discord.slash_command(description="Manage wallpaper as root")
     @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
     @discord.option("wallpaper_name", require=True)
     @discord.option("url", require=False)
