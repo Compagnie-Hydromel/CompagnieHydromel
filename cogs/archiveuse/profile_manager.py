@@ -37,11 +37,11 @@ class ProfileManager(discord.Cog):
                     user.buy_wallpaper(Wallpaper(options_specifies))
                     await ctx.respond("Wallpaper buyed!")
                 case "list of posseded wallpaper":
-                    await self.__respond_list_wallpapers(ctx, user.list_of_posseded_wallpapers(), "Posseded wallpapers")
+                    await self.__respond_list_wallpapers(ctx, user.list_of_posseded_wallpapers, "Posseded wallpapers")
                 case "all wallpaper":
-                    await self.__respond_list_wallpapers(ctx, wallpapers.all())
+                    await self.__respond_list_wallpapers(ctx, wallpapers.all)
                 case "wallpaper preview":
-                    await ctx.respond(file=discord.File(Utils().download_image(Wallpaper(options_specifies).url()), "wallpaper.png"))
+                    await ctx.respond(file=discord.File(Utils().download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
                 case "name color":
                     user.change_name_color(options_specifies)
                     await ctx.respond("Name color changed!")
@@ -84,14 +84,14 @@ class ProfileManager(discord.Cog):
         
         for wallpaper in wallpapers:
             unlock_with = ""
-            if wallpaper.price() != 0:
-                unlock_with += "\n" + str(wallpaper.price()) + " smartcoin"
-            elif wallpaper.level() != 0:
-                unlock_with += "\nUnlock at level " + str(wallpaper.level())
+            if wallpaper.price != 0:
+                unlock_with += "\n" + str(wallpaper.price) + " smartcoin"
+            elif wallpaper.level != 0:
+                unlock_with += "\nUnlock at level " + str(wallpaper.level)
             else:
                 unlock_with += "\n" + "not buyable"
                 
-            content += "**" + str(wallpaper.name()) + "**" + unlock_with + "\n"
+            content += "**" + str(wallpaper.name) + "**" + unlock_with + "\n"
             counter += 1
             
             if counter > wallpaper_per_page:

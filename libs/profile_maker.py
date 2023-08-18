@@ -110,7 +110,7 @@ class ProfilMaker():
         for badge in badges:
             tempImg = None
             try:
-                response_background_url = requests.get(badge.url())
+                response_background_url = requests.get(badge.url)
                 tempImg = Image.open(BytesIO(response_background_url.content)).convert('RGBA')
             except: 
                 raise UnableToDownloadImageException
@@ -138,6 +138,7 @@ class ProfilMaker():
         self.__profilPath = profil_path
         # endregion
 
+    @property
     def profil_path(self) -> str:
         """This method is designed to get the profil path.
 

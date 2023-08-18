@@ -89,7 +89,7 @@ class RootCommands(discord.Cog):
             
             match option:
                 case "list":
-                    users = Users().get_root_users()
+                    users = Users().get_root_users
                     paginator = Paginator(self.__generate_pages(users), "Root users", 0x75E6DA)
                     
                     await ctx.respond(
@@ -142,7 +142,7 @@ class RootCommands(discord.Cog):
             
             match option:
                 case "show":
-                    await ctx.respond(user.display_name + " smartcoin: " + str(user_in_db.get_smartcoin()))
+                    await ctx.respond(user.display_name + " smartcoin: " + str(user_in_db.smartcoin))
                 case "add" | "remove":
                     if amount < 1:
                         await ctx.respond("Please enter an amount!")
@@ -176,10 +176,10 @@ class RootCommands(discord.Cog):
             match option:
                 case "show":
                     wallpaper = Wallpaper(wallpaper_name)
-                    await ctx.respond("**Name** " + wallpaper.name() + 
-                                      "\n**url** " + wallpaper.url() + 
-                                      "\n**price** " + str(wallpaper.price()) + " smartcoin" + 
-                                      "\n**level to obtain** " + str(wallpaper.level()))
+                    await ctx.respond("**Name** " + wallpaper.name + 
+                                      "\n**url** " + wallpaper.url + 
+                                      "\n**price** " + str(wallpaper.price) + " smartcoin" + 
+                                      "\n**level to obtain** " + str(wallpaper.level))
                 case "add":
                     if not self.__is_url_image(url):
                         await ctx.respond("Please make sure url is an image!")
@@ -202,7 +202,7 @@ class RootCommands(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
         
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
-        if not User(str(ctx.author.id)).is_root():
+        if not User(str(ctx.author.id)).is_root:
             await ctx.respond("You are not root!")
             return False
         return True
@@ -214,7 +214,7 @@ class RootCommands(discord.Cog):
         content = ""
         
         for user in users:
-            discord_user = self.__bot.get_user(int(user.discord_id()))
+            discord_user = self.__bot.get_user(int(user.discord_id))
             content += "**" + discord_user.display_name + "**\n"
             counter += 1
             if counter > user_per_page:

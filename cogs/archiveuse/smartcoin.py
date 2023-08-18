@@ -13,7 +13,7 @@ class Smartcoin(discord.Cog):
         try:
             user = User(str(ctx.author.id))
 
-            await ctx.respond("Smartcoin : " + str(user.get_smartcoin()))
+            await ctx.respond("Smartcoin : " + str(user.smartcoin))
         except:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured while getting your smartcoin level")

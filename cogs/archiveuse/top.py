@@ -12,12 +12,12 @@ class Top(discord.Cog):
     async def top(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching top commands", LogType.COMMAND)
         try:
-            list_of_best_users = Users().get_top_users()
+            list_of_best_users = Users().get_top_users
             message = ""
             for user in list_of_best_users:
                 user_id = None
                 try:  # to avoid error if discord_id is not an convertible in int
-                    user_id = int(user.discord_id())
+                    user_id = int(user.discord_id)
                 except: 
                     continue
                 
@@ -28,7 +28,7 @@ class Top(discord.Cog):
                 else:
                     username = discord_user.name
                 
-                message += f"**{username}** is level {user.level()}\n\n" 
+                message += f"**{username}** is level {user.level}\n\n" 
             
             await ctx.respond(embed = discord.Embed(title="Top player", description=message, color=0x75E6DA))
         except:

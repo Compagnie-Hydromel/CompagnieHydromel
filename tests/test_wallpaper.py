@@ -1,13 +1,20 @@
 import unittest
 
 from libs.databases.wallpaper import Wallpaper
-from libs.databases.wallpapers import Wallpapers
 
 class TestWallpaper(unittest.TestCase):
     __wallpaper : Wallpaper
     
-    def test_get_name(self):
+    def __init__(self, methodName: str = "runTest") -> None:
         self.__wallpaper = Wallpaper("default")
-        self.assertEqual(self.__wallpaper.name(), "default")
+        super().__init__(methodName)
+    
+    def test_get_name(self):
+        self.assertEqual(self.__wallpaper.name, "default")
         
-    # TODO : Add more tests.
+    def test_price_level(self):
+        self.assertEqual(self.__wallpaper.level, 0)
+        self.assertEqual(self.__wallpaper.price, 0)
+    
+    def test_url(self):
+        self.assertTrue(isinstance(self.__wallpaper.url, str))

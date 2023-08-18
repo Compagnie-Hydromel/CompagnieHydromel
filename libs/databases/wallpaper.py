@@ -24,6 +24,7 @@ class Wallpaper:
         if not self.__db_access.is_wallpaper_exist(self.__wallpaper_name):
             raise WallpaperNotExistException
 
+    @property
     def name(self) -> str:
         """This method is designed to get the wallpaper name.
 
@@ -32,6 +33,7 @@ class Wallpaper:
         """
         return self.__wallpaper_name
     
+    @property
     def price(self) -> int:
         """This method is designed to get the wallpaper price.
 
@@ -40,6 +42,7 @@ class Wallpaper:
         """
         return self.__db_access.get_wallpaper_price(self.__wallpaper_name)
     
+    @property
     def level(self) -> int:
         """This method is designed to get the wallpaper level.
 
@@ -48,6 +51,7 @@ class Wallpaper:
         """
         return self.__db_access.get_wallpaper_level(self.__wallpaper_name)
     
+    @property
     def url(self) -> str:
         """This method is designed to get the wallpaper url.
 

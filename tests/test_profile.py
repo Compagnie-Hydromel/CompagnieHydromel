@@ -16,7 +16,7 @@ class TestProfileMaker(unittest.TestCase):
             "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",
         )
         
-        self.assertTrue(profile_maker.profil_path() == ".profile/test.png")
-        self.assertTrue(os.path.isfile(profile_maker.profil_path()))
+        self.assertTrue(profile_maker.profil_path == ".profile/test.png")
+        self.assertTrue(os.path.isfile(profile_maker.profil_path))
 
-        os.remove(profile_maker.profil_path())
+        os.remove(profile_maker.profil_path)

@@ -28,6 +28,7 @@ class User:
         self.__db_access = SqliteAccess()
         self.__db_access.add_user_if_not_exist(discord_id)
     
+    @property
     def discord_id(self) -> str:
         """This method is designed to get the discord id of the user.
 
@@ -36,6 +37,7 @@ class User:
         """        
         return self.__discord_id
     
+    @property
     def level(self) -> int:
         """This method is designed to get the level of the user.
 
@@ -44,6 +46,7 @@ class User:
         """
         return self.__db_access.get_user_level(self.__discord_id)
 
+    @property
     def point(self) -> int:
         """This method is designed to get the point of the user.
 
@@ -51,6 +54,15 @@ class User:
             int: The point of the user.
         """
         return self.__db_access.get_user_point(self.__discord_id)
+    
+    @property
+    def number_of_buy(self) -> int:
+        """This method is designed to get the number of buy of the user.
+
+        Returns:
+            int: The number of buy of the user.
+        """
+        return self.__db_access.get_number_of_buy(self.__discord_id)
     
     def add_point(self, point : int = 1) -> None:
         """This method is designed to add point to the user.
@@ -61,19 +73,11 @@ class User:
         self.__db_access.add_user_point(self.__discord_id, point)
         self.__check_add_level_up()
 
-    def number_of_buy(self) -> int:
-        """This method is designed to get the number of buy of the user.
-
-        Returns:
-            int: The number of buy of the user.
-        """
-        return self.__db_access.get_number_of_buy(self.__discord_id)
-
     def reset_point(self) -> None:
         """This method is designed to reset the point of the user.
         """
         self.__db_access.reset_point(self.__discord_id)
-        
+    
     def reset_level(self) -> None:
         """This method is designed to reset the level of the user. (WARNING essentially for test)
         """
@@ -96,10 +100,11 @@ class User:
         Raises:
             NotEnougtSmartcoinException: Raise when the user don't have enougt smartcoin.
         """
-        if self.get_smartcoin() - amount < 0:
+        if self.smartcoin - amount < 0:
             raise NotEnougtSmartcoinException
         self.__db_access.remove_smartcoin(self.__discord_id, amount)
     
+    @property
     def name_color(self) -> str:
         """This method is designed to get the name color of the user.
 
@@ -108,6 +113,7 @@ class User:
         """
         return "#" + self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor)
     
+    @property
     def bar_color(self) -> str:
         """This method is designed to get the bar color of the user.
 
@@ -116,6 +122,7 @@ class User:
         """
         return "#" + self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor)
     
+    @property
     def is_root(self) -> bool:
         """This method is designed to check if the user is root.
 
@@ -131,9 +138,10 @@ class User:
             root (bool | None, optional): if bool set the bool if none toggle. Defaults to None.
         """
         if root is None:
-            root = not self.is_root()
+            root = not self.is_root
         self.__db_access.set_user_root(self.__discord_id, root)
     
+    @property
     def current_wallpaper(self) -> Wallpaper:
         """This method is designed to get the current wallpaper of the user.
 
@@ -142,6 +150,7 @@ class User:
         """
         return Wallpaper(self.__db_access.get_user_current_wallpaper(self.__discord_id))
     
+    @property
     def list_of_posseded_wallpapers(self) -> list[Wallpaper]: 
         """This method is designed to get the list of posseded wallpapers of the user.
 
@@ -160,7 +169,7 @@ class User:
             WallpaperNotPossededException: Raise when the user don't possed the wallpaper.
         """
         if self.__is_wallpaper_posseded(wallpaper):
-            self.__db_access.change_user_current_wallpaper(self.__discord_id, wallpaper.name())
+            self.__db_access.change_user_current_wallpaper(self.__discord_id, wallpaper.name)
         else:
             raise WallpaperNotPossededException
     
@@ -206,6 +215,7 @@ class User:
         """        
         self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, Utils().check_color(color))
 
+    @property
     def badges_list(self) -> list[str]:
         """This method is designed to get the badges list of the user.
 
@@ -214,7 +224,8 @@ class User:
         """
         return Badges().create_list_badges_by_list_name(self.__db_access.get_users_badge_list(self.__discord_id))
     
-    def get_smartcoin(self) -> int:
+    @property
+    def smartcoin(self) -> int:
         """This method is designed to get the smartcoin of the user.
 
         Returns:
@@ -233,7 +244,7 @@ class User:
         """
         if self.__is_wallpaper_posseded(wallpaper):
             raise WallpaperAlreadyPossededException
-        self.__db_access.add_posseded_wallpaper(self.__discord_id, wallpaper.name())
+        self.__db_access.add_posseded_wallpaper(self.__discord_id, wallpaper.name)
     
     def buy_wallpaper(self, wallpaper: Wallpaper) -> None:
         """This method is designed to handle a buy of wallpaper by user.
@@ -248,10 +259,10 @@ class User:
         """
         if self.__is_wallpaper_posseded(wallpaper):
             raise WallpaperAlreadyPossededException
-        wallpaper_price = wallpaper.price()
+        wallpaper_price = wallpaper.price
         if wallpaper_price == 0:
             raise WallpaperCannotBeBuyedException
-        if self.get_smartcoin() < wallpaper_price:
+        if self.smartcoin < wallpaper_price:
             raise NotEnougtSmartcoinException
         self.remove_smartcoin(wallpaper_price)
         self.add_posseded_wallpaper(wallpaper)
@@ -275,16 +286,16 @@ class User:
         Returns:
             str: True if the user possed the wallpaper, False if not.
         """
-        for posseded_wallpaper in self.list_of_posseded_wallpapers():
-            if posseded_wallpaper.name() == wallpaper.name():
+        for posseded_wallpaper in self.list_of_posseded_wallpapers:
+            if posseded_wallpaper.name == wallpaper.name:
                 return True
         return False
 
     def __check_add_level_up(self) -> None:
         """This method is designed to check if the user can level up.
         """
-        point = self.point()
-        level = self.level()
+        point = self.point
+        level = self.level
         calculated_point_per_level = 200 * level
         calculated_money_per_level = 100+(level*100)
         if level > 15:
@@ -301,8 +312,8 @@ class User:
     def __check_add_if_wallpaper_at_this_level(self) -> None:
         """This method is designed to check if the user can add a wallpaper at this level.
         """
-        for wallpaper in Wallpapers().all():
-            if wallpaper.level() == self.level():
+        for wallpaper in Wallpapers().all:
+            if wallpaper.level == self.level:
                 try:
                     self.add_posseded_wallpaper(wallpaper)
                 except:
