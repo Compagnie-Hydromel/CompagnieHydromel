@@ -128,12 +128,12 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot send message to this user!")
             Log(traceback.format_exc(), LogType.ERROR)
     
-    @discord.slash_command(description="Manage smartcoin as root")
+    @discord.slash_command(description="Manage smartpoint as root")
     @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
     @discord.option("user", discord.User, require=True)
     @discord.option("amount", int, require=False)
-    async def manage_smartcoin(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User, amount: int = 0):
-        Log(ctx.author.name + " is launching manage smartcoin commands with " + option, LogType.COMMAND)
+    async def manage_smartpoint(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User, amount: int = 0):
+        Log(ctx.author.name + " is launching manage smartpoint commands with " + option, LogType.COMMAND)
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -142,17 +142,17 @@ class RootCommands(discord.Cog):
             
             match option:
                 case "show":
-                    await ctx.respond(user.display_name + " smartcoin: " + str(user_in_db.smartcoin))
+                    await ctx.respond(user.display_name + " smartpoint: " + str(user_in_db.smartpoint))
                 case "add" | "remove":
                     if amount < 1:
                         await ctx.respond("Please enter an amount!")
                         return
                     if option == "add":
-                        user_in_db.add_smartcoin(amount)
-                        await ctx.respond("Smartcoin added!")
+                        user_in_db.add_smartpoint(amount)
+                        await ctx.respond("smartpoint added!")
                     else:
-                        user_in_db.remove_smartcoin(amount)
-                        await ctx.respond("Smartcoin removed!")
+                        user_in_db.remove_smartpoint(amount)
+                        await ctx.respond("smartpoint removed!")
                 case _:
                     await ctx.respond("Option not found!")
         except:
@@ -178,7 +178,7 @@ class RootCommands(discord.Cog):
                     wallpaper = Wallpaper(wallpaper_name)
                     await ctx.respond("**Name** " + wallpaper.name + 
                                       "\n**url** " + wallpaper.url + 
-                                      "\n**price** " + str(wallpaper.price) + " smartcoin" + 
+                                      "\n**price** " + str(wallpaper.price) + " smartpoint" + 
                                       "\n**level to obtain** " + str(wallpaper.level))
                 case "add":
                     if not self.__is_url_image(url):

@@ -23,19 +23,19 @@ class TestUser(unittest.TestCase):
         self.__user.reset_point()
         self.assertEqual(self.__user.point, 0)
         
-    def test_get_smartcoin(self):
-        self.assertEqual(self.__user.smartcoin, 20)
+    def test_get_smartpoint(self):
+        self.assertEqual(self.__user.smartpoint, 20)
     
     def test_add_point(self):
         self.__user.reset_point()
         self.__user.add_point(3)
         self.assertEqual(self.__user.point, 3)
         
-    def test_add_remove_smartcoin(self):
-        self.__user.add_smartcoin(10)
-        self.assertEqual(self.__user.smartcoin, 30)
-        self.__user.remove_smartcoin(10)
-        self.assertEqual(self.__user.smartcoin, 20)
+    def test_add_remove_smartpoint(self):
+        self.__user.add_smartpoint(10)
+        self.assertEqual(self.__user.smartpoint, 30)
+        self.__user.remove_smartpoint(10)
+        self.assertEqual(self.__user.smartpoint, 20)
         
     def test_get_name_color(self):
         self.assertEqual(self.__user.name_color, "#0000FF")
@@ -59,7 +59,7 @@ class TestUser(unittest.TestCase):
         self.__user.add_point(200)
         self.assertEqual(self.__user.level, 2)
         self.assertEqual(self.__user.point, 0)
-        self.__user.remove_smartcoin(200)
+        self.__user.remove_smartpoint(200)
         
     def test_is_root(self):
         self.assertEqual(self.__user.is_root, False)
@@ -118,8 +118,8 @@ class TestUser(unittest.TestCase):
         Utils.wallpaper_in_list_of_wallpaper("test12345", list_of_posseeded_wallpaper)
         Utils.wallpaper_in_list_of_wallpaper("default", list_of_posseeded_wallpaper)
         
-        self.assertEqual(self.__user.smartcoin, 10)
-        self.__user.add_smartcoin(10)
-        self.assertEqual(self.__user.smartcoin, 20)
+        self.assertEqual(self.__user.smartpoint, 10)
+        self.__user.add_smartpoint(10)
+        self.assertEqual(self.__user.smartpoint, 20)
         
         wallpapers.remove(wallpaper)

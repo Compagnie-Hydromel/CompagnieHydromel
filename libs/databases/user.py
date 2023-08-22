@@ -5,7 +5,7 @@ from libs.databases.sqlite.sqlite_access import SqliteAccess
 from libs.databases.wallpaper import Wallpaper
 from libs.databases.wallpapers import Wallpapers
 from libs.exception.color_not_correct_exception import ColorNotCorrectException
-from libs.exception.not_enougt_smartcoin_exception import NotEnougtSmartcoinException
+from libs.exception.not_enougt_smartpoint_exception import NotEnougtsmartpointException
 from libs.exception.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
 from libs.exception.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
 from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
@@ -83,26 +83,26 @@ class User:
         """
         self.__db_access.reset_level(self.__discord_id)
 
-    def add_smartcoin(self, amount : int = 1) -> None: 
-        """This method is designed to add smartcoin to the user.
+    def add_smartpoint(self, amount : int = 1) -> None: 
+        """This method is designed to add smartpoint to the user.
 
         Args:
-            amount (int, optional): Number of smartcoin to add. Defaults to 1.
+            amount (int, optional): Number of smartpoint to add. Defaults to 1.
         """
-        self.__db_access.add_smartcoin(self.__discord_id, amount)
+        self.__db_access.add_smartpoint(self.__discord_id, amount)
 
-    def remove_smartcoin(self, amount : int = 1) -> None:
-        """This method is designed to remove smartcoin to the user.
+    def remove_smartpoint(self, amount : int = 1) -> None:
+        """This method is designed to remove smartpoint to the user.
 
         Args:
-            amount (int, optional): Number of smartcoin to remove. Defaults to 1.
+            amount (int, optional): Number of smartpoint to remove. Defaults to 1.
 
         Raises:
-            NotEnougtSmartcoinException: Raise when the user don't have enougt smartcoin.
+            NotEnougtsmartpointException: Raise when the user don't have enougt smartpoint.
         """
-        if self.smartcoin - amount < 0:
-            raise NotEnougtSmartcoinException
-        self.__db_access.remove_smartcoin(self.__discord_id, amount)
+        if self.smartpoint - amount < 0:
+            raise NotEnougtsmartpointException
+        self.__db_access.remove_smartpoint(self.__discord_id, amount)
     
     @property
     def name_color(self) -> str:
@@ -225,13 +225,13 @@ class User:
         return Badges().create_list_badges_by_list_name(self.__db_access.get_users_badge_list(self.__discord_id))
     
     @property
-    def smartcoin(self) -> int:
-        """This method is designed to get the smartcoin of the user.
+    def smartpoint(self) -> int:
+        """This method is designed to get the smartpoint of the user.
 
         Returns:
-            int: The smartcoin of the user.
+            int: The smartpoint of the user.
         """
-        return self.__db_access.get_smartcoin(self.__discord_id)
+        return self.__db_access.get_smartpoint(self.__discord_id)
     
     def add_posseded_wallpaper(self, wallpaper: Wallpaper) -> None:
         """This method is designed to add a posseded wallpaper to the user.
@@ -255,16 +255,16 @@ class User:
         Raises:
             WallpaperAlreadyPossededException: Raise when the user already possed the wallpaper.
             WallpaperCannotBeBuyedException: Raise when the wallpaper cannot be buyed.
-            NotEnougtSmartcoinException: Raise when the user don't have enougt smartcoin.
+            NotEnougtsmartpointException: Raise when the user don't have enougt smartpoint.
         """
         if self.__is_wallpaper_posseded(wallpaper):
             raise WallpaperAlreadyPossededException
         wallpaper_price = wallpaper.price
         if wallpaper_price == 0:
             raise WallpaperCannotBeBuyedException
-        if self.smartcoin < wallpaper_price:
-            raise NotEnougtSmartcoinException
-        self.remove_smartcoin(wallpaper_price)
+        if self.smartpoint < wallpaper_price:
+            raise NotEnougtsmartpointException
+        self.remove_smartpoint(wallpaper_price)
         self.add_posseded_wallpaper(wallpaper)
         
     def increase_number_of_buy(self) -> None:
@@ -306,7 +306,7 @@ class User:
             self.__db_access.add_user_level(self.__discord_id)
             self.reset_point()
             self.__db_access.add_user_point(self.__discord_id, point - (calculated_point_per_level))
-            self.add_smartcoin(calculated_money_per_level)
+            self.add_smartpoint(calculated_money_per_level)
             self.__check_add_if_wallpaper_at_this_level()
     
     def __check_add_if_wallpaper_at_this_level(self) -> None:

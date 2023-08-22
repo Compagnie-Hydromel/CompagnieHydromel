@@ -5,7 +5,7 @@ from libs.databases.user import User
 from libs.databases.wallpaper import Wallpaper
 from libs.databases.wallpapers import Wallpapers
 from libs.exception.color_not_correct_exception import ColorNotCorrectException
-from libs.exception.not_enougt_smartcoin_exception import NotEnougtSmartcoinException
+from libs.exception.not_enougt_smartpoint_exception import NotEnougtsmartpointException
 from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 from libs.exception.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
 from libs.exception.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
@@ -56,8 +56,8 @@ class ProfileManager(discord.Cog):
             await ctx.respond("Wallpaper not posseded!")
         except ColorNotCorrectException:
             await ctx.respond("Color is not correct!")
-        except NotEnougtSmartcoinException:
-            await ctx.respond("Your not so smart! You don't have enought smartcoin!")
+        except NotEnougtsmartpointException:
+            await ctx.respond("Your not so smart! You don't have enought smartpoint!")
         except WallpaperAlreadyPossededException:
             await ctx.respond("Be smart! Wallpaper already posseded!")
         except WallpaperCannotBeBuyedException:
@@ -85,7 +85,7 @@ class ProfileManager(discord.Cog):
         for wallpaper in wallpapers:
             unlock_with = ""
             if wallpaper.price != 0:
-                unlock_with += "\n" + str(wallpaper.price) + " smartcoin"
+                unlock_with += "\n" + str(wallpaper.price) + " smartpoint"
             elif wallpaper.level != 0:
                 unlock_with += "\nUnlock at level " + str(wallpaper.level)
             else:

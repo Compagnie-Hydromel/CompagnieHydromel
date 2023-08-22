@@ -36,14 +36,14 @@ class DatabaseAccessImplement:
         """
         pass
     
-    def get_smartcoin(self, discord_id: str) -> int:
-        """This method is designed to get a user number of smartcoin.
+    def get_smartpoint(self, discord_id: str) -> int:
+        """This method is designed to get a user number of smartpoint.
 
         Args:
             discord_id (str): Discord user id as a string.
 
         Returns:
-            int: The user number of smartcoin.
+            int: The user number of smartpoint.
         """
         pass
     
@@ -76,21 +76,21 @@ class DatabaseAccessImplement:
         """
         pass
 
-    def add_smartcoin(self, discord_id, amount=1) -> None:
-        """This method is designed to add smartcoin to a user.
+    def add_smartpoint(self, discord_id, amount=1) -> None:
+        """This method is designed to add smartpoint to a user.
 
         Args:
             discord_id (_type_): Discord user id as a string.
-            amount (int, optional): The number of smartcoin to add. Defaults to 1.
+            amount (int, optional): The number of smartpoint to add. Defaults to 1.
         """
         pass
 
-    def remove_smartcoin(self, discord_id, amount=1) -> None:
-        """This method is designed to remove smartcoin to a user.
+    def remove_smartpoint(self, discord_id, amount=1) -> None:
+        """This method is designed to remove smartpoint to a user.
 
         Args:
             discord_id (_type_): Discord user id as a string.
-            amount (int, optional): The number of smartcoin to remove. Defaults to 1.
+            amount (int, optional): The number of smartpoint to remove. Defaults to 1.
         """
         pass
 

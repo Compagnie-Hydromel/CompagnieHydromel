@@ -3,7 +3,7 @@ import traceback
 import discord
 from libs.config import Config
 from libs.databases.user import User
-from libs.exception.not_enougt_smartcoin_exception import NotEnougtSmartcoinException
+from libs.exception.not_enougt_smartpoint_exception import NotEnougtsmartpointException
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 from libs.utils import Utils
@@ -13,15 +13,15 @@ class BarCommands(discord.Cog):
         self.__bot = bot
         self.__config = Config()
 
-    @discord.slash_command(description="Buy your beer with smartcoin")
+    @discord.slash_command(description="Buy your beer with smartpoint")
     async def beer(self, ctx: discord.commands.context.ApplicationContext):
         await self.handler(ctx, "beer")
             
-    @discord.slash_command(description="Buy your soft drink with smartcoin")
+    @discord.slash_command(description="Buy your soft drink with smartpoint")
     async def soft(self, ctx: discord.commands.context.ApplicationContext):
         await self.handler(ctx, "soft")
     
-    @discord.slash_command(description="Buy your hydromel with smartcoin")
+    @discord.slash_command(description="Buy your hydromel with smartpoint")
     async def hydromel(self, ctx: discord.commands.context.ApplicationContext):
         await self.handler(ctx, "hydromel")
         
@@ -48,8 +48,8 @@ class BarCommands(discord.Cog):
             else: 
                 await ctx.respond(file=img_file)
             
-        except NotEnougtSmartcoinException:
-            await ctx.respond("You don't have enougth smartcoin for a " + drink + " (Minimal price: " + str(price) + " smartcoin)")
+        except NotEnougtsmartpointException:
+            await ctx.respond("You don't have enougth smartpoint for a " + drink + " (Minimal price: " + str(price) + " smartpoint)")
         except:
             await ctx.respond("An error has occurred, no " + drink + " for you now.")
             Log(traceback.format_exc(), LogType.ERROR)
@@ -66,8 +66,8 @@ class BarCommands(discord.Cog):
     def __payement_process(self, user: User, price: int):
         barman = User(str(self.__bot.user.id))
         
-        user.remove_smartcoin(price)
-        barman.add_smartcoin(price) 
+        user.remove_smartpoint(price)
+        barman.add_smartpoint(price) 
         
     def __generate_pages(self) -> list:
         pages = []
@@ -77,10 +77,10 @@ class BarCommands(discord.Cog):
         soft_price: str = str(bar_commands_config["soft"]["price"])
         hydromel_price: str = str(bar_commands_config["hydromel"]["price"])
         water_price: str = str(bar_commands_config["water"]["price"])
-        pages.append("**Beer** \n" + beer_price + " smartcoin" + "\n\n" + 
-                     "**Soft** \n" + soft_price + " smartcoin" + "\n\n" + 
-                     "**Hydromel** \n" + hydromel_price + " smartcoin" + "\n\n" + 
-                     "**Water** \n" + water_price + " smartcoin")
+        pages.append("**Beer** \n" + beer_price + " smartpoint" + "\n\n" + 
+                     "**Soft** \n" + soft_price + " smartpoint" + "\n\n" + 
+                     "**Hydromel** \n" + hydromel_price + " smartpoint" + "\n\n" + 
+                     "**Water** \n" + water_price + " smartpoint")
         
         return pages
 
