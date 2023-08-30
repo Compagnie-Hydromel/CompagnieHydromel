@@ -16,7 +16,7 @@ class Config():
             },
             "guild_id": 0
         },
-        "sex_commands": {
+        "nsfw_commands": {
             "enable": False,
             "porn": "",
             "hentai": "",

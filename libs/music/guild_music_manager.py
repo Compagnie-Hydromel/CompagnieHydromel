@@ -1,4 +1,4 @@
-from libs.music_manager import MusicManager
+from libs.music.music_manager import MusicManager
 
 class GuildMusicManager:
     """Class that manage the music for each guild.

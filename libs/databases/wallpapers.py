@@ -14,6 +14,7 @@ class Wallpapers:
         """
         self.__db_access = SqliteAccess()
 
+    @property
     def all(self) -> list[Wallpaper]:
         """This method is designed to get all wallpapers.
 
@@ -62,4 +63,4 @@ class Wallpapers:
         Args:
             wallpaper (Wallpaper): The wallpaper to remove.
         """
-        self.__db_access.remove_wallpaper(wallpaper.name())
+        self.__db_access.remove_wallpaper(wallpaper.name)

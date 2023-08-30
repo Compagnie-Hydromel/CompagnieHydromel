@@ -36,14 +36,25 @@ class DatabaseAccessImplement:
         """
         pass
     
-    def get_smartcoin(self, discord_id: str) -> int:
-        """This method is designed to get a user number of smartcoin.
+    def get_smartpoint(self, discord_id: str) -> int:
+        """This method is designed to get a user number of smartpoint.
 
         Args:
             discord_id (str): Discord user id as a string.
 
         Returns:
-            int: The user number of smartcoin.
+            int: The user number of smartpoint.
+        """
+        pass
+    
+    def get_number_of_buy(self, discord_id: str) -> int:
+        """This method is designed to get a user number of buy.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+
+        Returns:
+            int: The user number of buy.
         """
         pass
     
@@ -65,21 +76,21 @@ class DatabaseAccessImplement:
         """
         pass
 
-    def add_smartcoin(self, discord_id, amount=1) -> None:
-        """This method is designed to add smartcoin to a user.
+    def add_smartpoint(self, discord_id, amount=1) -> None:
+        """This method is designed to add smartpoint to a user.
 
         Args:
             discord_id (_type_): Discord user id as a string.
-            amount (int, optional): The number of smartcoin to add. Defaults to 1.
+            amount (int, optional): The number of smartpoint to add. Defaults to 1.
         """
         pass
 
-    def remove_smartcoin(self, discord_id, amount=1) -> None:
-        """This method is designed to remove smartcoin to a user.
+    def remove_smartpoint(self, discord_id, amount=1) -> None:
+        """This method is designed to remove smartpoint to a user.
 
         Args:
             discord_id (_type_): Discord user id as a string.
-            amount (int, optional): The number of smartcoin to remove. Defaults to 1.
+            amount (int, optional): The number of smartpoint to remove. Defaults to 1.
         """
         pass
 
@@ -93,6 +104,14 @@ class DatabaseAccessImplement:
 
     def reset_point(self, discord_id: str) -> None:
         """This method is designed to reset a user point to 0.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        pass
+    
+    def reset_level(self, discord_id: str) -> None:
+        """This method is designed to reset a user level to 1.
 
         Args:
             discord_id (str): Discord user id as a string.
@@ -284,6 +303,14 @@ class DatabaseAccessImplement:
     
     def increase_number_of_buy(self, discord_id: str) -> None:
         """This method is designed to increase the number of buy of a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        pass
+
+    def reset_number_of_buy(self, discord_id: str) -> None:
+        """This method is designed to reset the number of buy of a user.
 
         Args:
             discord_id (str): Discord user id as a string.

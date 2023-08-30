@@ -6,3 +6,4 @@ database.db
 .profile
 env
 config.yml
+.pytest_cache

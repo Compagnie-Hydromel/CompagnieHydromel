@@ -7,12 +7,12 @@ from libs.config import Config
 from libs.log import LogType
 from libs.utils import Utils
 
-class SexCommands(discord.Cog):
+class NsfwCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.__config = Config()
 
-    @discord.slash_command(description="Get some porn in NSFW channel only")
+    @discord.slash_command(description="Get some NSFW content in a NSFW channel")
     @discord.option("choose", description="", choices=["porn", "hentai", "jinx", "002", "overwatch"])
     async def porn(self, ctx: discord.commands.context.ApplicationContext, choose : str):
         Log(ctx.author.name + " is launching sex commands with " + choose, LogType.COMMAND)
@@ -30,5 +30,5 @@ class SexCommands(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
 
 def setup(bot: discord.bot.Bot):
-    if Config().value["sex_commands"]["enable"]:
-        bot.add_cog(SexCommands(bot))
+    if Config().value["nsfw_commands"]["enable"]:
+        bot.add_cog(NsfwCommands(bot))

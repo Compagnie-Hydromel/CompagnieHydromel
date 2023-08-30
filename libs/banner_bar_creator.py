@@ -40,9 +40,9 @@ class BannerBarCreator:
             raise UnableToDownloadImageException
 
         # image
-        for server in people:
+        for channel in people:
             add = 0
-            for member in people[server]:
+            for member in people[channel]:
                 try: 
                     response_profile = requests.get(member["profil"])
                     pic = Image.open(BytesIO(response_profile.content)).convert('RGBA').resize((64,64))
@@ -54,8 +54,8 @@ class BannerBarCreator:
                 pic = Utils().pillow_crop_max_square(pic).resize((w, h), Image.LANCZOS)
                 pic = Utils().pillow_mask_circle_transparent(pic, 1)
 
-                img.paste(pic, (coords[server]['w']+add, coords[server]['h']), pic)
-                add+=int(64/(len(people[server])/3))
+                img.paste(pic, (coords[channel]['w']+add, coords[channel]['h']), pic)
+                add+=int(64/(len(people[channel])/3))
         # image
 
         img.save(file_path)

@@ -36,16 +36,27 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         return self.__select_user(discord_id, "point")[0][0]
     
-    def get_smartcoin(self, discord_id: str) -> int:
-        """This method is designed to get a user number of smartcoin.
+    def get_smartpoint(self, discord_id: str) -> int:
+        """This method is designed to get a user number of smartpoint.
 
         Args:
             discord_id (str): Discord user id as a string.
 
         Returns:
-            int: The user number of smartcoin.
+            int: The user number of smartpoint.
         """
-        return self.__select_user(discord_id, "smartcoin")[0][0]
+        return self.__select_user(discord_id, "smartpoint")[0][0]
+    
+    def get_number_of_buy(self, discord_id: str) -> int:
+        """This method is designed to get a user number of buy.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+
+        Returns:
+            int: The user number of buy.
+        """
+        return self.__select_user(discord_id, "numberOfBuy")[0][0]
     
     def add_user_point(self, discord_id: str, point: int = 1) -> None:
         """This method is designed to add point to a user.
@@ -65,23 +76,23 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         self.__sqliteDB.modify("UPDATE users SET level = level + " + str(level) + " WHERE discordId = '" + discord_id + "'")
 
-    def add_smartcoin(self, discord_id, amount=1) -> None:
-        """This method is designed to add smartcoin to a user.
+    def add_smartpoint(self, discord_id, amount=1) -> None:
+        """This method is designed to add smartpoint to a user.
 
         Args:
             discord_id (_type_): Discord user id as a string.
-            amount (int, optional): The number of smartcoin to add. Defaults to 1.
+            amount (int, optional): The number of smartpoint to add. Defaults to 1.
         """
-        self.__sqliteDB.modify("UPDATE users SET smartcoin =  smartcoin + " + str(amount) + " WHERE discordId = '" + discord_id + "'")
+        self.__sqliteDB.modify("UPDATE users SET smartpoint =  smartpoint + " + str(amount) + " WHERE discordId = '" + discord_id + "'")
     
-    def remove_smartcoin(self, discord_id, amount=1) -> None:
-        """This method is designed to remove smartcoin to a user.
+    def remove_smartpoint(self, discord_id, amount=1) -> None:
+        """This method is designed to remove smartpoint to a user.
 
         Args:
             discord_id (_type_): Discord user id as a string.
-            amount (int, optional): The number of smartcoin to remove. Defaults to 1.
+            amount (int, optional): The number of smartpoint to remove. Defaults to 1.
         """
-        self.__sqliteDB.modify("UPDATE users SET smartcoin = smartcoin - " + str(amount) + " WHERE discordId = '" + discord_id + "'")
+        self.__sqliteDB.modify("UPDATE users SET smartpoint = smartpoint - " + str(amount) + " WHERE discordId = '" + discord_id + "'")
     
     def add_user_if_not_exist(self, discord_id: str) -> None:
         """This method is designed to add a user if he doesn't exist.
@@ -100,6 +111,14 @@ class SqliteAccess(DatabaseAccessImplement):
             discord_id (str): Discord user id as a string.
         """
         self.__sqliteDB.modify("UPDATE users SET point = 0 WHERE discordId = '" + discord_id + "';")
+
+    def reset_level(self, discord_id: str) -> None:
+        """This method is designed to reset a user level to 1.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        self.__sqliteDB.modify("UPDATE users SET level = 1 WHERE discordId = '" + discord_id + "';")
 
     def get_user_profile_custom_color(self, discord_id: str, profile_colored_part: ProfileColoredPart) -> str:
         """This method is designed to get a user profile custom color.
@@ -311,6 +330,14 @@ class SqliteAccess(DatabaseAccessImplement):
             discord_id (str): Discord user id as a string.
         """
         self.__sqliteDB.modify("UPDATE users SET numberOfBuy = numberOfBuy + 1 WHERE discordId = '" + discord_id + "';")
+
+    def reset_number_of_buy(self, discord_id: str) -> None:
+        """This method is designed to reset the number of buy of a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        self.__sqliteDB.modify("UPDATE users SET numberOfBuy = 0 WHERE discordId = '" + discord_id + "';")
 
     def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
         """This method is designed to add a wallpaper to the database.

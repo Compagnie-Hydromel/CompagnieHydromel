@@ -18,7 +18,7 @@ class RootCommands(discord.Cog):
         self.__bot = bot
         self.__config = Config()
 
-    @discord.slash_command(description="Broadcast a message to a any channel")
+    @discord.slash_command(description="Broadcast a message to a any channel as root")
     @discord.option("channel", discord.abc.GuildChannel, require=True)
     @discord.option("message", require=True)
     async def broadcast(self, ctx: discord.commands.context.ApplicationContext, channel: discord.abc.GuildChannel, message: str):
@@ -36,7 +36,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot send message now.")
             Log(traceback.format_exc(), LogType.ERROR)
             
-    @discord.slash_command(description="Send informations in information channel")
+    @discord.slash_command(description="Send informations in information channel as root")
     @discord.option("message", require=True)
     @discord.option("title", require=False)
     @discord.option("color", require=False)
@@ -65,7 +65,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot send message now.")
             Log(traceback.format_exc(), LogType.ERROR)
             
-    @discord.slash_command(description="clear message in a channel")
+    @discord.slash_command(description="Clear message in a channel as root")
     async def clear(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching clear commands", LogType.COMMAND)
         try:
@@ -78,7 +78,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot clear messages now.")
             Log(traceback.format_exc(), LogType.ERROR)
     
-    @discord.slash_command(description="")
+    @discord.slash_command(description="Manage root users as root")
     @discord.option("option", description="list/add/remove", choices=["list", "add", "remove"])
     @discord.option("user", discord.User, require=False)
     async def root(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User = None):
@@ -89,7 +89,7 @@ class RootCommands(discord.Cog):
             
             match option:
                 case "list":
-                    users = Users().get_root_users()
+                    users = Users().get_root_users
                     paginator = Paginator(self.__generate_pages(users), "Root users", 0x75E6DA)
                     
                     await ctx.respond(
@@ -108,7 +108,7 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot clear messages now.")
             Log(traceback.format_exc(), LogType.ERROR)
     
-    @discord.slash_command(description="Send a message to a user")
+    @discord.slash_command(description="Send a message to a user as root")
     @discord.option("user", discord.User, require=True)
     @discord.option("message", require=True)
     async def message_user(self, ctx: discord.commands.context.ApplicationContext, user: discord.User, message: str):
@@ -128,12 +128,12 @@ class RootCommands(discord.Cog):
             await ctx.respond("An error has occurred, cannot send message to this user!")
             Log(traceback.format_exc(), LogType.ERROR)
     
-    @discord.slash_command(description="Manage smartcoin")
+    @discord.slash_command(description="Manage smartpoint as root")
     @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
     @discord.option("user", discord.User, require=True)
     @discord.option("amount", int, require=False)
-    async def manage_smartcoin(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User, amount: int = 0):
-        Log(ctx.author.name + " is launching manage smartcoin commands with " + option, LogType.COMMAND)
+    async def manage_smartpoint(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User, amount: int = 0):
+        Log(ctx.author.name + " is launching manage smartpoint commands with " + option, LogType.COMMAND)
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -142,24 +142,24 @@ class RootCommands(discord.Cog):
             
             match option:
                 case "show":
-                    await ctx.respond(user.display_name + " smartcoin: " + str(user_in_db.get_smartcoin()))
+                    await ctx.respond(user.display_name + " smartpoint: " + str(user_in_db.smartpoint))
                 case "add" | "remove":
                     if amount < 1:
                         await ctx.respond("Please enter an amount!")
                         return
                     if option == "add":
-                        user_in_db.add_smartcoin(amount)
-                        await ctx.respond("Smartcoin added!")
+                        user_in_db.add_smartpoint(amount)
+                        await ctx.respond("smartpoint added!")
                     else:
-                        user_in_db.remove_smartcoin(amount)
-                        await ctx.respond("Smartcoin removed!")
+                        user_in_db.remove_smartpoint(amount)
+                        await ctx.respond("smartpoint removed!")
                 case _:
                     await ctx.respond("Option not found!")
         except:
             await ctx.respond("An error has occurred! please try again later.")
             Log(traceback.format_exc(), LogType.ERROR)
 
-    @discord.slash_command(description="Manage wallpaper")
+    @discord.slash_command(description="Manage wallpaper as root")
     @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
     @discord.option("wallpaper_name", require=True)
     @discord.option("url", require=False)
@@ -176,10 +176,10 @@ class RootCommands(discord.Cog):
             match option:
                 case "show":
                     wallpaper = Wallpaper(wallpaper_name)
-                    await ctx.respond("**Name** " + wallpaper.name() + 
-                                      "\n**url** " + wallpaper.url() + 
-                                      "\n**price** " + str(wallpaper.price()) + " smartcoin" + 
-                                      "\n**level to obtain** " + str(wallpaper.level()))
+                    await ctx.respond("**Name** " + wallpaper.name + 
+                                      "\n**url** " + wallpaper.url + 
+                                      "\n**price** " + str(wallpaper.price) + " smartpoint" + 
+                                      "\n**level to obtain** " + str(wallpaper.level))
                 case "add":
                     if not self.__is_url_image(url):
                         await ctx.respond("Please make sure url is an image!")
@@ -202,7 +202,7 @@ class RootCommands(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
         
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
-        if not User(str(ctx.author.id)).is_root():
+        if not User(str(ctx.author.id)).is_root:
             await ctx.respond("You are not root!")
             return False
         return True
@@ -214,7 +214,7 @@ class RootCommands(discord.Cog):
         content = ""
         
         for user in users:
-            discord_user = self.__bot.get_user(int(user.discord_id()))
+            discord_user = self.__bot.get_user(int(user.discord_id))
             content += "**" + discord_user.display_name + "**\n"
             counter += 1
             if counter > user_per_page:

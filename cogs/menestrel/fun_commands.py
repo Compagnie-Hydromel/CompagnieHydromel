@@ -54,7 +54,7 @@ class FunCommands(discord.Cog):
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond("An error occured!")
         
-    @discord.slash_command(description="To get a random joke")
+    @discord.slash_command(description="Get a random joke")
     @discord.option(name="type",choices=["Global", "Dev", "Beauf"])
     async def joke(self, ctx : discord.ApplicationContext, type : str):
         Log(ctx.author.name + " is launching joke commands", LogType.COMMAND)
