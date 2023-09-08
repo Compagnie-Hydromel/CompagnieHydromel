@@ -5,6 +5,7 @@ import random
 import praw
 from blagues_api import BlaguesAPI
 from dotenv import load_dotenv
+from libs.config import Config
 
 from libs.log import Log, LogType
 
@@ -13,6 +14,7 @@ load_dotenv()
 class FunCommands(discord.Cog):
     def __init__(self, bot) -> None:
         self.___bot = bot
+        self.__config = Config().value
         
     @discord.slash_command(description="Command to play *Rock, Paper, Scissors*.")
     @discord.option(name="choice", choices=["Rock", "Paper", "Scissors"])
@@ -47,12 +49,12 @@ class FunCommands(discord.Cog):
             message = f"{bot_choice_emoji} (<@{ctx.bot.user.id}>) X {user_choice_emoji} (<@{ctx.author.id}>)\n\n"
             
             if winner_id == -1: message += "Egalité !"
-            else: message += f"Le gagnant est <@{winner_id}> :trophy: !"
+            else: message += f"Winner is <@{winner_id}> :trophy: !"
             
             await ctx.respond(message)
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config["exception_response"]["default"])
         
     @discord.slash_command(description="Get a random joke")
     @discord.option(name="type",choices=["Global", "Dev", "Beauf"])
@@ -72,7 +74,7 @@ class FunCommands(discord.Cog):
             await ctx.respond(f"{blague_infos[0]}\n\n\n{blague_infos[1]}")
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config["exception_response"]["default"])
         
     @discord.slash_command(name="meme", description="Get a random meme from reddit")
     async def meme(self, ctx : discord.ApplicationContext):
@@ -96,7 +98,7 @@ class FunCommands(discord.Cog):
             await ctx.respond(submission.url)
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config["exception_response"]["default"])
             
     
 def setup(bot):

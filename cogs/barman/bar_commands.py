@@ -49,9 +49,9 @@ class BarCommands(discord.Cog):
                 await ctx.respond(file=img_file)
             
         except NotEnougtsmartpointException:
-            await ctx.respond("You don't have enougth smartpoint for a " + drink + " (Minimal price: " + str(price) + " smartpoint)")
+            await ctx.respond(self.__config.value["exception_response"]["not_enougth_smartpoint_for_a_drinks"].replace("{drink}", drink).replace("{price}", str(price)))
         except:
-            await ctx.respond("An error has occurred, no " + drink + " for you now.")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
             
     @discord.slash_command(name="drinks_menu", description="Get the list of selled drinks")

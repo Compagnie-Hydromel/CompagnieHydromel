@@ -1,5 +1,6 @@
 import traceback
 import discord
+from libs.config import Config
 
 from libs.databases.user import User
 from libs.databases.wallpaper import Wallpaper
@@ -18,6 +19,7 @@ from libs.utils import Utils
 class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
+        self.__config = Config().value
 
     @discord.slash_command(description="Manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color"])
@@ -32,10 +34,10 @@ class ProfileManager(discord.Cog):
             match option:
                 case "set wallpaper":
                     user.change_current_wallpapers(Wallpaper(options_specifies))
-                    await ctx.respond("Wallpaper changed!")
+                    await ctx.respond(self.__config["response"]["wallpaper_changed"])
                 case "buy wallpaper":
                     user.buy_wallpaper(Wallpaper(options_specifies))
-                    await ctx.respond("Wallpaper buyed!")
+                    await ctx.respond(self.__config["response"]["wallpaper_buyed"])
                 case "list of posseded wallpaper":
                     await self.__respond_list_wallpapers(ctx, user.list_of_posseded_wallpapers, "Posseded wallpapers")
                 case "all wallpaper":
@@ -44,29 +46,29 @@ class ProfileManager(discord.Cog):
                     await ctx.respond(file=discord.File(Utils().download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
                 case "name color":
                     user.change_name_color(options_specifies)
-                    await ctx.respond("Name color changed!")
+                    await ctx.respond(self.__config["response"]["namecolor_changed"])
                 case "bar color":
                     user.change_bar_color(options_specifies)
-                    await ctx.respond("Bar color changed!")
+                    await ctx.respond(self.__config["response"]["namecolor_changed"])
                 case _:
-                    await ctx.respond("Option not found!")
+                    await ctx.respond(self.__config["exception_response"]["option_not_found"])
         except WallpaperNotExistException:
-            await ctx.respond("Wallpaper not exist!")
+            await ctx.respond(self.__config["exception_response"]["wallpaper_not_exist"])
         except WallpaperNotPossededException:
-            await ctx.respond("Wallpaper not posseded!")
+            await ctx.respond(self.__config["exception_response"]["wallpaper_not_posseded"])
         except ColorNotCorrectException:
-            await ctx.respond("Color is not correct!")
+            await ctx.respond(self.__config["exception_response"]["color_not_correct"])
         except NotEnougtsmartpointException:
-            await ctx.respond("Your not so smart! You don't have enought smartpoint!")
+            await ctx.respond(self.__config["exception_response"]["not_enougt_smartpoint"])
         except WallpaperAlreadyPossededException:
-            await ctx.respond("Be smart! Wallpaper already posseded!")
+            await ctx.respond(self.__config["exception_response"]["wallpaper_already_posseded"])
         except WallpaperCannotBeBuyedException:
-            await ctx.respond("Be smart! Wallpaper cannot be buyed!")
+            await ctx.respond(self.__config["exception_response"]["wallpaper_cannot_be_buyed"])
         except UnableToDownloadImageException:
-            await ctx.respond("Unable to download image!")
+            await ctx.respond(self.__config["exception_response"]["unable_to_download_image"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured")
+            await ctx.respond(self.__config["exception_response"]["default"])
             
     async def __respond_list_wallpapers(self, ctx: discord.commands.context.ApplicationContext, wallpapers: list, wallpapers_name: str = "Wallpapers"):
         paginator = Paginator(self.__generate_pages(wallpapers), wallpapers_name, 0x75E6DA)

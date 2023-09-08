@@ -1,4 +1,5 @@
 import discord
+from libs.config import Config
 from libs.databases.user import User
 from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 
@@ -11,6 +12,7 @@ import traceback
 class Profile(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
+        self.__config = Config().value
 
     @discord.slash_command(description="Get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):
@@ -48,10 +50,10 @@ class Profile(discord.Cog):
             Log(ctx.author.name + " profile saved at " + pro.profil_path, LogType.INFO)
         except UnableToDownloadImageException:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("Impossible to download image")
+            await ctx.respond(self.__config["exception_response"]["unable_to_download_image"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured while making profile") 
+            await ctx.respond(self.__config["exception_response"]["default"]) 
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(Profile(bot))

@@ -27,13 +27,13 @@ class RootCommands(discord.Cog):
             if not await self.__check_if_root(ctx):
                 return
             if not isinstance(channel, discord.abc.Messageable):
-                await ctx.respond("This channel is not messageable!")
+                await ctx.respond(self.__config.value["exception_response"]["channel_not_messageable"])
                 return
             
             await channel.send(message.replace("\\n", "\n"))
-            await ctx.respond("Message sent!")
+            await ctx.respond(self.__config.value["response"]["message_sent"])
         except:
-            await ctx.respond("An error has occurred, cannot send message now.")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
             
     @discord.slash_command(description="Send informations in information channel as root")
@@ -47,10 +47,10 @@ class RootCommands(discord.Cog):
                 return
             information_channel = self.__bot.get_channel(self.__config.value["information_channel_id"])
             if information_channel == None:
-                await ctx.respond("Information channel not found! please add it in config.yml")
+                await ctx.respond(self.__config.value["exception_response"]["information_channel_not_found"])
                 return
             if not isinstance(information_channel, discord.abc.Messageable):
-                await ctx.respond("The information channel is not messageable! please change it in config.yml")
+                await ctx.respond(self.__config.value["exception_response"]["information_channel_not_messageable"])
                 return
             
             # WARNING: eval = evil 
@@ -58,11 +58,11 @@ class RootCommands(discord.Cog):
             embed = discord.Embed(title=title, description=message.replace("\\n", "\n"), color=eval("0x" + Utils().check_color(color)))
             
             await information_channel.send(embed=embed)
-            await ctx.respond("Message sent!")
+            await ctx.respond(self.__config.value["response"]["message_sent"])
         except ColorNotCorrectException:
-            await ctx.respond("The color is not correct! please use hexadecimal color (ex: #ffffff) or use color name (green, blue, red, yellow, orange, pink, black, white, ect...)")
+            await ctx.respond(self.__config.value["exception_response"]["color_not_correct"])
         except:
-            await ctx.respond("An error has occurred, cannot send message now.")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
             
     @discord.slash_command(description="Clear message in a channel as root")
@@ -71,11 +71,11 @@ class RootCommands(discord.Cog):
         try:
             if not await self.__check_if_root(ctx):
                 return
-            await ctx.respond("Clearing messages...")
+            await ctx.respond(self.__config.value["response"]["clearing_channel"])
             await ctx.channel.purge()
-            await ctx.channel.send("Messages cleared!")
+            await ctx.channel.send(self.__config.value["response"]["channel_cleared"])
         except:
-            await ctx.respond("An error has occurred, cannot clear messages now.")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
     
     @discord.slash_command(description="Manage root users as root")
@@ -98,14 +98,14 @@ class RootCommands(discord.Cog):
                     )
                 case "add":
                     User(str(user.id)).toggle_root(root=True)
-                    await ctx.respond("User added to root!")
+                    await ctx.respond(self.__config.value["response"]["user_added_to_root"])
                 case "remove":
                     User(str(user.id)).toggle_root(root=False)
-                    await ctx.respond("User removed from root!")
+                    await ctx.respond(self.__config.value["response"]["user_removed_to_root"])
                 case _:
-                    await ctx.respond("Option not found!")
+                    await ctx.respond(self.__config.value["exception_response"]["option_not_found"])
         except:
-            await ctx.respond("An error has occurred, cannot clear messages now.")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
     
     @discord.slash_command(description="Send a message to a user as root")
@@ -117,15 +117,15 @@ class RootCommands(discord.Cog):
             if not await self.__check_if_root(ctx):
                 return
             if not isinstance(user, discord.abc.Messageable):
-                await ctx.respond("This user is not messageable!")
+                await ctx.respond(self.__config.value["exception_response"]["user_not_messageable"])
                 return
             
             await user.send(message.replace("\\n", "\n"))
-            await ctx.respond("Message sent!")
+            await ctx.respond(self.__config.value["response"]["message_sent"])
         except discord.Forbidden:
-            await ctx.respond("Cannot send message to this user!")
+            await ctx.respond(self.__config.value["exception_response"]["cannot_send_message_to_this_user"])
         except:
-            await ctx.respond("An error has occurred, cannot send message to this user!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
     
     @discord.slash_command(description="Manage smartpoint as root")
@@ -145,18 +145,18 @@ class RootCommands(discord.Cog):
                     await ctx.respond(user.display_name + " smartpoint: " + str(user_in_db.smartpoint))
                 case "add" | "remove":
                     if amount < 1:
-                        await ctx.respond("Please enter an amount!")
+                        await ctx.respond(self.__config.value["exception_response"]["enter_amount"])
                         return
                     if option == "add":
                         user_in_db.add_smartpoint(amount)
-                        await ctx.respond("smartpoint added!")
+                        await ctx.respond(self.__config.value["response"]["smartpoint_added"])
                     else:
                         user_in_db.remove_smartpoint(amount)
-                        await ctx.respond("smartpoint removed!")
+                        await ctx.respond(self.__config.value["response"]["smartpoint_removed"])
                 case _:
-                    await ctx.respond("Option not found!")
+                    await ctx.respond(self.__config.value["exception_response"]["option_not_found"])
         except:
-            await ctx.respond("An error has occurred! please try again later.")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
 
     @discord.slash_command(description="Manage wallpaper as root")
@@ -182,28 +182,28 @@ class RootCommands(discord.Cog):
                                       "\n**level to obtain** " + str(wallpaper.level))
                 case "add":
                     if not self.__is_url_image(url):
-                        await ctx.respond("Please make sure url is an image!")
+                        await ctx.respond(self.__config.value["exception_response"]["url_not_an_image"])
                         return
                     wallpapers.add(wallpaper_name, url, price, level)
-                    await ctx.respond("Added!")
+                    await ctx.respond(self.__config.value["response"]["wallpaper_added"])
                 case "remove":
                     wallpapers.remove(Wallpaper(wallpaper_name))
-                    await ctx.respond("Removed!")
+                    await ctx.respond(self.__config.value["response"]["wallpaper_removed"])
                 case _:
-                    await ctx.respond("Option not found!")
+                    await ctx.respond(self.__config.value["exception_response"]["option_not_found"])
         except requests.exceptions.MissingSchema:
-            await ctx.respond("Please enter an valid url!")
+            await ctx.respond(self.__config.value["exception_response"]["url_not_good_formated"])
         except WallpaperAlreadyExistException: 
-            await ctx.respond("Wallpaper already exist!")
+            await ctx.respond(self.__config.value["exception_response"]["wallpaper_already_exist"])
         except WallpaperNotExistException:
-            await ctx.respond("Wallpaper not found!")
+            await ctx.respond(self.__config.value["exception_response"]["wallpaper_not_exist"])
         except:
-            await ctx.respond("An error has occurred! please try again later.")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
         
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
         if not User(str(ctx.author.id)).is_root:
-            await ctx.respond("You are not root!")
+            await ctx.respond(self.__config.value["exception_response"]["not_root"])
             return False
         return True
     

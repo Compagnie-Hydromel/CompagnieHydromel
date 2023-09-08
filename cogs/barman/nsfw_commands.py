@@ -18,15 +18,15 @@ class NsfwCommands(discord.Cog):
         Log(ctx.author.name + " is launching sex commands with " + choose, LogType.COMMAND)
         try:
             if not ctx.channel.nsfw:
-                await ctx.respond("This command can only be used in a NSFW channel")
+                await ctx.respond(self.__config.value["exception_response"]["not_nsfw_channel"])
                 return 
             path = self.__config.value["sex_commands"][choose]
             if path != "" and os.path.isdir(path):
                 await ctx.respond(file=discord.File(Utils().random_file(path)))
             else:
-                await ctx.respond("No porn folder found!")
+                await ctx.respond(self.__config.value["exception_response"]["folder_not_found"])
         except:
-            await ctx.respond("An error has occurred, cannot get your porn now please try again later.")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             Log(traceback.format_exc(), LogType.ERROR)
 
 def setup(bot: discord.bot.Bot):

@@ -1,12 +1,14 @@
 import traceback
 import discord
+from libs.config import Config
 
 from libs.databases.users import Users
 from libs.log import Log, LogType
 
 class Top(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
-        self.__bot = bot        
+        self.__bot = bot  
+        self.__coni = Config().value
 
     @discord.slash_command(description="Get the top level up player")
     async def top(self, ctx: discord.commands.context.ApplicationContext):
@@ -33,7 +35,7 @@ class Top(discord.Cog):
             await ctx.respond(embed = discord.Embed(title="Top player", description=message, color=0x75E6DA))
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured")
+            await ctx.respond(self.__config["exception_response"]["default"])
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(Top(bot))
