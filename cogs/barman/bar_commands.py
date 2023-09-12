@@ -3,7 +3,7 @@ import traceback
 import discord
 from libs.config import Config
 from libs.databases.user import User
-from libs.exception.not_enougt_smartpoint_exception import NotEnougtsmartpointException
+from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtsmartpointException
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 from libs.utils import Utils

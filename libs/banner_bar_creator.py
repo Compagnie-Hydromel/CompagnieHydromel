@@ -1,5 +1,5 @@
 from PIL import Image
-from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
+from libs.exception.wallpaper.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 from libs.utils import Utils
 import requests
 from io import BytesIO

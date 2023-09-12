@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFilter
 import requests
 import re
 
-from libs.exception.color_not_correct_exception import ColorNotCorrectException
+from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
 
 class Utils():
     """This class is designed to manage the utils.

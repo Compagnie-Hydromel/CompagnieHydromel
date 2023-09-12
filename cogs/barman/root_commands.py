@@ -6,9 +6,9 @@ from libs.databases.user import User
 from libs.databases.users import Users
 from libs.databases.wallpaper import Wallpaper
 from libs.databases.wallpapers import Wallpapers
-from libs.exception.color_not_correct_exception import ColorNotCorrectException
-from libs.exception.wallpaper_already_exist_exception import WallpaperAlreadyExistException
-from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
+from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
+from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
+from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 from libs.utils import Utils

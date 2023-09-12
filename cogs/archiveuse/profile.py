@@ -1,7 +1,7 @@
 import discord
 from libs.config import Config
 from libs.databases.user import User
-from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
+from libs.exception.wallpaper.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 
 from libs.log import Log
 from libs.profile_maker import ProfilMaker

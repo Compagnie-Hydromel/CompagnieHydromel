@@ -4,7 +4,7 @@ from libs.utils import Utils
 import requests
 from io import BytesIO
 from libs.databases.badge import Badge
-from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
+from libs.exception.wallpaper.unable_to_download_wallpaper_exception import UnableToDownloadImageException
 
 class ProfilMaker():
     """This class is designed to make a profile.
