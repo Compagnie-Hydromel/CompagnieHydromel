@@ -1,6 +1,7 @@
 import discord
 from libs.config import Config
 from libs.databases.user import User
+from libs.exception.handler import Handler
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 from libs.log import Log
@@ -12,8 +13,7 @@ import traceback
 class Profile(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config().value
-
+        
     @discord.slash_command(description="Get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching profile commands", LogType.COMMAND)
@@ -48,12 +48,8 @@ class Profile(discord.Cog):
 
             await ctx.respond(file=discord.File(pro.profil_path))
             Log(ctx.author.name + " profile saved at " + pro.profil_path, LogType.INFO)
-        except WallpaperIsNotDownloadableException:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond(self.__config["exception_response"]["unable_to_download_image"])
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond(self.__config["exception_response"]["default"]) 
+        except Exception as e:
+            await ctx.respond(Handler().response_handler(e))
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(Profile(bot))

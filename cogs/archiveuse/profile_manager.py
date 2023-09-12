@@ -6,7 +6,8 @@ from libs.databases.user import User
 from libs.databases.wallpaper import Wallpaper
 from libs.databases.wallpapers import Wallpapers
 from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
-from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtsmartpointException
+from libs.exception.handler import Handler
+from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 from libs.exception.wallpaper.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
 from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
@@ -19,7 +20,9 @@ from libs.utils import Utils
 class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config().value
+        self.__config = Config()
+        self.__response = self.__config.value["response"]
+        self.__response_exception = self.__config.value["exception_response"]
 
     @discord.slash_command(description="Manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color"])
@@ -34,10 +37,10 @@ class ProfileManager(discord.Cog):
             match option:
                 case "set wallpaper":
                     user.change_current_wallpapers(Wallpaper(options_specifies))
-                    await ctx.respond(self.__config["response"]["wallpaper_changed"])
+                    await ctx.respond(self.__response["wallpaper_changed"])
                 case "buy wallpaper":
                     user.buy_wallpaper(Wallpaper(options_specifies))
-                    await ctx.respond(self.__config["response"]["wallpaper_buyed"])
+                    await ctx.respond(self.__response["wallpaper_buyed"])
                 case "list of posseded wallpaper":
                     await self.__respond_list_wallpapers(ctx, user.list_of_posseded_wallpapers, "Posseded wallpapers")
                 case "all wallpaper":
@@ -46,29 +49,14 @@ class ProfileManager(discord.Cog):
                     await ctx.respond(file=discord.File(Utils().download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
                 case "name color":
                     user.change_name_color(options_specifies)
-                    await ctx.respond(self.__config["response"]["namecolor_changed"])
+                    await ctx.respond(self.__response["namecolor_changed"])
                 case "bar color":
                     user.change_bar_color(options_specifies)
-                    await ctx.respond(self.__config["response"]["namecolor_changed"])
+                    await ctx.respond(self.__response["namecolor_changed"])
                 case _:
-                    await ctx.respond(self.__config["exception_response"]["option_not_found"])
-        except WallpaperNotExistException:
-            await ctx.respond(self.__config["exception_response"]["wallpaper_not_exist"])
-        except WallpaperNotPossededException:
-            await ctx.respond(self.__config["exception_response"]["wallpaper_not_posseded"])
-        except ColorNotCorrectException:
-            await ctx.respond(self.__config["exception_response"]["color_not_correct"])
-        except NotEnougtsmartpointException:
-            await ctx.respond(self.__config["exception_response"]["not_enougt_smartpoint"])
-        except WallpaperAlreadyPossededException:
-            await ctx.respond(self.__config["exception_response"]["wallpaper_already_posseded"])
-        except WallpaperCannotBeBuyedException:
-            await ctx.respond(self.__config["exception_response"]["wallpaper_cannot_be_buyed"])
-        except WallpaperIsNotDownloadableException:
-            await ctx.respond(self.__config["exception_response"]["unable_to_download_image"])
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond(self.__config["exception_response"]["default"])
+                    await ctx.respond(self.__response_exception["option_not_found"])
+        except Exception as e:
+            await ctx.respond(Handler().response_handler(e))
             
     async def __respond_list_wallpapers(self, ctx: discord.commands.context.ApplicationContext, wallpapers: list, wallpapers_name: str = "Wallpapers"):
         paginator = Paginator(self.__generate_pages(wallpapers), wallpapers_name, 0x75E6DA)

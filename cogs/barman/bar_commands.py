@@ -3,7 +3,7 @@ import traceback
 import discord
 from libs.config import Config
 from libs.databases.user import User
-from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtsmartpointException
+from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 from libs.utils import Utils
@@ -48,7 +48,7 @@ class BarCommands(discord.Cog):
             else: 
                 await ctx.respond(file=img_file)
             
-        except NotEnougtsmartpointException:
+        except NotEnougtSmartpointException:
             await ctx.respond(self.__config.value["exception_response"]["not_enougth_smartpoint_for_a_drinks"].replace("{drink}", drink).replace("{price}", str(price)))
         except:
             await ctx.respond(self.__config.value["exception_response"]["default"])

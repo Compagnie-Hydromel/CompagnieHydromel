@@ -1,4 +1,4 @@
 from libs.exception.bot_exception import BotException
 
-class NotEnougtsmartpointException(BotException):
+class NotEnougtSmartpointException(BotException):
     pass

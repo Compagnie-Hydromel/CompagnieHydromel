@@ -3,12 +3,12 @@ import  discord
 from libs.config import Config
 
 from libs.databases.user import User
+from libs.exception.handler import Handler
 from libs.log import Log, LogType
 
 class smartpoint(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config().value
 
     async def __smartpoint(self, ctx: discord.commands.context.ApplicationContext):
         Log(ctx.author.name + " is launching smartpoint commands", LogType.COMMAND)
@@ -16,9 +16,8 @@ class smartpoint(discord.Cog):
             user = User(str(ctx.author.id))
 
             await ctx.respond("smartpoint : " + str(user.smartpoint))
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond(self.__config["exception_response"]["default"])
+        except Exception as e:
+            await ctx.respond(Handler().response_handler(e))
 
     @discord.slash_command(description="Get your number of smartpoint")
     async def smartpoint(self, ctx: discord.commands.context.ApplicationContext):
