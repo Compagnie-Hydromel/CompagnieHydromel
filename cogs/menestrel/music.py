@@ -19,7 +19,8 @@ from libs.music.music_player_displayer import MusicPlayerDisplayer
 class Music(discord.Cog):    
     def __init__(self, bot) -> None:
         self.__bot = bot
-        self.__music_config = Config().value["music"]
+        self.__config = Config()
+        self.__music_config = self.__config.value["music"]
         self.__guild_music_manager = GuildMusicManager()
     
     @discord.Cog.listener()
@@ -73,50 +74,50 @@ class Music(discord.Cog):
             await music_manager.play(ctx.author.voice, song)
             await ctx.respond(embed=player_displayer.embed, view=player_displayer)
         except AlreadyPlayingException:
-            await ctx.respond("Already playing. Adding to queue.")
+            await ctx.respond(self.__config.value["exception_response"]["already_playing"])
         except NotConnectedToVoiceChannelException:
-            await ctx.respond("You need to be connected to a voice channel to play music.")
+            await ctx.respond(self.__config.value["exception_response"]["not_connected_to_voice_channel"])
         except NoResultsFoundException:
-            await ctx.respond("No results found.")
+            await ctx.respond(self.__config.value["exception_response"]["no_results_found"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
 
     @discord.slash_command(description="Command that stop the music and make the bot leave the channel.")
     async def stop(self, ctx : discord.ApplicationContext):
         Log(ctx.author.name + " is launching stop commands", LogType.COMMAND)
         try: 
             await self.__guild_music_manager.get(ctx.guild.id).stop()
-            await ctx.respond("Stopping.")
+            await ctx.respond(self.__config.value["response"]["music_stopping"])
         except NoPlayingInstanceException:
-            await ctx.respond("The bot is not playing music.")
+            await ctx.respond(self.__config.value["exception_response"]["not_playing_music"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             
     @discord.slash_command(description="Command that pause the music.")
     async def pause(self, ctx : discord.ApplicationContext):
         Log(ctx.author.name + " is launching pause commands", LogType.COMMAND)
         try:
             await self.__guild_music_manager.get(ctx.guild.id).pause()
-            await ctx.respond("Pausing music: `" + str(self.__guild_music_manager.get(ctx.guild.id).now) + "`")
+            await ctx.respond(self.__config.value["response"]["pausing_music"].replace("{music}", str(self.__guild_music_manager.get(ctx.guild.id).now)))
         except NoPlayingInstanceException:
-            await ctx.respond("The bot not playing music.")
+            await ctx.respond(self.__config.value["exception_response"]["not_playing_music"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
         
     @discord.slash_command(description="Command that resume the music.")
     async def resume(self, ctx : discord.ApplicationContext):
         Log(ctx.author.name + " is launching resume commands", LogType.COMMAND)
         try:
             await self.__guild_music_manager.get(ctx.guild.id).resume()
-            await ctx.respond("Resuming music: `" + str(self.__guild_music_manager.get(ctx.guild.id).now) + "`")
+            await ctx.respond(self.__config.value["response"]["resuming_music"].replace("{music}", str(self.__guild_music_manager.get(ctx.guild.id).now)))
         except NoPlayingInstanceException:
-            await ctx.respond("The bot not playing music.")
+            await ctx.respond(self.__config.value["exception_response"]["not_playing_music"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
     
     @discord.slash_command(description="Command that come back to the previous music.")
     async def back(self, ctx : discord.ApplicationContext):
@@ -125,14 +126,14 @@ class Music(discord.Cog):
             await ctx.defer()
             
             await self.__guild_music_manager.get(ctx.guild.id).back()
-            await ctx.respond("Back to the previous music.")
+            await ctx.respond(self.__config.value["response"]["back_to_previous_music"])
         except NothingLeftInBackQueueException:
-            await ctx.respond("Nothing left in previous song queue.")
+            await ctx.respond(self.__config.value["exception_response"]["nothing_left_in_previous_queue"])
         except NoPlayingInstanceException:
-            await ctx.respond("The bot not playing music.")
+            await ctx.respond(self.__config.value["exception_response"]["not_playing_music"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
 
     @discord.slash_command(description="Command that skip the music.")
     async def skip(self, ctx : discord.ApplicationContext):
@@ -141,14 +142,14 @@ class Music(discord.Cog):
             await ctx.defer()
             
             await self.__guild_music_manager.get(ctx.guild.id).skip()
-            await ctx.respond("Skipping.")
+            await ctx.respond(self.__config.value["response"]["skipping_music"])
         except NothingLeftInQueueException:
-            await ctx.respond("Nothing left in queue.")
+            await ctx.respond(self.__config.value["exception_response"]["nothing_left_in_queue"])
         except NoPlayingInstanceException:
-            await ctx.respond("The bot not playing music.")
+            await ctx.respond(self.__config.value["exception_response"]["not_playing_music"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
     
     @discord.slash_command(description="Command that get the queue.")
     async def queue(self, ctx : discord.ApplicationContext):
@@ -159,12 +160,12 @@ class Music(discord.Cog):
             paginator = Paginator(self.__generate_pages(songs), "Queues")
             await ctx.respond(embed=paginator.embed, view=paginator)
         except NoPlayingInstanceException:
-            await ctx.respond("The bot not playing music.")
+            await ctx.respond(self.__config.value["exception_response"]["not_playing_music"])
         except NothingLeftInQueueException:
-            await ctx.respond("Nothing left in queue.")
+            await ctx.respond(self.__config.value["exception_response"]["nothing_left_in_queue"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
         
     @discord.slash_command(description="Command to get the current music.")
     async def now(self, ctx : discord.ApplicationContext):
@@ -175,12 +176,12 @@ class Music(discord.Cog):
             
             await ctx.respond(embed=player_displayer.embed, view=player_displayer)
         except NoMusicPlaying:
-            await ctx.respond("No music playing.")
+            await ctx.respond(self.__config.value["exception_response"]["not_playing_music"])
         except NoPlayingInstanceException:
-            await ctx.respond("The bot not playing music.")
+            await ctx.respond(self.__config.value["exception_response"]["not_playing_music"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+            await ctx.respond(self.__config.value["exception_response"]["default"])
             
 
     def __generate_pages(self, songs: list[wavelink.abc.Playable]) -> list:

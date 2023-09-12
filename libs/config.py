@@ -93,6 +93,11 @@ class Config():
             "smartpoint_removed": "smartpoint removed!",
             "wallpaper_added": "Wallpaper added!",
             "wallpaper_removed": "Wallpaper Removed!",
+            "music_stopping": "Stopping.",
+            "pausing_music": "Pausing music: `{music}`",
+            "resuming_music": "Resuming music: `{music}`",
+            "back_to_previous_music": "Back to the previous music.",
+            "skipping_music": "Skipping."
         },
         "exception_response": {
             "default": "An error occured",
@@ -117,6 +122,12 @@ class Config():
             "url_not_an_image": "Please make sure url is an image!",
             "url_not_good_formated": "Please enter an valid url!",
             "wallpaper_already_exist": "Wallpaper already exist!",
+            "already_playing": "Already playing. Adding to queue.",
+            "not_connected_to_voice_channel": "You need to be connected to a voice channel to play music.",
+            "no_results_found": "No results found.",
+            "not_playing_music": "The bot is not playing music.",
+            "nothing_left_in_previous_queue": "Nothing left in previous song queue.",
+            "nothing_left_in_queue": "Nothing left in queue."
         }
     }
     __config_file = "config.yml"
