@@ -7,7 +7,7 @@ from libs.databases.wallpaper import Wallpaper
 from libs.databases.wallpapers import Wallpapers
 from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtsmartpointException
-from libs.exception.wallpaper.unable_to_download_wallpaper_exception import UnableToDownloadImageException
+from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 from libs.exception.wallpaper.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
 from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
 from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
@@ -64,7 +64,7 @@ class ProfileManager(discord.Cog):
             await ctx.respond(self.__config["exception_response"]["wallpaper_already_posseded"])
         except WallpaperCannotBeBuyedException:
             await ctx.respond(self.__config["exception_response"]["wallpaper_cannot_be_buyed"])
-        except UnableToDownloadImageException:
+        except WallpaperIsNotDownloadableException:
             await ctx.respond(self.__config["exception_response"]["unable_to_download_image"])
         except:
             Log(traceback.format_exc(), LogType.ERROR)

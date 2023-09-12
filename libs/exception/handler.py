@@ -5,4 +5,4 @@ class Handler:
         self.__config = Config()
         
     def response_handler(self, exception: Exception) -> str:
-        pass
+        pass 

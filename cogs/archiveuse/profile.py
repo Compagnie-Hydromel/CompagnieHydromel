@@ -1,7 +1,7 @@
 import discord
 from libs.config import Config
 from libs.databases.user import User
-from libs.exception.wallpaper.unable_to_download_wallpaper_exception import UnableToDownloadImageException
+from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 from libs.log import Log
 from libs.profile_maker import ProfilMaker
@@ -48,7 +48,7 @@ class Profile(discord.Cog):
 
             await ctx.respond(file=discord.File(pro.profil_path))
             Log(ctx.author.name + " profile saved at " + pro.profil_path, LogType.INFO)
-        except UnableToDownloadImageException:
+        except WallpaperIsNotDownloadableException:
             Log(traceback.format_exc(), LogType.ERROR)
             await ctx.respond(self.__config["exception_response"]["unable_to_download_image"])
         except:

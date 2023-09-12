@@ -1,5 +1,5 @@
 from PIL import Image
-from libs.exception.wallpaper.unable_to_download_wallpaper_exception import UnableToDownloadImageException
+from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 from libs.utils import Utils
 import requests
 from io import BytesIO
@@ -37,7 +37,7 @@ class BannerBarCreator:
             response_banner_image = requests.get(banner_image)
             img = Image.open(BytesIO(response_banner_image.content)).convert('RGBA')
         except: 
-            raise UnableToDownloadImageException
+            raise WallpaperIsNotDownloadableException
 
         # image
         for channel in people:
@@ -47,7 +47,7 @@ class BannerBarCreator:
                     response_profile = requests.get(member["profil"])
                     pic = Image.open(BytesIO(response_profile.content)).convert('RGBA').resize((64,64))
                 except: 
-                    raise UnableToDownloadImageException
+                    raise WallpaperIsNotDownloadableException
 
                 h,w = pic.size
 
