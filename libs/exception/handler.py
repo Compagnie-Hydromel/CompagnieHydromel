@@ -4,11 +4,24 @@ from libs.exception.bot_exception import BotException
 from libs.log import Log, LogType
 
 class Handler:
+    """Handler class for handling exception
+    """    
     def __init__(self) -> None:
+        """Constructor of Handler class
+        """        
         self.__config = Config()
         self.__response_exception = self.__config.value["exception_response"]
         
     def response_handler(self, exception: Exception, stacktrace: str) -> str:
+        """Response handler for exception to convert exception to response message
+
+        Args:
+            exception (Exception): the exceptions throws
+            stacktrace (str): the stacktrace of the exception to log if needed
+
+        Returns:
+            str: the response message
+        """
         if isinstance(exception, BotException):
             match(str(exception)):
                 # wallpaper exception
@@ -51,6 +64,14 @@ class Handler:
         else:
             return self.__default(stacktrace)
         
-    def __default(self, stacktrace: str):
+    def __default(self, stacktrace: str) -> str:
+        """Default response for exception
+
+        Args:
+            stacktrace (str): the stacktrace of the exception to log if needed
+
+        Returns:
+            str: the default response message
+        """        
         Log(stacktrace, LogType.ERROR)
         return self.__response_exception["default"]

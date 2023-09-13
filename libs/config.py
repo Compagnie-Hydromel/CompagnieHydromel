@@ -158,6 +158,8 @@ class Config():
             return False
         
     def __check_no_missing_field(self):
+        """To check if there is no missing field in the config.
+        """        
         self.__need_to_rewrite = False
         if self.config is None:
             self.config = self.__default_config
@@ -172,6 +174,15 @@ class Config():
             self.__write(self.config)
             
     def __check_subfield_exist(self, subfield, default_subfield) -> any:
+        """Useful but only use with __check_no_missing_field to check if subfield exist.
+
+        Args:
+            subfield (_type_): the subfield to check and modifiy if needed.
+            default_subfield (_type_): the default subfield alias the reference of the check.
+
+        Returns:
+            any: the subfield modified or not modified.
+        """
         if isinstance(default_subfield, dict):
             for field in default_subfield:
                 if field not in subfield:
