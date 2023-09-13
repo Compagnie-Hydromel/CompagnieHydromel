@@ -23,6 +23,7 @@ class ProfileManager(discord.Cog):
         self.__config = Config()
         self.__response = self.__config.value["response"]
         self.__response_exception = self.__config.value["exception_response"]
+        self.__error_handler = Handler()
 
     @discord.slash_command(description="Manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color"])
@@ -56,7 +57,7 @@ class ProfileManager(discord.Cog):
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
         except Exception as e:
-            await ctx.respond(Handler().response_handler(e))
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
             
     async def __respond_list_wallpapers(self, ctx: discord.commands.context.ApplicationContext, wallpapers: list, wallpapers_name: str = "Wallpapers"):
         paginator = Paginator(self.__generate_pages(wallpapers), wallpapers_name, 0x75E6DA)

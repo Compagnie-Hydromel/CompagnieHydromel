@@ -35,10 +35,8 @@ class BannerUpdater(discord.Cog):
                 continue
             vocal = self.__get_voice_channel(vocal_id, guild)
             for member in vocal.members:
-                avatar = member.avatar.url
-                if member.guild_avatar != None:
-                    avatar = member.guild_avatar.url
-                people[coord].append({"username": member.name, "profil": avatar })
+                avatar_url = member.display_avatar.url
+                people[coord].append({"username": member.name, "profil": avatar_url })
 
         return BannerBarCreator('.banner.png', self.__config.value["banner"]["banner_image"], coords, people).file_path
 

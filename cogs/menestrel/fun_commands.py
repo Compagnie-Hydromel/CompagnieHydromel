@@ -6,6 +6,7 @@ import praw
 from blagues_api import BlaguesAPI
 from dotenv import load_dotenv
 from libs.config import Config
+from libs.exception.handler import Handler
 
 from libs.log import Log, LogType
 
@@ -14,8 +15,8 @@ load_dotenv()
 class FunCommands(discord.Cog):
     def __init__(self, bot) -> None:
         self.___bot = bot
-        self.__config = Config().value
-        
+        self.__error_handler = Handler()
+                
     @discord.slash_command(description="Command to play *Rock, Paper, Scissors*.")
     @discord.option(name="choice", choices=["Rock", "Paper", "Scissors"])
     async def rock_paper_scissors(self, ctx : discord.ApplicationContext, choice : str):
@@ -52,9 +53,8 @@ class FunCommands(discord.Cog):
             else: message += f"Winner is <@{winner_id}> :trophy: !"
             
             await ctx.respond(message)
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond(self.__config["exception_response"]["default"])
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
         
     @discord.slash_command(description="Get a random joke")
     @discord.option(name="type",choices=["Global", "Dev", "Beauf"])
@@ -72,9 +72,8 @@ class FunCommands(discord.Cog):
             blague_infos = [blague.joke, blague.answer]
             
             await ctx.respond(f"{blague_infos[0]}\n\n\n{blague_infos[1]}")
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond(self.__config["exception_response"]["default"])
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
         
     @discord.slash_command(name="meme", description="Get a random meme from reddit")
     async def meme(self, ctx : discord.ApplicationContext):
@@ -96,9 +95,8 @@ class FunCommands(discord.Cog):
                 submission = next(x for x in memes_submissions if not x.stickied)
 
             await ctx.respond(submission.url)
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond(self.__config["exception_response"]["default"])
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
             
     
 def setup(bot):

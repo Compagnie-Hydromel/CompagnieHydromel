@@ -13,6 +13,7 @@ import traceback
 class Profile(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
+        self.__error_handler = Handler()
         
     @discord.slash_command(description="Get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):
@@ -49,7 +50,7 @@ class Profile(discord.Cog):
             await ctx.respond(file=discord.File(pro.profil_path))
             Log(ctx.author.name + " profile saved at " + pro.profil_path, LogType.INFO)
         except Exception as e:
-            await ctx.respond(Handler().response_handler(e))
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(Profile(bot))

@@ -3,12 +3,13 @@ import discord
 from libs.config import Config
 
 from libs.databases.users import Users
+from libs.exception.handler import Handler
 from libs.log import Log, LogType
 
 class Top(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot  
-        self.__coni = Config().value
+        self.__error_handler = Handler()
 
     @discord.slash_command(description="Get the top level up player")
     async def top(self, ctx: discord.commands.context.ApplicationContext):
@@ -33,9 +34,8 @@ class Top(discord.Cog):
                 message += f"**{username}** is level {user.level}\n\n" 
             
             await ctx.respond(embed = discord.Embed(title="Top player", description=message, color=0x75E6DA))
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond(self.__config["exception_response"]["default"])
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(Top(bot))

@@ -109,7 +109,6 @@ class Config():
             "wallpaper_already_posseded": "Be smart! Wallpaper already posseded!",
             "wallpaper_cannot_be_buyed": "Be smart! Wallpaper cannot be buyed!",
             "unable_to_download_image": "Unable to download image!",
-            "not_enougth_smartpoint_for_a_drinks": "You don't have enougth smartpoint for a {drink} (Minimal price: {price} smartpoint)",
             "folder_not_found": "Folder not found!",
             "not_nsfw_channel": "This command can only be used in a NSFW channel",
             "channel_not_messageable": "This channel is not messageable!",
