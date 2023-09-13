@@ -156,6 +156,31 @@ class Config():
                 return True
         except FileNotFoundError:
             return False
+        
+    def __check_no_missing_field(self):
+        self.__need_to_rewrite = False
+        if self.config is None:
+            self.config = self.__default_config
+        else: 
+            for field in self.__default_config:
+                if field in self.config:
+                    self.config[field] = self.__check_subfield_exist(self.config[field], self.__default_config[field])
+                else:
+                    self.config[field] = self.__default_config[field]
+                    self.__need_to_rewrite = True
+        if self.__need_to_rewrite:
+            self.__write(self.config)
+            
+    def __check_subfield_exist(self, subfield, default_subfield) -> any:
+        if isinstance(default_subfield, dict):
+            for field in default_subfield:
+                if field not in subfield:
+                    subfield[field] = default_subfield[field]
+                    self.__need_to_rewrite = True
+                else:
+                    subfield[field] = self.__check_subfield_exist(subfield[field], default_subfield[field])
+    
+        return subfield
     
     def __read(self) -> dict[str: any]:
         """This method is designed to read the config.
@@ -173,6 +198,7 @@ class Config():
         """This method is designed to reload the config.
         """
         self.config = self.__read()
+        self.__check_no_missing_field()
     
     @property
     def value(self) -> dict:

@@ -79,6 +79,8 @@ class FunCommands(discord.Cog):
     async def meme(self, ctx : discord.ApplicationContext):
         Log(ctx.author.name + " is launching meme commands", LogType.COMMAND)
         try:
+            await ctx.defer()
+            
             if os.getenv("REDDIT_CLIENT_ID") is None and os.getenv("REDDIT_CLIENT_SECRET") is None:
                 await ctx.respond("Not api access!")
                 return
