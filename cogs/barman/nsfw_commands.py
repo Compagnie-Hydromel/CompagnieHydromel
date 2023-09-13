@@ -23,7 +23,7 @@ class NsfwCommands(discord.Cog):
             if not ctx.channel.nsfw:
                 await ctx.respond(self.__error_exception["not_nsfw_channel"])
                 return 
-            path = self.__config.value["sex_commands"][choose]
+            path = self.__config.value["nsfw_commands"][choose]
             if path != "" and os.path.isdir(path):
                 await ctx.respond(file=discord.File(Utils().random_file(path)))
             else:
