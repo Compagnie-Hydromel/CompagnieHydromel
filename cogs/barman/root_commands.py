@@ -206,7 +206,10 @@ class RootCommands(discord.Cog):
         
         for user in users:
             discord_user = self.__bot.get_user(int(user.discord_id))
-            content += "**" + discord_user.display_name + "**\n"
+            if discord_user == None:
+                content += "**" + user.discord_id + "**\n"
+            else:
+                content += "**" + discord_user.display_name + "**\n"
             counter += 1
             if counter > user_per_page:
                 pages.append(content)
