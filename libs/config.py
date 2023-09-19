@@ -163,6 +163,7 @@ class Config():
         self.__need_to_rewrite = False
         if self.config is None:
             self.config = self.__default_config
+            self.__need_to_rewrite = True
         else: 
             for field in self.__default_config:
                 if field in self.config:
