@@ -1,8 +1,8 @@
 from libs.databases.database_access_implement import DatabaseAccessImplement
 from libs.databases.sqlite.sqlite_access import SqliteAccess
 from libs.databases.wallpaper import Wallpaper
-from libs.exception.wallpaper_already_exist_exception import WallpaperAlreadyExistException
-from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
+from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
+from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 
 class Wallpapers:
     """This class is designed to manage wallpapers.

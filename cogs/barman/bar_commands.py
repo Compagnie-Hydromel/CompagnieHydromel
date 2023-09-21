@@ -3,7 +3,8 @@ import traceback
 import discord
 from libs.config import Config
 from libs.databases.user import User
-from libs.exception.not_enougt_smartpoint_exception import NotEnougtsmartpointException
+from libs.exception.handler import Handler
+from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 from libs.utils import Utils
@@ -12,6 +13,7 @@ class BarCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.__config = Config()
+        self.__error_handler = Handler()
 
     @discord.slash_command(description="Buy your beer with smartpoint")
     async def beer(self, ctx: discord.commands.context.ApplicationContext):
@@ -47,12 +49,8 @@ class BarCommands(discord.Cog):
                 user.increase_number_of_buy()
             else: 
                 await ctx.respond(file=img_file)
-            
-        except NotEnougtsmartpointException:
-            await ctx.respond("You don't have enougth smartpoint for a " + drink + " (Minimal price: " + str(price) + " smartpoint)")
-        except:
-            await ctx.respond("An error has occurred, no " + drink + " for you now.")
-            Log(traceback.format_exc(), LogType.ERROR)
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
             
     @discord.slash_command(name="drinks_menu", description="Get the list of selled drinks")
     async def drinks(self, ctx: discord.commands.context.ApplicationContext):

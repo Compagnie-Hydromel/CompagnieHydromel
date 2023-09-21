@@ -4,12 +4,12 @@ from libs.databases.database_access_implement import DatabaseAccessImplement, Pr
 from libs.databases.sqlite.sqlite_access import SqliteAccess
 from libs.databases.wallpaper import Wallpaper
 from libs.databases.wallpapers import Wallpapers
-from libs.exception.color_not_correct_exception import ColorNotCorrectException
-from libs.exception.not_enougt_smartpoint_exception import NotEnougtsmartpointException
-from libs.exception.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
-from libs.exception.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
-from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
-from libs.exception.wallpaper_not_posseded_exception import WallpaperNotPossededException
+from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
+from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
+from libs.exception.wallpaper.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
+from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
+from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
+from libs.exception.wallpaper.wallpaper_not_posseded_exception import WallpaperNotPossededException
 from libs.utils import Utils
 
 class User:
@@ -98,10 +98,10 @@ class User:
             amount (int, optional): Number of smartpoint to remove. Defaults to 1.
 
         Raises:
-            NotEnougtsmartpointException: Raise when the user don't have enougt smartpoint.
+            NotEnougtSmartpointException: Raise when the user don't have enougt smartpoint.
         """
         if self.smartpoint - amount < 0:
-            raise NotEnougtsmartpointException
+            raise NotEnougtSmartpointException
         self.__db_access.remove_smartpoint(self.__discord_id, amount)
     
     @property
@@ -255,7 +255,7 @@ class User:
         Raises:
             WallpaperAlreadyPossededException: Raise when the user already possed the wallpaper.
             WallpaperCannotBeBuyedException: Raise when the wallpaper cannot be buyed.
-            NotEnougtsmartpointException: Raise when the user don't have enougt smartpoint.
+            NotEnougtSmartpointException: Raise when the user don't have enougt smartpoint.
         """
         if self.__is_wallpaper_posseded(wallpaper):
             raise WallpaperAlreadyPossededException
@@ -263,7 +263,7 @@ class User:
         if wallpaper_price == 0:
             raise WallpaperCannotBeBuyedException
         if self.smartpoint < wallpaper_price:
-            raise NotEnougtsmartpointException
+            raise NotEnougtSmartpointException
         self.remove_smartpoint(wallpaper_price)
         self.add_posseded_wallpaper(wallpaper)
         

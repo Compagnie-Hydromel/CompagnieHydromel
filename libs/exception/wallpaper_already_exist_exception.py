@@ -1,2 +1,0 @@
-class WallpaperAlreadyExistException(Exception):
-    pass

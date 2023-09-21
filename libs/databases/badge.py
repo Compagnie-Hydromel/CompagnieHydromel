@@ -1,6 +1,6 @@
 from libs.databases.database_access_implement import DatabaseAccessImplement
 from libs.databases.sqlite.sqlite_access import SqliteAccess
-from libs.exception.badge_not_exist_exception import BadgeNotExistException
+from libs.exception.badge.badge_not_exist_exception import BadgeNotExistException
 
 
 class Badge:

@@ -1,3 +1,4 @@
+from libs.exception.handler import Handler
 from libs.log import Log
 import traceback
 import discord
@@ -10,7 +11,9 @@ from libs.utils import Utils
 class NsfwCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
+        self.__error_handler = Handler()
         self.__config = Config()
+        self.__error_exception = self.__config.value["exception_response"]
 
     @discord.slash_command(description="Get some NSFW content in a NSFW channel")
     @discord.option("choose", description="", choices=["porn", "hentai", "jinx", "002", "overwatch"])
@@ -18,16 +21,15 @@ class NsfwCommands(discord.Cog):
         Log(ctx.author.name + " is launching sex commands with " + choose, LogType.COMMAND)
         try:
             if not ctx.channel.nsfw:
-                await ctx.respond("This command can only be used in a NSFW channel")
+                await ctx.respond(self.__error_exception["not_nsfw_channel"])
                 return 
-            path = self.__config.value["sex_commands"][choose]
+            path = self.__config.value["nsfw_commands"][choose]
             if path != "" and os.path.isdir(path):
                 await ctx.respond(file=discord.File(Utils().random_file(path)))
             else:
-                await ctx.respond("No porn folder found!")
-        except:
-            await ctx.respond("An error has occurred, cannot get your porn now please try again later.")
-            Log(traceback.format_exc(), LogType.ERROR)
+                await ctx.respond(self.__error_exception["folder_not_found"])
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
 def setup(bot: discord.bot.Bot):
     if Config().value["nsfw_commands"]["enable"]:

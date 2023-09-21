@@ -1,2 +1,0 @@
-class NotEnougtsmartpointException(Exception):
-    pass

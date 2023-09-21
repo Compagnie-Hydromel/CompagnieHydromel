@@ -78,7 +78,56 @@ class Config():
             "lavalink_ip": "127.0.0.1",
             "lavalink_port": 2333,
         },
-        "information_channel_id": 0
+        "information_channel_id": 0,
+        "response": {
+            "wallpaper_changed": "Wallpaper changed!",
+            "wallpaper_buyed": "Wallpaper buyed!",
+            "namecolor_changed": "Name color changed!",
+            "barcolor_changed": "Bar color changed!",
+            "message_sent": "Message sent!",
+            "clearing_channel": "Clearing messages...",
+            "channel_cleared": "Message cleared!",
+            "user_added_to_root": "User added to root!",
+            "user_removed_to_root": "User removed from root!",
+            "smartpoint_added": "smartpoint added!",
+            "smartpoint_removed": "smartpoint removed!",
+            "wallpaper_added": "Wallpaper added!",
+            "wallpaper_removed": "Wallpaper Removed!",
+            "music_stopping": "Stopping.",
+            "pausing_music": "Pausing music: `{music}`",
+            "resuming_music": "Resuming music: `{music}`",
+            "back_to_previous_music": "Back to the previous music.",
+            "skipping_music": "Skipping."
+        },
+        "exception_response": {
+            "default": "An error occured",
+            "option_not_found": "Option not found!",
+            "wallpaper_not_exist": "Wallpaper not exist!",
+            "wallpaper_not_posseded": "Wallpaper not posseded!",
+            "color_not_correct": "The color is not correct! please use hexadecimal color (ex: #ffffff) or use color name (green, blue, red, yellow, orange, pink, black, white, ect...)",
+            "not_enougt_smartpoint": "Your not so smart! You don't have enought smartpoint!",
+            "wallpaper_already_posseded": "Be smart! Wallpaper already posseded!",
+            "wallpaper_cannot_be_buyed": "Be smart! Wallpaper cannot be buyed!",
+            "unable_to_download_image": "Unable to download image!",
+            "folder_not_found": "Folder not found!",
+            "not_nsfw_channel": "This command can only be used in a NSFW channel",
+            "channel_not_messageable": "This channel is not messageable!",
+            "user_not_messageable": "This user is not messageable!",
+            "information_channel_not_found": "Information channel not found! please add it in config.yml",
+            "information_channel_not_messageable": "The information channel is not messageable! please change it in config.yml",
+            "cannot_send_message_to_this_user": "Cannot send message to this user!",
+            "not_root": "You are not root!",
+            "enter_amount": "Please enter an amount!",
+            "url_not_an_image": "Please make sure url is an image!",
+            "url_not_good_formated": "Please enter an valid url!",
+            "wallpaper_already_exist": "Wallpaper already exist!",
+            "already_playing": "Already playing. Adding to queue.",
+            "not_connected_to_voice_channel": "You need to be connected to a voice channel to play music.",
+            "no_results_found": "No results found.",
+            "not_playing_music": "The bot is not playing music.",
+            "nothing_left_in_previous_queue": "Nothing left in previous song queue.",
+            "nothing_left_in_queue": "Nothing left in queue."
+        }
     }
     __config_file = "config.yml"
     
@@ -107,6 +156,43 @@ class Config():
                 return True
         except FileNotFoundError:
             return False
+        
+    def __check_no_missing_field(self):
+        """To check if there is no missing field in the config.
+        """        
+        self.__need_to_rewrite = False
+        if self.config is None:
+            self.config = self.__default_config
+            self.__need_to_rewrite = True
+        else: 
+            for field in self.__default_config:
+                if field in self.config:
+                    self.config[field] = self.__check_subfield_exist(self.config[field], self.__default_config[field])
+                else:
+                    self.config[field] = self.__default_config[field]
+                    self.__need_to_rewrite = True
+        if self.__need_to_rewrite:
+            self.__write(self.config)
+            
+    def __check_subfield_exist(self, subfield, default_subfield) -> any:
+        """Useful but only use with __check_no_missing_field to check if subfield exist.
+
+        Args:
+            subfield (_type_): the subfield to check and modifiy if needed.
+            default_subfield (_type_): the default subfield alias the reference of the check.
+
+        Returns:
+            any: the subfield modified or not modified.
+        """
+        if isinstance(default_subfield, dict):
+            for field in default_subfield:
+                if field not in subfield:
+                    subfield[field] = default_subfield[field]
+                    self.__need_to_rewrite = True
+                else:
+                    subfield[field] = self.__check_subfield_exist(subfield[field], default_subfield[field])
+    
+        return subfield
     
     def __read(self) -> dict[str: any]:
         """This method is designed to read the config.
@@ -124,6 +210,7 @@ class Config():
         """This method is designed to reload the config.
         """
         self.config = self.__read()
+        self.__check_no_missing_field()
     
     @property
     def value(self) -> dict:
