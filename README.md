@@ -112,6 +112,10 @@ python3 menestrel.py
 python3 archiveuse.py
 ```
 
+## Avoid users to see admin commands 
+use the discord default slash commands permission system
+https://discord.com/blog/slash-commands-permissions-discord-apps-bots
+
 ## Configuration
 You can configure the bot with the **config.yml** file in the root folder of the bot. You can change the prefix, the language, the music, the reddit and the database. The file is generate automatically if it doesn't exist.
 

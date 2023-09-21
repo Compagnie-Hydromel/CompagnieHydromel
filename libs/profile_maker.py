@@ -4,7 +4,7 @@ from libs.utils import Utils
 import requests
 from io import BytesIO
 from libs.databases.badge import Badge
-from libs.exception.unable_to_download_wallpaper_exception import UnableToDownloadImageException
+from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 class ProfilMaker():
     """This class is designed to make a profile.
@@ -56,9 +56,7 @@ class ProfilMaker():
         }
 
         Raises:
-            UnableToDownloadImageException: _description_
-            UnableToDownloadImageException: _description_
-            UnableToDownloadImageException: _description_
+            UnableToDownloadImageException: If one of the image can't be downloaded.
         """
         
         # region [background]
@@ -78,7 +76,7 @@ class ProfilMaker():
             pic = Image.open(BytesIO(response_profile_picture.content)).convert(
                 'RGBA').resize((128, 128))
         except: 
-            raise UnableToDownloadImageException
+            raise WallpaperIsNotDownloadableException
 
         h, w = pic.size
 
@@ -112,10 +110,10 @@ class ProfilMaker():
         for badge in badges:
             tempImg = None
             try:
-                response_background_url = requests.get(badge.url())
+                response_background_url = requests.get(badge.url)
                 tempImg = Image.open(BytesIO(response_background_url.content)).convert('RGBA')
             except: 
-                raise UnableToDownloadImageException
+                raise WallpaperIsNotDownloadableException
             tempImg.thumbnail((32, 32), Image.LANCZOS)
             img.paste(tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
             badgeNumber += 1
@@ -140,6 +138,7 @@ class ProfilMaker():
         self.__profilPath = profil_path
         # endregion
 
+    @property
     def profil_path(self) -> str:
         """This method is designed to get the profil path.
 

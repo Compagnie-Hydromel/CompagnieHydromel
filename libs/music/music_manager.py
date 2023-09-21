@@ -1,7 +1,7 @@
 import discord
 import wavelink
 from libs.exception.music.already_playing_exception import AlreadyPlayingException
-from libs.exception.music.no_music_playing import NoMusicPlaying
+from libs.exception.music.no_music_playing_exception import NoMusicPlayingException
 from libs.exception.music.no_playing_instance_exception import NoPlayingInstanceException
 from libs.exception.music.no_result_found_exception import NoResultsFoundException
 
@@ -176,7 +176,7 @@ class MusicManager:
         """Get the current song.
 
         Raises:
-            NoMusicPlaying: if there is no music playing.
+            NoMusicPlayingException: if there is no music playing.
             NoPlayingInstanceException: if there is no playing instance.
 
         Returns:
@@ -186,7 +186,7 @@ class MusicManager:
             
         current_music = self.voice_clients.source 
         if current_music is None:
-            raise NoMusicPlaying
+            raise NoMusicPlayingException
         return current_music
     
     @property

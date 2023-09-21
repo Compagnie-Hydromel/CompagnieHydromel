@@ -5,6 +5,8 @@ import random
 import praw
 from blagues_api import BlaguesAPI
 from dotenv import load_dotenv
+from libs.config import Config
+from libs.exception.handler import Handler
 
 from libs.log import Log, LogType
 
@@ -13,7 +15,8 @@ load_dotenv()
 class FunCommands(discord.Cog):
     def __init__(self, bot) -> None:
         self.___bot = bot
-        
+        self.__error_handler = Handler()
+                
     @discord.slash_command(description="Command to play *Rock, Paper, Scissors*.")
     @discord.option(name="choice", choices=["Rock", "Paper", "Scissors"])
     async def rock_paper_scissors(self, ctx : discord.ApplicationContext, choice : str):
@@ -47,14 +50,13 @@ class FunCommands(discord.Cog):
             message = f"{bot_choice_emoji} (<@{ctx.bot.user.id}>) X {user_choice_emoji} (<@{ctx.author.id}>)\n\n"
             
             if winner_id == -1: message += "Egalité !"
-            else: message += f"Le gagnant est <@{winner_id}> :trophy: !"
+            else: message += f"Winner is <@{winner_id}> :trophy: !"
             
             await ctx.respond(message)
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
         
-    @discord.slash_command(description="To get a random joke")
+    @discord.slash_command(description="Get a random joke")
     @discord.option(name="type",choices=["Global", "Dev", "Beauf"])
     async def joke(self, ctx : discord.ApplicationContext, type : str):
         Log(ctx.author.name + " is launching joke commands", LogType.COMMAND)
@@ -70,14 +72,15 @@ class FunCommands(discord.Cog):
             blague_infos = [blague.joke, blague.answer]
             
             await ctx.respond(f"{blague_infos[0]}\n\n\n{blague_infos[1]}")
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
         
     @discord.slash_command(name="meme", description="Get a random meme from reddit")
     async def meme(self, ctx : discord.ApplicationContext):
         Log(ctx.author.name + " is launching meme commands", LogType.COMMAND)
         try:
+            await ctx.defer()
+            
             if os.getenv("REDDIT_CLIENT_ID") is None and os.getenv("REDDIT_CLIENT_SECRET") is None:
                 await ctx.respond("Not api access!")
                 return
@@ -94,9 +97,8 @@ class FunCommands(discord.Cog):
                 submission = next(x for x in memes_submissions if not x.stickied)
 
             await ctx.respond(submission.url)
-        except:
-            Log(traceback.format_exc(), LogType.ERROR)
-            await ctx.respond("An error occured!")
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
             
     
 def setup(bot):

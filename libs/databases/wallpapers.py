@@ -1,8 +1,8 @@
 from libs.databases.database_access_implement import DatabaseAccessImplement
 from libs.databases.sqlite.sqlite_access import SqliteAccess
 from libs.databases.wallpaper import Wallpaper
-from libs.exception.wallpaper_already_exist_exception import WallpaperAlreadyExistException
-from libs.exception.wallpaper_not_exist_exception import WallpaperNotExistException
+from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
+from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 
 class Wallpapers:
     """This class is designed to manage wallpapers.
@@ -14,6 +14,7 @@ class Wallpapers:
         """
         self.__db_access = SqliteAccess()
 
+    @property
     def all(self) -> list[Wallpaper]:
         """This method is designed to get all wallpapers.
 
@@ -62,4 +63,4 @@ class Wallpapers:
         Args:
             wallpaper (Wallpaper): The wallpaper to remove.
         """
-        self.__db_access.remove_wallpaper(wallpaper.name())
+        self.__db_access.remove_wallpaper(wallpaper.name)

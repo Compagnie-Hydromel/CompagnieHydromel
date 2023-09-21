@@ -1,6 +1,6 @@
 from libs.databases.database_access_implement import DatabaseAccessImplement
 from libs.databases.sqlite.sqlite_access import SqliteAccess
-from libs.exception.badge_not_exist_exception import BadgeNotExistException
+from libs.exception.badge.badge_not_exist_exception import BadgeNotExistException
 
 
 class Badge:
@@ -23,7 +23,8 @@ class Badge:
 
         if not self.__db_access.is_badge_exist(self.__badge_name):
             raise BadgeNotExistException
-        
+    
+    @property
     def name(self) -> str:
         """This method is designed to get the name of the badge.
 
@@ -32,6 +33,7 @@ class Badge:
         """
         return self.__badge_name
 
+    @property
     def url(self) -> str:
         """This method is designed to get the url of the badge.
 
