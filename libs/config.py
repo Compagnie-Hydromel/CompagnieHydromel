@@ -79,9 +79,9 @@ class Config():
             "lavalink_port": 2333,
             "music_on_join": {
                 "enable": False,
-                "default_song": "ZRCpkDk4yug",
+                "default_song": "",
                 "discord_id_to_song": {
-                    "0": "ZRCpkDk4yug"
+                    "0": ""
                 }
             }
         },  

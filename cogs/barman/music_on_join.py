@@ -48,6 +48,9 @@ class MusicOnJoin(discord.Cog):
             
             search_query = self.__get_music_query(str(members.id))
             
+            if search_query == "":
+                return
+            
             song = await music_manager.search(search_query)
             while True:
                 try:
