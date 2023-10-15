@@ -2,7 +2,7 @@ import yaml
 
 class Config():
     """This class is designed to manage the config.
-    """    
+    """
     __default_config = {
         "database": "sqlite",
         "banner": {
@@ -77,7 +77,14 @@ class Config():
             "enable": False,
             "lavalink_ip": "127.0.0.1",
             "lavalink_port": 2333,
-        },
+            "music_on_join": {
+                "enable": False,
+                "default_song": "",
+                "discord_id_to_song": {
+                    "0": ""
+                }
+            }
+        },  
         "information_channel_id": 0,
         "response": {
             "wallpaper_changed": "Wallpaper changed!",
@@ -130,6 +137,7 @@ class Config():
         }
     }
     __config_file = "config.yml"
+    __no_check_fields = ["discord_id_to_song"]
     
     def __init__(self) -> None:
         """This method is designed to initialize the Config class.
@@ -184,7 +192,7 @@ class Config():
         Returns:
             any: the subfield modified or not modified.
         """
-        if isinstance(default_subfield, dict):
+        if isinstance(default_subfield, dict) and default_subfield not in self.__no_check_fields:
             for field in default_subfield:
                 if field not in subfield:
                     subfield[field] = default_subfield[field]
