@@ -55,6 +55,7 @@ class MusicOnJoin(discord.Cog):
             while True:
                 try:
                     await music_manager.play(members.voice, song)
+                    await members.guild.me.edit(mute=False, deafen=False)
                 except AlreadyPlayingException:
                     await music_manager.disconnect()
                     continue
