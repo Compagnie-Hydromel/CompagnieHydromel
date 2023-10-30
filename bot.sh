@@ -1,12 +1,12 @@
 source env/bin/activate
 
-python3 barman.py &
+python3 bot.py &
 barman_pid=$!
 
-python3 menestrel.py &
+python3 bot.py &
 menestrel_pid=$!
 
-python3 archiveuse.py &
+python3 bot.py &
 archiveuse_pid=$!
 
 wait $barman_pid
