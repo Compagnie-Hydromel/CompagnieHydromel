@@ -14,7 +14,7 @@ class Reload(discord.Cog):
     
     @discord.command(name="reload", help="Reload all cogs")
     async def reload(self, ctx):
-        if User(str(ctx.author.id)).is_root():    
+        if User(str(ctx.author.id)).is_root:    
             extensions = self.bot.extensions.copy()
             for extension in extensions:
                 self.bot.reload_extension(extension)
