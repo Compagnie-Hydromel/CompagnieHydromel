@@ -26,9 +26,15 @@ match sys.argv[1]:
 intents: discord.Intents = discord.Intents.all()
 bot: discord.bot.Bot = discord.Bot(intents=intents)
 
+# Load specific bot cogs
 for filename in os.listdir('./cogs/' + bot_name):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{bot_name}.{filename[:-3]}')
+
+# Load common cogs
+for filename in os.listdir('./cogs/'):
+    if filename.endswith('.py'):
+        bot.load_extension(f'cogs.{filename[:-3]}')
 
 @bot.event
 async def on_ready():
