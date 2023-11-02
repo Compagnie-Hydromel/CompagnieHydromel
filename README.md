@@ -103,13 +103,13 @@ zsh bot.sh
 You can also use the command below to start the bot on by one
 ```bash
 # To start the barman
-python3 barman.py
+python3 bot.py barman
 
 # To start the menestrel
-python3 menestrel.py
+python3 bot.py menestrel
 
 # To start the archiveuse
-python3 archiveuse.py
+python3 bot.py archiveuse
 ```
 
 ## Avoid users to see admin commands 
