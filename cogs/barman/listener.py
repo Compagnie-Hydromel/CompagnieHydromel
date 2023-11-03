@@ -1,8 +1,10 @@
+import traceback
 import  discord
 from libs.banner_bar_creator import BannerBarCreator
 from libs.config import Config
 
 from libs.databases.user import User
+from libs.exception.handler import Handler
 from libs.log import Log, LogType
 
 class Listener(discord.Cog):
@@ -10,6 +12,7 @@ class Listener(discord.Cog):
         self.__bot = bot
         self.__config = Config()
         self.__response_config = self.__config.value["response"]
+        self.__error_handler = Handler()
 
     @discord.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -18,10 +21,13 @@ class Listener(discord.Cog):
         if message.author == self.__bot.user:
             return
         
-        if message.type == discord.MessageType.premium_guild_subscription:
-            information_channel_id = self.__config.value["information_channel_id"]
-            if information_channel_id != 0:
-                await self.__bot.get_channel(information_channel_id).send(self.__response_config["server_boosted"].replace("{user}", message.author.mention))
+        try:
+            if message.type == discord.MessageType.premium_guild_subscription:
+                information_channel_id = self.__config.value["information_channel_id"]
+                if information_channel_id != 0:
+                    await self.__bot.get_channel(information_channel_id).send(self.__response_config["server_boosted"].replace("{user}", message.author.mention))
+        except Exception as e:
+            self.__error_handler.response_handler(e, traceback.format_exc())
     
     @discord.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
