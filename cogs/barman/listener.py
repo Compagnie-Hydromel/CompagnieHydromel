@@ -1,5 +1,6 @@
 import  discord
 from libs.banner_bar_creator import BannerBarCreator
+from libs.config import Config
 
 from libs.databases.user import User
 from libs.log import Log, LogType
@@ -7,6 +8,8 @@ from libs.log import Log, LogType
 class Listener(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
+        self.__config = Config()
+        self.__response_config = self.__config.value["response"]
 
     @discord.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -14,6 +17,11 @@ class Listener(discord.Cog):
         
         if message.author == self.__bot.user:
             return
+        
+        if message.type == discord.MessageType.premium_guild_subscription:
+            information_channel_id = self.__config.value["information_channel_id"]
+            if information_channel_id != 0:
+                await self.__bot.get_channel(information_channel_id).send(self.__response_config["server_boosted"].replace("{user}", message.author.mention))
     
     @discord.Cog.listener()
     async def on_message_delete(self, message: discord.Message):

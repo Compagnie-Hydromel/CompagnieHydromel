@@ -104,7 +104,8 @@ class Config():
             "pausing_music": "Pausing music: `{music}`",
             "resuming_music": "Resuming music: `{music}`",
             "back_to_previous_music": "Back to the previous music.",
-            "skipping_music": "Skipping."
+            "skipping_music": "Skipping.",
+            "server_boosted": "Thanks {user} for boosting the server!",
         },
         "exception_response": {
             "default": "An error occured",
