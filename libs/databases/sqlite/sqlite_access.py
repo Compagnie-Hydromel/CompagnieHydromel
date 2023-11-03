@@ -339,8 +339,8 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         self.__sqliteDB.modify("UPDATE users SET numberOfBuy = 0 WHERE discordId = '" + discord_id + "';")
 
-    def get_user_profile_coords(self, discord_id: str) -> dict[str,dict[str, int]]:
-        """This method is designed to get users profiles coords.
+    def get_user_profile_layout(self, discord_id: str) -> dict[str,dict[str, int]]:
+        """This method is designed to get users profiles layout.
 
         Args:
             discord_id (str): Discord user id as a string.
@@ -348,7 +348,7 @@ class SqliteAccess(DatabaseAccessImplement):
         Returns:
             dict[dict[str, int]]: The users profiles coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
         """
-        raw = self.__sqliteDB.select("SELECT profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY FROM profilesCoords INNER JOIN users ON users.profilesCoordsId = profilesCoords.id WHERE discordId = '" + discord_id + "';")[0]
+        raw = self.__sqliteDB.select("SELECT profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY FROM profilesLayout INNER JOIN users ON users.profilesLayoutId = profilesLayout.id WHERE discordId = '" + discord_id + "';")[0]
         
         return {
             "profilPicture": {

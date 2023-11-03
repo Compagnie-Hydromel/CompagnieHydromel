@@ -317,8 +317,8 @@ class DatabaseAccessImplement:
         """
         pass
     
-    def get_user_profile_coords(self, discord_id: str) -> dict[str,dict[str, int]]:
-        """This method is designed to get users profiles coords.
+    def get_user_profile_layout(self, discord_id: str) -> dict[str,dict[str, int]]:
+        """This method is designed to get user profile layout.
 
         Args:
             discord_id (str): Discord user id as a string.

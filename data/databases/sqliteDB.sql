@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS users (
   barColor TEXT DEFAULT 'ADFF2F',
   nameColor TEXT DEFAULT '0000FF',
   numberOfBuy INTEGER DEFAULT '0',
-  profilesCoordsId INTEGER DEFAULT '1',
-  CONSTRAINT current_profiles_coords_id_foreign_key FOREIGN KEY (profilesCoordsId) REFERENCES profilesCoords (id),
+  profilesLayoutId INTEGER DEFAULT '1',
+  CONSTRAINT current_profiles_layout_id_foreign_key FOREIGN KEY (profilesLayoutId) REFERENCES profilesLayout (id),
   CONSTRAINT current_wallpapers_id_foreign_key FOREIGN KEY (wallpapersId) REFERENCES wallpapers (id)
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS usersHaveBadge (
   CONSTRAINT users_id_foreign_key FOREIGN KEY (usersId) REFERENCES users (id)
 );
 
-CREATE TABLE IF NOT EXISTS profilesCoords (
+CREATE TABLE IF NOT EXISTS profilesLayout (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   profilPictureX INTEGER NOT NULL,
   profilPictureY INTEGER NOT NULL,
@@ -61,10 +61,10 @@ CREATE TABLE IF NOT EXISTS profilesCoords (
   levelBarY INTEGER NOT NULL
 );
 
-INSERT INTO profilesCoords (id, profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY) VALUES 
+INSERT INTO profilesLayout (id, profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY) VALUES 
 (1, 0, 0, 150, 20, 150, 65, 250, 224, 150, 90, 0, 254);
 
--- INSERT INTO profilesCoords (id, profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY) VALUES 
+-- INSERT INTO profilesLayout (id, profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY) VALUES 
 -- (2, 186, 35, 186, 155, 190, 195, 250, 224, 150, 5, 0, 254);
 
 INSERT INTO wallpapers (id, name, url, level, price) VALUES 
