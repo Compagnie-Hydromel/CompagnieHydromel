@@ -8,7 +8,10 @@
             "name": "Archiveuse debug",
             "type": "python",
             "request": "launch",
-            "program": "archiveuse.py",
+            "program": "bot.py",
+            "args": [
+                "archiveuse"
+            ],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -16,7 +19,10 @@
             "name": "Menestrel debug",
             "type": "python",
             "request": "launch",
-            "program": "menestrel.py",
+            "program": "bot.py",
+            "args": [
+                "menestrel"
+            ],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -24,7 +30,10 @@
             "name": "Barman debug",
             "type": "python",
             "request": "launch",
-            "program": "barman.py",
+            "program": "bot.py",
+            "args": [
+                "barman"
+            ],
             "console": "integratedTerminal",
             "justMyCode": true
         }
