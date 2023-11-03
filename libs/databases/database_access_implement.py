@@ -317,6 +317,17 @@ class DatabaseAccessImplement:
         """
         pass
     
+    def get_user_profile_coords(self, discord_id: str) -> dict[str,dict[str, int]]:
+        """This method is designed to get users profiles coords.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        
+        Returns:
+            dict[dict[str, int]]: The users profiles coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+        """
+        pass
+    
     def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
         """This method is designed to add a wallpaper to the database.
 

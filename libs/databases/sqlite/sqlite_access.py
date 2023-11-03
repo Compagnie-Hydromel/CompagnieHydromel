@@ -339,6 +339,44 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         self.__sqliteDB.modify("UPDATE users SET numberOfBuy = 0 WHERE discordId = '" + discord_id + "';")
 
+    def get_user_profile_coords(self, discord_id: str) -> dict[str,dict[str, int]]:
+        """This method is designed to get users profiles coords.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+
+        Returns:
+            dict[dict[str, int]]: The users profiles coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+        """
+        raw = self.__sqliteDB.select("SELECT profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY FROM profilesCoords INNER JOIN users ON users.profilesCoordsId = profilesCoords.id WHERE discordId = '" + discord_id + "';")[0]
+        
+        return {
+            "profilPicture": {
+                "x": raw[0],
+                "y": raw[1]
+            },
+            "name": {
+                "x": raw[2],
+                "y": raw[3]
+            },
+            "userName": {
+                "x": raw[4],
+                "y": raw[5]
+            },
+            "level": {
+                "x": raw[6],
+                "y": raw[7]
+            },
+            "badge": {
+                "x": raw[8],
+                "y": raw[9]
+            },
+            "levelBar": {
+                "x": raw[10],
+                "y": raw[11]
+            }
+        }
+    
     def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
         """This method is designed to add a wallpaper to the database.
 

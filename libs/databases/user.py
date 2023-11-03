@@ -159,6 +159,15 @@ class User:
         """        
         return Wallpapers().create_list_wallpaper_by_list_name(self.__db_access.get_list_posseded_wallpapers(self.__discord_id)) 
     
+    @property 
+    def profiles_coords(self) -> dict[str,dict[str, int]]:
+        """This method is designed to get the profiles coords of the user.
+
+        Returns:
+            dict[dict[str, int]]: The users profiles coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+        """
+        return self.__db_access.get_user_profile_coords(self.__discord_id)
+    
     def change_current_wallpapers(self, wallpaper: Wallpaper) -> None:
         """This method is designed to change the current wallpaper of the user.
 
