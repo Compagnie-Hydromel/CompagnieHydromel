@@ -106,6 +106,7 @@ class Config():
             "back_to_previous_music": "Back to the previous music.",
             "skipping_music": "Skipping.",
             "server_boosted": "Thanks {user} for boosting the server!",
+            "profile_layout_changed": "Profile layout changed!",
         },
         "exception_response": {
             "default": "An error occured",
@@ -134,7 +135,8 @@ class Config():
             "no_results_found": "No results found.",
             "not_playing_music": "The bot is not playing music.",
             "nothing_left_in_previous_queue": "Nothing left in previous song queue.",
-            "nothing_left_in_queue": "Nothing left in queue."
+            "nothing_left_in_queue": "Nothing left in queue.",
+            "profile_layout_not_exist": "Profile layout not exist!"
         }
     }
     __config_file = "config.yml"

@@ -1,6 +1,6 @@
 import  discord
 
-from libs.databases.user import User
+from libs.databases.user.user import User
 from libs.log import Log, LogType
 
 class Listener(discord.Cog):

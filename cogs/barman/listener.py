@@ -3,7 +3,7 @@ import  discord
 from libs.banner_bar_creator import BannerBarCreator
 from libs.config import Config
 
-from libs.databases.user import User
+from libs.databases.user.user import User
 from libs.exception.handler import Handler
 from libs.log import Log, LogType
 

@@ -1,5 +1,5 @@
-from libs.databases.wallpaper import Wallpaper
-from libs.databases.wallpapers import Wallpapers
+from libs.databases.wallpaper.wallpaper import Wallpaper
+from libs.databases.wallpaper.wallpapers import Wallpapers
 
 
 class Utils:

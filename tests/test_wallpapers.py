@@ -1,7 +1,7 @@
 import unittest
 
-from libs.databases.wallpaper import Wallpaper
-from libs.databases.wallpapers import Wallpapers
+from libs.databases.wallpaper.wallpaper import Wallpaper
+from libs.databases.wallpaper.wallpapers import Wallpapers
 from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
 
 class TestWallpapers(unittest.TestCase):

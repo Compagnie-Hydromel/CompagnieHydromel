@@ -1,6 +1,5 @@
 import discord
-from libs.config import Config
-from libs.databases.user import User
+from libs.databases.user.user import User
 from libs.exception.handler import Handler
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
@@ -35,7 +34,7 @@ class Profile(discord.Cog):
                 bar_color = user.bar_color,
                 name_color = user.name_color,
                 badges = user.badges_list,
-                coords = user.profiles_layout
+                coords = user.profiles_layout.layout
             )
 
             await ctx.respond(file=discord.File(pro.profil_path))

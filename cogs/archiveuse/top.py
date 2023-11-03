@@ -2,7 +2,7 @@ import traceback
 import discord
 from libs.config import Config
 
-from libs.databases.users import Users
+from libs.databases.user.users import Users
 from libs.exception.handler import Handler
 from libs.log import Log, LogType
 
