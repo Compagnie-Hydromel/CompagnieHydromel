@@ -399,6 +399,15 @@ class SqliteAccess(DatabaseAccessImplement):
         
         return self.__generate_layout_return(raw)
     
+    def add_profile_layout(self, layout_name: str, layout: dict[str,dict[str, int]]) -> None:
+        """This method is designed to add a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+            layout (dict[str,dict[str, int]]): The layout coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+        """
+        self.__sqliteDB.modify("INSERT INTO profilesLayout(name, profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY) VALUES ('" + layout_name + "', " + str(layout["profilPicture"]["x"]) + ", " + str(layout["profilPicture"]["y"]) + ", " + str(layout["name"]["x"]) + ", " + str(layout["name"]["y"]) + ", " + str(layout["userName"]["x"]) + ", " + str(layout["userName"]["y"]) + ", " + str(layout["level"]["x"]) + ", " + str(layout["level"]["y"]) + ", " + str(layout["badge"]["x"]) + ", " + str(layout["badge"]["y"]) + ", " + str(layout["levelBar"]["x"]) + ", " + str(layout["levelBar"]["y"]) + ");")
+    
     def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
         """This method is designed to add a wallpaper to the database.
 
