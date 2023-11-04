@@ -367,6 +367,15 @@ class DatabaseAccessImplement:
         """
         pass
     
+    def add_profile_layout(self, layout_name: str, layout: dict[str,dict[str, int]]) -> None:
+        """This method is designed to add a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+            layout (dict[str,dict[str, int]]): The layout coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+        """
+        pass
+    
     def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
         """This method is designed to add a wallpaper to the database.
 

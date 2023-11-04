@@ -191,6 +191,30 @@ class RootCommands(discord.Cog):
             await ctx.respond(self.__response_exception["url_not_good_formated"])
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
+    
+    @discord.slash_command(description="Manage profile layout as root")
+    @discord.option("option", description="add/remove/list/change/show", choices=["add", "remove", "list", "change", "show"])
+    async def manage_profile_layout(self, ctx: discord.commands.context.ApplicationContext, option: str):
+        Log(ctx.author.name + " is launching manage profile layout commands", LogType.COMMAND)
+        try:
+            if not await self.__check_if_root(ctx):
+                return
+            
+            match option:
+                case "add":
+                    pass
+                case "remove":
+                    pass
+                case "change":
+                    pass
+                case "show":
+                    pass
+                case _:
+                    await ctx.respond(self.__response_exception["option_not_found"])
+            
+            await ctx.respond("")
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
         
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
         if not User(str(ctx.author.id)).is_root:
