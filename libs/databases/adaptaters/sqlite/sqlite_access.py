@@ -1,6 +1,9 @@
 from libs.databases.adaptaters.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
 from libs.databases.adaptaters.sqlite.sqlite import Sqlite
 from typing import Any
+from libs.dto.coords import Coords
+
+from libs.dto.layout import Layout
 
 class SqliteAccess(DatabaseAccessImplement):
     __sqliteDB : Sqlite
@@ -349,8 +352,6 @@ class SqliteAccess(DatabaseAccessImplement):
             str: The user profile layout name.
         """
         return self.__sqliteDB.select("SELECT profilesLayout.name FROM profilesLayout INNER JOIN users ON users.profilesLayoutId = profilesLayout.id WHERE discordId = '" + discord_id + "';")[0][0]
-        
-         
     
     def change_user_profile_layout(self, discord_id: str, layout_name: str) -> None:
         """This method is designed to set user profile layout.
@@ -378,8 +379,8 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         return len(self.__sqliteDB.select("SELECT name FROM profilesLayout WHERE name = '" + layout_name + "'")) > 0
     
-    def get_all_profile_layouts(self) -> list[str]:
-        """This method is designed to list all user profile layout.
+    def get_all_profile_layouts_name(self) -> list[str]:
+        """This method is designed to list all user profile layout name.
 
         Returns:
             list[str]: The list of all user profile layout name.
@@ -397,7 +398,14 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         raw = self.__sqliteDB.select("SELECT profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY FROM profilesLayout WHERE name = '" + layout_name + "';")[0]
         
-        return self.__generate_layout_return(raw)
+        return Layout(
+            Coords(raw[0], raw[1]),
+            Coords(raw[2], raw[3]),
+            Coords(raw[4], raw[5]),
+            Coords(raw[6], raw[7]),
+            Coords(raw[8], raw[9]),
+            Coords(raw[10], raw[11])
+        )
     
     def add_profile_layout(self, layout_name: str, layout: dict[str,dict[str, int]]) -> None:
         """This method is designed to add a profile layout.
@@ -430,34 +438,6 @@ class SqliteAccess(DatabaseAccessImplement):
     # Public
 
     # Private
-    
-    def __generate_layout_return(self, raw: list[Any]) -> dict[str,dict[str, int]]:
-        return {
-            "profilPicture": {
-                "x": raw[0],
-                "y": raw[1]
-            },
-            "name": {
-                "x": raw[2],
-                "y": raw[3]
-            },
-            "userName": {
-                "x": raw[4],
-                "y": raw[5]
-            },
-            "level": {
-                "x": raw[6],
-                "y": raw[7]
-            },
-            "badge": {
-                "x": raw[8],
-                "y": raw[9]
-            },
-            "levelBar": {
-                "x": raw[10],
-                "y": raw[11]
-            }
-        }
 
     def __select_user(self, discord_id: str, selection) -> list[list[Any]]:
         """This method is designed to select a user's data.

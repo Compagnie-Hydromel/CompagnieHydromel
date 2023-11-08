@@ -20,13 +20,7 @@ class ProfileLayouts():
         Returns:
             list[ProfileLayouts]: A list of profile layout.
         """
-        return self.__create_list_of_profile_layout_by_list_profile_layout_name(self.__db_access.get_all_profile_layouts())
-
-    @property
-    def add_profile_layout(self) -> None:
-        """This method is designed to add a profile layout.
-        """
-        self.__db_access.add_profile_layout()
+        return self.__create_list_of_profile_layout_by_list_profile_layout_name(self.__db_access.get_all_profile_layouts_name())
     
     def __create_list_of_profile_layout_by_list_profile_layout_name(self, list_name: list[str]) -> list[ProfileLayout]:
         """This method is designed to create a list of ProfileLayout object by a list of profile layout name.

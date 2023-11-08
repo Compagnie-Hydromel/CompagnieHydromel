@@ -1,5 +1,7 @@
 from enum import Enum
 
+from libs.dto.layout import Layout
+
 class ProfileColoredPart(Enum):
     BarColor = "barColor"
     NameColor = "nameColor"
@@ -348,31 +350,31 @@ class DatabaseAccessImplement:
         """
         pass
     
-    def get_all_profile_layouts(self) -> list[str]:
-        """This method is designed to list all user profile layout.
+    def get_all_profile_layouts_name(self) -> list[str]:
+        """This method is designed to list all user profile layout name.
 
         Returns:
             list[str]: The list of all user profile layout name.
         """
         pass
     
-    def get_profile_layout(self, layout_name: str) -> dict[str,dict[str, int]]:
+    def get_profile_layout(self, layout_name: str) -> Layout:
         """This method is designed to get a profile layout.
 
         Args:
             layout_name (str): The layout name.
 
         Returns:
-            dict[dict[str, int]]: The profile layout coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+            Layout: The profile layout.
         """
         pass
     
-    def add_profile_layout(self, layout_name: str, layout: dict[str,dict[str, int]]) -> None:
+    def add_profile_layout(self, layout_name: str, layout: Layout) -> None:
         """This method is designed to add a profile layout.
 
         Args:
             layout_name (str): The layout name.
-            layout (dict[str,dict[str, int]]): The layout coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+            layout (Layout): The profile layout.
         """
         pass
     

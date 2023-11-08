@@ -1,6 +1,8 @@
 
 from libs.databases.adaptaters.database_access_implement import DatabaseAccessImplement
 from libs.databases.adaptaters.sqlite.sqlite_access import SqliteAccess
+from libs.dto.coords import Coords
+from libs.dto.layout import Layout
 from libs.exception.profile_layout.profile_layout_not_exist import ProfileLayoutNotExist
 
 
@@ -35,10 +37,11 @@ class ProfileLayout:
         return self.__profile_layout_name
     
     @property
-    def layout(self) -> dict[str,dict[str, int]]:
+    def layout(self) -> Layout:
         """This method is designed to get the profile layout.
 
         Returns:
-            dict[str,dict[str, int]]: The profile layout. (exemple: {"profilPicture": {"x": 0, "y": 0}, ...})
+            Layout: The profile layout.
         """
         return self.__db_access.get_profile_layout(self.__profile_layout_name)
+    

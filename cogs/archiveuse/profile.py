@@ -34,7 +34,7 @@ class Profile(discord.Cog):
                 bar_color = user.bar_color,
                 name_color = user.name_color,
                 badges = user.badges_list,
-                coords = user.profiles_layout.layout
+                coords = user.profiles_layout.layout.dict()
             )
 
             await ctx.respond(file=discord.File(pro.profil_path))

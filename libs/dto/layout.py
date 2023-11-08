@@ -4,7 +4,6 @@ from libs.dto.coords import Coords
 class Layout:
     """Layout DTO
     """    
-    __layoutName: str
     __profilPicture: Coords
     __name: Coords
     __userName: Coords
@@ -12,11 +11,10 @@ class Layout:
     __badge: Coords
     __levelBar: Coords
     
-    def __init__(self, layoutName: str, profilPicture: Coords, name: Coords, userName: Coords, level: Coords, badge: Coords, levelBar: Coords):
+    def __init__(self, profilPicture: Coords, name: Coords, userName: Coords, level: Coords, badge: Coords, levelBar: Coords):
         """layout Constructor
 
         Args:
-            layoutName (str): the name of the layout
             profilPicture (Coords): the coords of the profil picture
             name (Coords): the coords of the name
             userName (Coords): the coords of the username
@@ -24,22 +22,12 @@ class Layout:
             badge (Coords): the coords of the badge
             levelBar (Coords): the coords of the level bar
         """
-        self.__layoutName = layoutName
         self.__profilPicture = profilPicture
         self.__name = name
         self.__userName = userName
         self.__level = level
         self.__badge = badge
         self.__levelBar = levelBar
-        
-    @property
-    def layoutName(self) -> str:
-        """Get the name of the layout
-
-        Returns:
-            str: the name of the layout
-        """
-        return self.__layoutName
     
     @property
     def profilPicture(self) -> Coords:
@@ -102,11 +90,10 @@ class Layout:
             dict[str, any]: the dict of the layout
         """
         return {
-            'layoutName': self.__layoutName,
-            'profilPicture': self.__profilPicture.to_dict(),
-            'name': self.__name.to_dict(),
-            'userName': self.__userName.to_dict(),
-            'level': self.__level.to_dict(),
-            'badge': self.__badge.to_dict(),
-            'levelBar': self.__levelBar.to_dict()
+            'profilPicture': self.__profilPicture.dict(),
+            'name': self.__name.dict(),
+            'userName': self.__userName.dict(),
+            'level': self.__level.dict(),
+            'badge': self.__badge.dict(),
+            'levelBar': self.__levelBar.dict()
         }

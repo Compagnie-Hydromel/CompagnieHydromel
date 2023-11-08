@@ -66,4 +66,5 @@ INSERT INTO wallpapers (id, name, url, level, price) VALUES
 (1, 'default', 'https://shkermit.ch/~ethann/compHydromel/wallpapers/default.png', 0, 0);
 
 INSERT INTO profilesLayout (id, name, profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY) VALUES 
-(1, "default", 0, 0, 150, 20, 150, 65, 250, 224, 150, 90, 0, 254);
+(1, "default", 0, 0, 150, 20, 150, 65, 250, 224, 150, 90, 0, 254)
+(2, "reimaginated", 186, 35, 186, 155, 190, 195, 250, 224, 150, 5, 0, 254);

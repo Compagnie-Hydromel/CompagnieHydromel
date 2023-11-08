@@ -201,18 +201,9 @@ class RootCommands(discord.Cog):
                 return
             
             match option:
-                case "add":
-                    pass
-                case "remove":
-                    pass
-                case "change":
-                    pass
-                case "show":
-                    pass
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
             
-            await ctx.respond("")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
         
