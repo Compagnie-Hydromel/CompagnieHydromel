@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 from libs.utils import Utils
 import requests
 from io import BytesIO
-from libs.databases.badge.badge import Badge
+from libs.databases.model.badge.badge import Badge
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 class ProfilMaker():

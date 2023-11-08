@@ -1,10 +1,10 @@
 import re
-from libs.databases.badge.badges import Badges
-from libs.databases.adaptaters.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
-from libs.databases.adaptaters.sqlite.sqlite_access import SqliteAccess
-from libs.databases.profile_layout.profile_layout import ProfileLayout
-from libs.databases.wallpaper.wallpaper import Wallpaper
-from libs.databases.wallpaper.wallpapers import Wallpapers
+from libs.databases.model.badge.badges import Badges
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
+from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
+from libs.databases.model.profile_layout.profile_layout import ProfileLayout
+from libs.databases.model.wallpaper.wallpaper import Wallpaper
+from libs.databases.model.wallpaper.wallpapers import Wallpapers
 from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.exception.wallpaper.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException

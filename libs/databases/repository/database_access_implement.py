@@ -1,6 +1,6 @@
 from enum import Enum
 
-from libs.dto.layout import Layout
+from libs.databases.dto.layout import Layout
 
 class ProfileColoredPart(Enum):
     BarColor = "barColor"

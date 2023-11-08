@@ -1,8 +1,8 @@
 
-from libs.databases.adaptaters.database_access_implement import DatabaseAccessImplement
-from libs.databases.adaptaters.sqlite.sqlite_access import SqliteAccess
-from libs.dto.coords import Coords
-from libs.dto.layout import Layout
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement
+from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
+from libs.databases.dto.coords import Coords
+from libs.databases.dto.layout import Layout
 from libs.exception.profile_layout.profile_layout_not_exist import ProfileLayoutNotExist
 
 

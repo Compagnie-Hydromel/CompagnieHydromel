@@ -1,9 +1,8 @@
-from libs.databases.adaptaters.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
-from libs.databases.adaptaters.sqlite.sqlite import Sqlite
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
+from libs.databases.repository.sqlite.sqlite import Sqlite
 from typing import Any
-from libs.dto.coords import Coords
-
-from libs.dto.layout import Layout
+from libs.databases.dto.coords import Coords
+from libs.databases.dto.layout import Layout
 
 class SqliteAccess(DatabaseAccessImplement):
     __sqliteDB : Sqlite

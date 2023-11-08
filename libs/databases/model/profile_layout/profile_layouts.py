@@ -1,6 +1,6 @@
-from libs.databases.adaptaters.database_access_implement import DatabaseAccessImplement
-from libs.databases.adaptaters.sqlite.sqlite_access import SqliteAccess
-from libs.databases.profile_layout.profile_layout import ProfileLayout
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement
+from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
+from libs.databases.model.profile_layout.profile_layout import ProfileLayout
 
 
 class ProfileLayouts():

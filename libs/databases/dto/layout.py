@@ -1,4 +1,4 @@
-from libs.dto.coords import Coords
+from libs.databases.dto.coords import Coords
 
 
 class Layout:

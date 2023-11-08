@@ -1,6 +1,6 @@
-from libs.databases.adaptaters.database_access_implement import DatabaseAccessImplement
-from libs.databases.adaptaters.sqlite.sqlite_access import SqliteAccess
-from libs.databases.wallpaper.wallpaper import Wallpaper
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement
+from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
+from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
 from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 

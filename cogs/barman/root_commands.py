@@ -2,10 +2,10 @@ import traceback
 import discord
 import requests
 from libs.config import Config
-from libs.databases.user.user import User
-from libs.databases.user.users import Users
-from libs.databases.wallpaper.wallpaper import Wallpaper
-from libs.databases.wallpaper.wallpapers import Wallpapers
+from libs.databases.model.user.user import User
+from libs.databases.model.user.users import Users
+from libs.databases.model.wallpaper.wallpaper import Wallpaper
+from libs.databases.model.wallpaper.wallpapers import Wallpapers
 from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.handler import Handler
 from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException

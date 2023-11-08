@@ -1,6 +1,6 @@
 import unittest
 
-from libs.databases.user.users import Users
+from libs.databases.model.user.users import Users
 
 class TestUser(unittest.TestCase):
     __users : Users

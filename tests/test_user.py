@@ -1,8 +1,8 @@
 import unittest
 
-from libs.databases.user.user import User
-from libs.databases.wallpaper.wallpaper import Wallpaper
-from libs.databases.wallpaper.wallpapers import Wallpapers
+from libs.databases.model.user.user import User
+from libs.databases.model.wallpaper.wallpaper import Wallpaper
+from libs.databases.model.wallpaper.wallpapers import Wallpapers
 from tests.utils import Utils
 
 class TestUser(unittest.TestCase):

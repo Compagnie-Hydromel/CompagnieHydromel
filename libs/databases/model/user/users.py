@@ -1,6 +1,6 @@
-from libs.databases.adaptaters.database_access_implement import DatabaseAccessImplement
-from libs.databases.adaptaters.sqlite.sqlite_access import SqliteAccess
-from libs.databases.user.user import User
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement
+from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
+from libs.databases.model.user.user import User
 
 
 class Users:
