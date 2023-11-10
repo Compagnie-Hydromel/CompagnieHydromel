@@ -1,6 +1,9 @@
+from libs.databases.dto.layout import Layout
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
 from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
+from libs.exception.profile_layout.profile_layout_already_exist import ProfileLayoutAlreadyExist
+from libs.exception.profile_layout.profile_layout_not_exist import ProfileLayoutNotExist
 
 
 class ProfileLayouts():
@@ -21,6 +24,30 @@ class ProfileLayouts():
             list[ProfileLayouts]: A list of profile layout.
         """
         return self.__create_list_of_profile_layout_by_list_profile_layout_name(self.__db_access.get_all_profile_layouts_name())
+    
+    def add(self, layout_name: str, layout: Layout) -> None:
+        """This method is designed to add a profile layout.
+        """
+        try: 
+            ProfileLayout(layout_name)
+            raise ProfileLayoutAlreadyExist
+        except ProfileLayoutNotExist:
+            self.__db_access.add_profile_layout(layout_name, layout)
+    
+    def update(self, profile_layout: ProfileLayout, layout: Layout) -> None:
+        """This method is designed to update a profile layout.
+        """
+        self.__db_access.update_profile_layout(profile_layout.name, layout)
+        
+    def remove(self, profile_layout: ProfileLayout):
+        """This method is designed to remove a profile layout.
+        """
+        self.__db_access.remove_profile_layout(profile_layout.name)
+    
+    def rename(self, profile_layout: ProfileLayout, new_name: str) -> None:
+        """This method is designed to rename a profile layout.
+        """
+        self.__db_access.rename_profile_layout(profile_layout.name, new_name)
     
     def __create_list_of_profile_layout_by_list_profile_layout_name(self, list_name: list[str]) -> list[ProfileLayout]:
         """This method is designed to create a list of ProfileLayout object by a list of profile layout name.

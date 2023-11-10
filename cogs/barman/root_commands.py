@@ -2,6 +2,10 @@ import traceback
 import discord
 import requests
 from libs.config import Config
+from libs.databases.dto.coords import Coords
+from libs.databases.dto.layout import Layout
+from libs.databases.model.profile_layout.profile_layout import ProfileLayout
+from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
 from libs.databases.model.user.user import User
 from libs.databases.model.user.users import Users
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
@@ -193,14 +197,68 @@ class RootCommands(discord.Cog):
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
     
     @discord.slash_command(description="Manage profile layout as root")
-    @discord.option("option", description="add/remove/list/change/show", choices=["add", "remove", "list", "change", "show"])
-    async def manage_profile_layout(self, ctx: discord.commands.context.ApplicationContext, option: str):
+    @discord.option("option", description="add/remove/update/rename/show", choices=["add", "remove", "update", "rename", "show"])
+    @discord.option("profile_layout_name", str, require=True)
+    @discord.option("profile_picture_x", int, require=False)
+    @discord.option("profile_picture_y", int, require=False)
+    @discord.option("name_x", int, require=False)
+    @discord.option("name_y", int, require=False)
+    @discord.option("username_x", int, require=False)
+    @discord.option("username_y", int, require=False)
+    @discord.option("level_x", int, require=False)
+    @discord.option("level_y", int, require=False)
+    @discord.option("badge_x", int, require=False)
+    @discord.option("badge_y", int, require=False)
+    @discord.option("level_bar_x", int, require=False)
+    @discord.option("level_bar_y", int, require=False)
+    @discord.option("new_name", str, require=False)
+    async def manage_profile_layout(self, ctx: discord.commands.context.ApplicationContext, option: str, profile_layout_name: str, profile_picture_x: int = None, profile_picture_y: int = None, name_x: int = None, name_y: int = None, username_x: int = None, username_y: int = None, level_x: int = None, level_y: int = None, badge_x: int = None, badge_y: int = None, level_bar_x: int = None, level_bar_y: int = None, new_name: str = None):
         Log(ctx.author.name + " is launching manage profile layout commands", LogType.COMMAND)
         try:
             if not await self.__check_if_root(ctx):
                 return
             
+            profile_layouts = ProfileLayouts()
+            
             match option:
+                case "show":
+                    profile_layout = ProfileLayout(profile_layout_name)
+                    await ctx.respond("**Name** " + profile_layout.name +
+                                      "\n**Layout** " + str(profile_layout.layout.dict()))
+                case "remove":
+                    profile_layouts.remove(ProfileLayout(profile_layout_name))
+                    await ctx.respond(self.__response["profile_layout_removed"])
+                case "add":
+                    layout = Layout(
+                        Coords(self.__not_none(profile_picture_x), self.__not_none(profile_picture_y)),
+                        Coords(self.__not_none(name_x), self.__not_none(name_y)),
+                        Coords(self.__not_none(username_x), self.__not_none(username_y)),
+                        Coords(self.__not_none(level_x), self.__not_none(level_y)),
+                        Coords(self.__not_none(badge_x), self.__not_none(badge_y)),
+                        Coords(self.__not_none(level_bar_x), self.__not_none(level_bar_y))
+                    )
+                    
+                    profile_layouts.add(profile_layout_name, layout)
+                    await ctx.respond(self.__response["profile_layout_added"])
+                case "rename":
+                    if new_name == None:
+                        await ctx.respond(self.__response_exception["enter_new_name"])
+                        return
+                    profile_layouts.rename(ProfileLayout(profile_layout_name), new_name)
+                    await ctx.respond(self.__response["profile_layout_renamed"])
+                case "update":
+                    profile_layout = ProfileLayout(profile_layout_name)
+                    current_profile_layout = profile_layout.layout
+                    layout = Layout(
+                        Coords(self.__not_none(profile_picture_x, current_profile_layout.profile_picture.x), self.__not_none(profile_picture_y, current_profile_layout.profile_picture.y)),
+                        Coords(self.__not_none(name_x, current_profile_layout.name.x), self.__not_none(name_y, current_profile_layout.name.y)),
+                        Coords(self.__not_none(username_x, current_profile_layout.username.x), self.__not_none(username_y, current_profile_layout.username.y)),
+                        Coords(self.__not_none(level_x, current_profile_layout.level.x), self.__not_none(level_y, current_profile_layout.level.y)),
+                        Coords(self.__not_none(badge_x, current_profile_layout.badge.x), self.__not_none(badge_y, current_profile_layout.badge.y)),
+                        Coords(self.__not_none(level_bar_x, current_profile_layout.level_bar.x), self.__not_none(level_bar_y, current_profile_layout.level_bar.y))
+                    )
+                    profile_layouts.update(profile_layout, layout)
+                    await ctx.respond(self.__response["profile_layout_updated"])
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
             
@@ -212,6 +270,12 @@ class RootCommands(discord.Cog):
             await ctx.respond(self.__response_exception["not_root"])
             return False
         return True
+    
+    def __not_none(self, s ,d = 0):
+        if s is None:
+            return d
+        else:
+            return s
     
     def __generate_pages(self, users: list[User]) -> list[str]:
         pages = []

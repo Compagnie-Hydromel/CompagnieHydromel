@@ -61,6 +61,8 @@ class Handler:
                     return self.__response_exception["not_playing_music"]
                 case "ProfileLayoutNotExist":
                     return self.__response_exception["profile_layout_not_exist"]
+                case "ProfileLayoutAlreadyExist":
+                    return self.__response_exception["profile_layout_already_exist"]
                 case _:
                     return self.__default(stacktrace)
         else:

@@ -378,6 +378,32 @@ class DatabaseAccessImplement:
         """
         pass
     
+    def remove_profile_layout(self, layout_name: str) -> None:
+        """This method is designed to remove a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+        """
+        pass
+    
+    def update_profile_layout(self, layout_name: str, layout: Layout) -> None:
+        """This method is designed to update a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+            layout (Layout): The profile layout.
+        """
+        pass
+    
+    def rename_profile_layout(self, old_layout_name: str, new_layout_name: str) -> None:
+        """This method is designed to rename a profile layout.
+
+        Args:
+            old_layout_name (str): The old layout name.
+            new_layout_name (str): The new layout name.
+        """
+        pass
+    
     def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
         """This method is designed to add a wallpaper to the database.
 

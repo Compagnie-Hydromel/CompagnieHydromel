@@ -4,39 +4,39 @@ from libs.databases.dto.coords import Coords
 class Layout:
     """Layout DTO
     """    
-    __profilPicture: Coords
+    __profile_picture: Coords
     __name: Coords
-    __userName: Coords
+    __username: Coords
     __level: Coords
     __badge: Coords
-    __levelBar: Coords
+    __level_bar: Coords
     
-    def __init__(self, profilPicture: Coords, name: Coords, userName: Coords, level: Coords, badge: Coords, levelBar: Coords):
+    def __init__(self, profil_picture: Coords, name: Coords, username: Coords, level: Coords, badge: Coords, level_bar: Coords):
         """layout Constructor
 
         Args:
-            profilPicture (Coords): the coords of the profil picture
+            profil_picture (Coords): the coords of the profil picture
             name (Coords): the coords of the name
-            userName (Coords): the coords of the username
+            username (Coords): the coords of the username
             level (Coords): the coords of the level
             badge (Coords): the coords of the badge
-            levelBar (Coords): the coords of the level bar
+            level_bar (Coords): the coords of the level bar
         """
-        self.__profilPicture = profilPicture
+        self.__profile_picture = profil_picture
         self.__name = name
-        self.__userName = userName
+        self.__username = username
         self.__level = level
         self.__badge = badge
-        self.__levelBar = levelBar
+        self.__level_bar = level_bar
     
     @property
-    def profilPicture(self) -> Coords:
+    def profile_picture(self) -> Coords:
         """Get the coords of the profil picture
 
         Returns:
             Coords: the coords of the profil picture
         """
-        return self.__profilPicture
+        return self.__profile_picture
     
     @property
     def name(self) -> Coords:
@@ -48,13 +48,13 @@ class Layout:
         return self.__name
     
     @property
-    def userName(self) -> Coords:
+    def username(self) -> Coords:
         """Get the coords of the username
 
         Returns:
             Coords: the coords of the username
         """
-        return self.__userName
+        return self.__username
     
     @property
     def level(self) -> Coords:
@@ -75,13 +75,13 @@ class Layout:
         return self.__badge
     
     @property
-    def levelBar(self) -> Coords:
+    def level_bar(self) -> Coords:
         """Get the coords of the level bar
 
         Returns:
             Coords: the coords of the level bar
         """
-        return self.__levelBar
+        return self.__level_bar
         
     def dict(self) -> dict[str, any]:
         """Convert the dto to a dict
@@ -90,10 +90,10 @@ class Layout:
             dict[str, any]: the dict of the layout
         """
         return {
-            'profilPicture': self.__profilPicture.dict(),
+            'profil_picture': self.__profile_picture.dict(),
             'name': self.__name.dict(),
-            'userName': self.__userName.dict(),
+            'username': self.__username.dict(),
             'level': self.__level.dict(),
             'badge': self.__badge.dict(),
-            'levelBar': self.__levelBar.dict()
+            'level_bar': self.__level_bar.dict()
         }
