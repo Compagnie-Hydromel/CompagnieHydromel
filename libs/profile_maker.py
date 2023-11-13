@@ -1,21 +1,22 @@
 #!/usr/local/bin/python3
 from PIL import Image, ImageDraw, ImageFont, ImageColor
+from libs.log import Log, LogType
 from libs.utils import Utils
 import requests
 from io import BytesIO
-from libs.databases.badge import Badge
+from libs.databases.model.badge.badge import Badge
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 class ProfilMaker():
     """This class is designed to make a profile.
     """
     __coords = {
-        'profilPicture':{'x': 0,'y': 0},
+        'profil_picture':{'x': 0,'y': 0},
         'name':{'x': 150,'y': 20},
-        'userName':{'x': 150,'y': 65},
+        'username':{'x': 150,'y': 65},
         'level':{'x': 250,'y': 224},
         'badge':{'x': 150,'y': 90},
-        'levelBar':{'x': 0,'y': 254}
+        'level_bar':{'x': 0,'y': 254}
     }
 
     def __init__(self,
@@ -47,12 +48,12 @@ class ProfilMaker():
             bar_color (str, optional): The bar name as Hex RGB(example: 00ff00, ff00ffaf, etc..). Defaults to "#ADFF2F".
             
         __coords = {
-            'profilPicture':{'x': 0,'y': 0},
+            'profil_picture':{'x': 0,'y': 0},
             'name':{'x': 150,'y': 20},
-            'userName':{'x': 150,'y': 65},
+            'username':{'x': 150,'y': 65},
             'level':{'x': 250,'y': 224},
             'badge':{'x': 150,'y': 90},
-            'levelBar':{'x': 0,'y': 254}
+            'level_bar':{'x': 0,'y': 254}
         }
 
         Raises:
@@ -60,7 +61,12 @@ class ProfilMaker():
         """
         
         # region [background]
-        img = Image.open(Utils().download_image(background_url)).convert('RGBA').resize((500, 281))
+        img = None
+        try: 
+            img = Image.open(Utils().download_image(background_url)).convert('RGBA').resize((500, 281))
+        except Exception as e:
+            Log(str(e), LogType.ERROR)
+            raise WallpaperIsNotDownloadableException
 
         # endregion
         
@@ -75,7 +81,8 @@ class ProfilMaker():
             response_profile_picture = requests.get(user_profil_picture)
             pic = Image.open(BytesIO(response_profile_picture.content)).convert(
                 'RGBA').resize((128, 128))
-        except: 
+        except Exception as e:
+            Log(str(e), LogType.ERROR)
             raise WallpaperIsNotDownloadableException
 
         h, w = pic.size
@@ -83,8 +90,8 @@ class ProfilMaker():
         pic = Utils().pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
         pic = Utils().pillow_mask_circle_transparent(pic, 1)
 
-        img.paste(pic, (coords["profilPicture"]['x'],
-                  coords["profilPicture"]['y']), pic)
+        img.paste(pic, (coords["profil_picture"]['x'],
+                  coords["profil_picture"]['y']), pic)
         # endregion
 
         # region [text]
@@ -95,7 +102,7 @@ class ProfilMaker():
         d.multiline_text((coords["name"]['x'], coords["name"]['y']), display_name, font=ImageFont.truetype(
             "data/font/ancientMedium.ttf", 45), fill=_name_color)
 
-        d.multiline_text((coords["userName"]['x'], coords["userName"]['y']), user_name, font=ImageFont.truetype(
+        d.multiline_text((coords["username"]['x'], coords["username"]['y']), user_name, font=ImageFont.truetype(
             "data/font/LiberationSans-Regular.ttf", 20), fill=_name_color)
         # endregion
 
@@ -112,7 +119,8 @@ class ProfilMaker():
             try:
                 response_background_url = requests.get(badge.url)
                 tempImg = Image.open(BytesIO(response_background_url.content)).convert('RGBA')
-            except: 
+            except Exception as e:
+                Log(str(e), LogType.ERROR)
                 raise WallpaperIsNotDownloadableException
             tempImg.thumbnail((32, 32), Image.LANCZOS)
             img.paste(tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
@@ -129,7 +137,7 @@ class ProfilMaker():
 
         bar = Utils().pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
 
-        img.paste(bar, (coords['levelBar']['x'], coords['levelBar']['y']), bar)
+        img.paste(bar, (coords['level_bar']['x'], coords['level_bar']['y']), bar)
         # endregion
 
         # region [save]

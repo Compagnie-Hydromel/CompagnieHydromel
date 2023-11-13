@@ -106,6 +106,11 @@ class Config():
             "back_to_previous_music": "Back to the previous music.",
             "skipping_music": "Skipping.",
             "server_boosted": "Thanks {user} for boosting the server!",
+            "profile_layout_changed": "Profile layout changed!",
+            "profile_layout_added": "Profile layout added!",
+            "profile_layout_removed": "Profile layout removed!",
+            "profile_layout_updated": "Profile layout updated!",
+            "profile_layout_renamed": "Profile layout renamed!",
         },
         "exception_response": {
             "default": "An error occured",
@@ -134,7 +139,12 @@ class Config():
             "no_results_found": "No results found.",
             "not_playing_music": "The bot is not playing music.",
             "nothing_left_in_previous_queue": "Nothing left in previous song queue.",
-            "nothing_left_in_queue": "Nothing left in queue."
+            "nothing_left_in_queue": "Nothing left in queue.",
+            "profile_layout_not_exist": "Profile layout not exist!",
+            "profile_layout_already_exist": "Profile layout already exist!",
+            "enter_new_name": "Please enter a new name!",
+            "cannot_remove_default_profile_layout": "Cannot remove default profile layout!",
+            "cannot_remove_default_wallpaper": "Cannot remove default wallpaper!",
         }
     }
     __config_file = "config.yml"

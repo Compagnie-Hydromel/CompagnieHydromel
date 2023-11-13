@@ -1,5 +1,7 @@
 from enum import Enum
 
+from libs.databases.dto.layout import Layout
+
 class ProfileColoredPart(Enum):
     BarColor = "barColor"
     NameColor = "nameColor"
@@ -314,6 +316,99 @@ class DatabaseAccessImplement:
 
         Args:
             discord_id (str): Discord user id as a string.
+        """
+        pass
+    
+    def get_user_profile_layout(self, discord_id: str) -> dict[str,dict[str, int]]:
+        """This method is designed to get user profile layout.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        
+        Returns:
+            dict[dict[str, int]]: The users profiles coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+        """
+        pass
+    
+    def change_user_profile_layout(self, discord_id: str, layout_name: str) -> None:
+        """This method is designed to set user profile layout.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            layout_name (str): The layout name.
+        """
+        pass
+    
+    def is_profile_layout_exist(self, layout_name: str) -> bool:
+        """This method is designed to check if a profile layout exist.
+
+        Args:
+            layout_name (str): The layout name.
+
+        Returns:
+            bool: True if the user profile layout exist, False if not.
+        """
+        pass
+    
+    def get_all_profile_layouts_name(self) -> list[str]:
+        """This method is designed to list all user profile layout name.
+
+        Returns:
+            list[str]: The list of all user profile layout name.
+        """
+        pass
+    
+    def get_profile_layout(self, layout_name: str) -> Layout:
+        """This method is designed to get a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+
+        Returns:
+            Layout: The profile layout.
+        """
+        pass
+    
+    def get_default_profile_layout_name(self) -> str:
+        """This method is designed to get the default profile layout name.
+
+        Returns:
+            str: The default profile layout name.
+        """
+        pass
+    
+    def add_profile_layout(self, layout_name: str, layout: Layout) -> None:
+        """This method is designed to add a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+            layout (Layout): The profile layout.
+        """
+        pass
+    
+    def remove_profile_layout(self, layout_name: str) -> None:
+        """This method is designed to remove a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+        """
+        pass
+    
+    def update_profile_layout(self, layout_name: str, layout: Layout) -> None:
+        """This method is designed to update a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+            layout (Layout): The profile layout.
+        """
+        pass
+    
+    def rename_profile_layout(self, old_layout_name: str, new_layout_name: str) -> None:
+        """This method is designed to rename a profile layout.
+
+        Args:
+            old_layout_name (str): The old layout name.
+            new_layout_name (str): The new layout name.
         """
         pass
     

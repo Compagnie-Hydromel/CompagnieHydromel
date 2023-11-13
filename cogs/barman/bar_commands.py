@@ -2,7 +2,7 @@ from io import BytesIO
 import traceback
 import discord
 from libs.config import Config
-from libs.databases.user import User
+from libs.databases.model.user.user import User
 from libs.exception.handler import Handler
 from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.log import Log, LogType

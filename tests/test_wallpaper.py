@@ -1,6 +1,6 @@
 import unittest
 
-from libs.databases.wallpaper import Wallpaper
+from libs.databases.model.wallpaper.wallpaper import Wallpaper
 
 class TestWallpaper(unittest.TestCase):
     __wallpaper : Wallpaper

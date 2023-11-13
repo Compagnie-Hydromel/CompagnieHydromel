@@ -2,7 +2,7 @@ import discord
 import os
 from libs.config import Config
 
-from libs.databases.user import User 
+from libs.databases.model.user.user import User 
 
 class Reload(discord.Cog):
     bot : discord.bot.Bot

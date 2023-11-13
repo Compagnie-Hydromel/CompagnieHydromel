@@ -1,6 +1,8 @@
-from libs.databases.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
-from libs.databases.sqlite.sqlite import Sqlite
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
+from libs.databases.repository.sqlite.sqlite import Sqlite
 from typing import Any
+from libs.databases.dto.coords import Coords
+from libs.databases.dto.layout import Layout
 
 class SqliteAccess(DatabaseAccessImplement):
     __sqliteDB : Sqlite
@@ -187,13 +189,13 @@ class SqliteAccess(DatabaseAccessImplement):
             discord_id (str): Discord user id as a string.
             wallpaper_name (str): The new wallpaper name.
         """
-        return self.__sqliteDB.modify("WITH updated_wallpapers AS (\
-                                        SELECT id\
-                                        FROM wallpapers\
-                                        WHERE name = '" + wallpaper_name + "')\
-                                    UPDATE users\
-                                    SET wallpapersId = (SELECT id FROM updated_wallpapers)\
-                                    WHERE discordId = '" + discord_id + "';")
+        self.__sqliteDB.modify("WITH updated_wallpapers AS (\
+                                    SELECT id\
+                                    FROM wallpapers\
+                                    WHERE name = '" + wallpaper_name + "')\
+                                UPDATE users\
+                                SET wallpapersId = (SELECT id FROM updated_wallpapers)\
+                                WHERE discordId = '" + discord_id + "';")
     
     def get_all_wallpapers(self) -> list[str]:
         """This method is designed to get all wallpapers name.
@@ -339,6 +341,118 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         self.__sqliteDB.modify("UPDATE users SET numberOfBuy = 0 WHERE discordId = '" + discord_id + "';")
 
+    def get_user_profile_layout(self, discord_id: str) -> str:
+        """This method is designed to get users profiles layout.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+
+        Returns:
+            str: The user profile layout name.
+        """
+        query_result = self.__sqliteDB.select("SELECT profilesLayout.name FROM profilesLayout INNER JOIN users ON users.profilesLayoutId = profilesLayout.id WHERE discordId = '" + discord_id + "';")
+
+        if len(query_result) > 0:
+            return query_result[0][0]
+        return self.get_default_profile_layout_name()
+    
+    def change_user_profile_layout(self, discord_id: str, layout_name: str) -> None:
+        """This method is designed to set user profile layout.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            layout_name (str): The layout name.
+        """
+        self.__sqliteDB.modify("WITH updated_profiles_layout AS (\
+                                    SELECT id\
+                                    FROM profilesLayout\
+                                    WHERE name = '" + layout_name + "')\
+                                UPDATE users\
+                                SET profilesLayoutId = (SELECT id FROM updated_profiles_layout)\
+                                WHERE discordId = '" + discord_id + "';")
+        
+    def is_profile_layout_exist(self, layout_name: str) -> bool:
+        """This method is designed to check if a profile layout exist.
+
+        Args:
+            layout_name (str): The layout name.
+
+        Returns:
+            bool: True if the user profile layout exist, False if not.
+        """
+        return len(self.__sqliteDB.select("SELECT name FROM profilesLayout WHERE name = '" + layout_name + "'")) > 0
+    
+    def get_all_profile_layouts_name(self) -> list[str]:
+        """This method is designed to list all user profile layout name.
+
+        Returns:
+            list[str]: The list of all user profile layout name.
+        """
+        return self.__reorder_list(self.__sqliteDB.select("SELECT name FROM profilesLayout"))
+    
+    def get_profile_layout(self, layout_name: str) -> Layout:
+        """This method is designed to get a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+
+        Returns:
+            Layout: The profile layout.
+        """
+        raw = self.__sqliteDB.select("SELECT profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY FROM profilesLayout WHERE name = '" + layout_name + "';")[0]
+        
+        return Layout(
+            Coords(raw[0], raw[1]),
+            Coords(raw[2], raw[3]),
+            Coords(raw[4], raw[5]),
+            Coords(raw[6], raw[7]),
+            Coords(raw[8], raw[9]),
+            Coords(raw[10], raw[11])
+        )
+    
+    def get_default_profile_layout_name(self) -> str:
+        """This method is designed to get the default profile layout name.
+
+        Returns:
+            str: The default profile layout name.
+        """
+        return self.__sqliteDB.select("SELECT name FROM profilesLayout WHERE id = 1")[0][0]
+    
+    def add_profile_layout(self, layout_name: str, layout: Layout) -> None:
+        """This method is designed to add a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+            layout (Layout): The profile layout.
+        """
+        self.__sqliteDB.modify("INSERT INTO profilesLayout(name, profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY) VALUES ('" + layout_name + "', " + str(layout.profile_picture.x) + ", " + str(layout.profile_picture.y) + ", " + str(layout.name.x) + ", " + str(layout.name.y) + ", " + str(layout.username.x) + ", " + str(layout.username.y) + ", " + str(layout.level.x) + ", " + str(layout.level.y) + ", " + str(layout.badge.x) + ", " + str(layout.badge.y) + ", " + str(layout.level_bar.x) + ", " + str(layout.level_bar.y) + ");")
+    
+    def remove_profile_layout(self, layout_name: str) -> None:
+        """This method is designed to remove a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+        """            
+        self.__sqliteDB.modify("DELETE FROM profilesLayout WHERE name = '" + layout_name + "' AND id != 1;")
+        
+    def update_profile_layout(self, layout_name: str, layout: Layout) -> None:
+        """This method is designed to update a profile layout.
+
+        Args:
+            layout_name (str): The layout name.
+            layout (Layout): The profile layout.
+        """
+        self.__sqliteDB.modify("UPDATE profilesLayout SET profilPictureX = " + str(layout.profile_picture.x) + ", profilPictureY = " + str(layout.profile_picture.y) + ", nameX = " + str(layout.name.x) + ", nameY = " + str(layout.name.y) + ", userNameX = " + str(layout.username.x) + ", userNameY = " + str(layout.username.y) + ", levelX = " + str(layout.level.x) + ", levelY = " + str(layout.level.y) + ", badgeX = " + str(layout.badge.x) + ", badgeY = " + str(layout.badge.y) + ", levelBarX = " + str(layout.level_bar.x) + ", levelBarY = " + str(layout.level_bar.y) + " WHERE name = '" + layout_name + "';")
+    
+    def rename_profile_layout(self, old_layout_name: str, new_layout_name: str) -> None:
+        """This method is designed to rename a profile layout.
+
+        Args:
+            old_layout_name (str): The old layout name.
+            new_layout_name (str): The new layout name.
+        """
+        self.__sqliteDB.modify("UPDATE profilesLayout SET name = '" + new_layout_name + "' WHERE name = '" + old_layout_name + "';")
+    
     def add_wallpaper(self, wallpaper_name: str, url: str, price: int, level: int) -> None:
         """This method is designed to add a wallpaper to the database.
 
