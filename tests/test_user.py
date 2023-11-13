@@ -1,4 +1,6 @@
 import unittest
+from libs.databases.model.profile_layout.profile_layout import ProfileLayout
+from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
 
 from libs.databases.model.user.user import User
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
@@ -123,3 +125,17 @@ class TestUser(unittest.TestCase):
         self.assertEqual(self.__user.smartpoint, 20)
         
         wallpapers.remove(wallpaper)
+        
+    def test_get_user_profile_layout(self):
+        self.assertEqual(str(self.__user.profiles_layout), str(ProfileLayout.get_default()))
+        
+    def test_change_user_profile_layout(self):
+        profile_layout_name = "test_add_profile_layout"
+        self.assertEqual(str(self.__user.profiles_layout), str(ProfileLayout.get_default()))
+        Utils.add_profile_layout(profile_layout_name)
+        profile_layout = ProfileLayout(profile_layout_name)
+        self.__user.change_profile_layout(profile_layout)
+        self.assertEqual(str(self.__user.profiles_layout), str(ProfileLayout(profile_layout_name)))
+        
+        self.__user.change_profile_layout(ProfileLayout.get_default())
+        ProfileLayouts().remove(profile_layout)

@@ -1,3 +1,6 @@
+from libs.databases.dto.coords import Coords
+from libs.databases.dto.layout import Layout
+from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.databases.model.wallpaper.wallpapers import Wallpapers
 
@@ -18,3 +21,16 @@ class Utils:
         for wallpaper_in_for in list_of_wallpaper:
             list_of_wallpaper_name.append(wallpaper_in_for.name)
         return wallpaper_name in list_of_wallpaper_name
+    
+    @staticmethod
+    def add_profile_layout(profile_layout_name: str) -> Layout:
+        layout: Layout = Layout(
+            Coords(0, 0),
+            Coords(0, 0),
+            Coords(0, 0),
+            Coords(0, 0),
+            Coords(0, 0),
+            Coords(0, 0),
+        )
+        ProfileLayouts().add(profile_layout_name, layout)
+        return layout
