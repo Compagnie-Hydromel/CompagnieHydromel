@@ -354,7 +354,7 @@ class SqliteAccess(DatabaseAccessImplement):
 
         if len(query_result) > 0:
             return query_result[0][0]
-        return self.__sqliteDB.select("SELECT profilesLayout.name FROM profilesLayout WHERE id = 1")[0][0]
+        return self.get_default_profile_layout_name()
     
     def change_user_profile_layout(self, discord_id: str, layout_name: str) -> None:
         """This method is designed to set user profile layout.
@@ -390,14 +390,14 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         return self.__reorder_list(self.__sqliteDB.select("SELECT name FROM profilesLayout"))
     
-    def get_profile_layout(self, layout_name: str) -> dict[str,dict[str, int]]:
+    def get_profile_layout(self, layout_name: str) -> Layout:
         """This method is designed to get a profile layout.
 
         Args:
             layout_name (str): The layout name.
 
         Returns:
-            dict[dict[str, int]]: The profile layout coords list (example: {"profilPicture": {"x": 0, "y": 0}, "name": ...}).
+            Layout: The profile layout.
         """
         raw = self.__sqliteDB.select("SELECT profilPictureX, profilPictureY, nameX, nameY, userNameX, userNameY, levelX, levelY, badgeX, badgeY, levelBarX, levelBarY FROM profilesLayout WHERE name = '" + layout_name + "';")[0]
         
@@ -409,6 +409,14 @@ class SqliteAccess(DatabaseAccessImplement):
             Coords(raw[8], raw[9]),
             Coords(raw[10], raw[11])
         )
+    
+    def get_default_profile_layout_name(self) -> str:
+        """This method is designed to get the default profile layout name.
+
+        Returns:
+            str: The default profile layout name.
+        """
+        return self.__sqliteDB.select("SELECT name FROM profilesLayout WHERE id = 1")[0][0]
     
     def add_profile_layout(self, layout_name: str, layout: Layout) -> None:
         """This method is designed to add a profile layout.

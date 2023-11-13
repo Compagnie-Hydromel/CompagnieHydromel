@@ -27,6 +27,15 @@ class ProfileLayout:
         if not self.__db_access.is_profile_layout_exist(self.__profile_layout_name):
             raise ProfileLayoutNotExist
         
+    @staticmethod
+    def get_default():
+        """This method is designed to get the default profile layout.
+        
+        Returns:
+            ProfileLayout: The default profile layout.
+        """
+        return ProfileLayout(SqliteAccess().get_default_profile_layout_name())
+        
     @property
     def name(self) -> str:
         """This method is designed to get the profile layout name.

@@ -1,6 +1,5 @@
 from libs.databases.dto.coords import Coords
 
-
 class Layout:
     """Layout DTO
     """    
@@ -28,6 +27,9 @@ class Layout:
         self.__level = level
         self.__badge = badge
         self.__level_bar = level_bar
+        
+    def __str__(self) -> str:
+        return f'Layout(profil_picture: {self.__profile_picture}, name: {self.__name}, username: {self.__username}, level: {self.__level}, badge: {self.__badge}, level_bar: {self.__level_bar})'
     
     @property
     def profile_picture(self) -> Coords:

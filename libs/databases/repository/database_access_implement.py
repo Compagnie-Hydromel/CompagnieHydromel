@@ -369,6 +369,14 @@ class DatabaseAccessImplement:
         """
         pass
     
+    def get_default_profile_layout_name(self) -> str:
+        """This method is designed to get the default profile layout name.
+
+        Returns:
+            str: The default profile layout name.
+        """
+        pass
+    
     def add_profile_layout(self, layout_name: str, layout: Layout) -> None:
         """This method is designed to add a profile layout.
 
