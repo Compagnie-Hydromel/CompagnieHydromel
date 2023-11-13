@@ -63,6 +63,8 @@ class Handler:
                     return self.__response_exception["profile_layout_not_exist"]
                 case "ProfileLayoutAlreadyExist":
                     return self.__response_exception["profile_layout_already_exist"]
+                case "CannotRemoveDefaultProfileLayout":
+                    return self.__response_exception["cannot_remove_default_profile_layout"]
                 case _:
                     return self.__default(stacktrace)
         else:

@@ -2,6 +2,7 @@ from libs.databases.dto.layout import Layout
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
 from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
+from libs.exception.profile_layout.cannot_remove_default_profile_layout import CannotRemoveDefaultProfileLayout
 from libs.exception.profile_layout.profile_layout_already_exist import ProfileLayoutAlreadyExist
 from libs.exception.profile_layout.profile_layout_not_exist import ProfileLayoutNotExist
 
@@ -42,6 +43,8 @@ class ProfileLayouts():
     def remove(self, profile_layout: ProfileLayout):
         """This method is designed to remove a profile layout.
         """
+        if profile_layout.get_default().name == profile_layout.name:
+            raise CannotRemoveDefaultProfileLayout
         self.__db_access.remove_profile_layout(profile_layout.name)
     
     def rename(self, profile_layout: ProfileLayout, new_name: str) -> None:
