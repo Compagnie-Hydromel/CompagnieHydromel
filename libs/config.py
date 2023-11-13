@@ -144,6 +144,7 @@ class Config():
             "profile_layout_already_exist": "Profile layout already exist!",
             "enter_new_name": "Please enter a new name!",
             "cannot_remove_default_profile_layout": "Cannot remove default profile layout!",
+            "cannot_remove_default_wallpaper": "Cannot remove default wallpaper!",
         }
     }
     __config_file = "config.yml"
