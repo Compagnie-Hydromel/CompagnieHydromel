@@ -1,5 +1,6 @@
 #!/usr/local/bin/python3
 from PIL import Image, ImageDraw, ImageFont, ImageColor
+from libs.log import Log, LogType
 from libs.utils import Utils
 import requests
 from io import BytesIO
@@ -60,7 +61,12 @@ class ProfilMaker():
         """
         
         # region [background]
-        img = Image.open(Utils().download_image(background_url)).convert('RGBA').resize((500, 281))
+        img = None
+        try: 
+            img = Image.open(Utils().download_image(background_url)).convert('RGBA').resize((500, 281))
+        except Exception as e:
+            Log(str(e), LogType.ERROR)
+            raise WallpaperIsNotDownloadableException
 
         # endregion
         
@@ -75,7 +81,8 @@ class ProfilMaker():
             response_profile_picture = requests.get(user_profil_picture)
             pic = Image.open(BytesIO(response_profile_picture.content)).convert(
                 'RGBA').resize((128, 128))
-        except: 
+        except Exception as e:
+            Log(str(e), LogType.ERROR)
             raise WallpaperIsNotDownloadableException
 
         h, w = pic.size
@@ -112,7 +119,8 @@ class ProfilMaker():
             try:
                 response_background_url = requests.get(badge.url)
                 tempImg = Image.open(BytesIO(response_background_url.content)).convert('RGBA')
-            except: 
+            except Exception as e:
+                Log(str(e), LogType.ERROR)
                 raise WallpaperIsNotDownloadableException
             tempImg.thumbnail((32, 32), Image.LANCZOS)
             img.paste(tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
