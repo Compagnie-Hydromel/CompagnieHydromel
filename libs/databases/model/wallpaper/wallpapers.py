@@ -64,6 +64,6 @@ class Wallpapers:
         Args:
             wallpaper (Wallpaper): The wallpaper to remove.
         """
-        if wallpaper.name == "default":
+        if wallpaper.name == Wallpaper.get_default().name:
             raise CannotRemoveDefaultWallpaper
         self.__db_access.remove_wallpaper(wallpaper.name)
