@@ -160,12 +160,13 @@ class RootCommands(discord.Cog):
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
     @discord.slash_command(description="Manage wallpaper as root")
-    @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
+    @discord.option("option", description="add/remove/show/update/rename", choices=["add", "remove", "show", "update", "rename"])
     @discord.option("wallpaper_name", require=True)
     @discord.option("url", require=False)
     @discord.option("price", int, require=False)
     @discord.option("level", int, require=False)
-    async def manage_wallpaper(self, ctx: discord.commands.context.ApplicationContext, option: str, wallpaper_name: str, url: str = "", price: int = 0, level: int = 0):
+    @discord.option("new_name", str, require=False)
+    async def manage_wallpaper(self, ctx: discord.commands.context.ApplicationContext, option: str, wallpaper_name: str, url: str = "", price: int = None, level: int = None, new_name: str = None):
         Log(ctx.author.name + " is launching manage wallpaper commands with " + option, LogType.COMMAND)
         try:
             if not await self.__check_if_root(ctx):
@@ -184,11 +185,36 @@ class RootCommands(discord.Cog):
                     if not self.__is_url_image(url):
                         await ctx.respond(self.__response_exception["url_not_an_image"])
                         return
-                    wallpapers.add(wallpaper_name, url, price, level)
+                    wallpapers.add(wallpaper_name, url, self.__not_none(price), self.__not_none(level))
                     await ctx.respond(self.__response["wallpaper_added"])
                 case "remove":
                     wallpapers.remove(Wallpaper(wallpaper_name))
                     await ctx.respond(self.__response["wallpaper_removed"])
+                case "update":
+                    wallpaper = Wallpaper(wallpaper_name)
+                    
+                    if url != "":
+                        if not self.__is_url_image(url):
+                            await ctx.respond(self.__response_exception["url_not_an_image"])
+                            return
+                        wallpaper.url = url
+                    
+                    if price != None:
+                        wallpaper.price = price
+                        
+                    if level != None:
+                        wallpaper.level = level
+                    
+                    await ctx.respond(self.__response["wallpaper_updated"])
+                case "rename":
+                    if new_name == None:
+                        await ctx.respond(self.__response_exception["enter_new_name"])
+                        return
+                    
+                    wallpaper = Wallpaper(wallpaper_name)
+                    wallpaper.name = new_name
+                    
+                    await ctx.respond(self.__response["wallpaper_renamed"])
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
         except requests.exceptions.MissingSchema:
