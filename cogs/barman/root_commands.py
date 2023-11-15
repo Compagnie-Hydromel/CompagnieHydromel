@@ -270,7 +270,8 @@ class RootCommands(discord.Cog):
                     if new_name == None:
                         await ctx.respond(self.__response_exception["enter_new_name"])
                         return
-                    profile_layouts.rename(ProfileLayout(profile_layout_name), new_name)
+                    profile_layout = ProfileLayout(profile_layout_name)
+                    profile_layout.name = new_name
                     await ctx.respond(self.__response["profile_layout_renamed"])
                 case "update":
                     profile_layout = ProfileLayout(profile_layout_name)
@@ -283,7 +284,7 @@ class RootCommands(discord.Cog):
                         Coords(self.__not_none(badge_x, current_profile_layout.badge.x), self.__not_none(badge_y, current_profile_layout.badge.y)),
                         Coords(self.__not_none(level_bar_x, current_profile_layout.level_bar.x), self.__not_none(level_bar_y, current_profile_layout.level_bar.y))
                     )
-                    profile_layouts.update(profile_layout, layout)
+                    profile_layout.layout = layout
                     await ctx.respond(self.__response["profile_layout_updated"])
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
