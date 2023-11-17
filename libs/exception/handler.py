@@ -67,6 +67,8 @@ class Handler:
                     return self.__response_exception["cannot_remove_default_profile_layout"]
                 case "CannotRemoveDefaultWallpaper":
                     return self.__response_exception["cannot_remove_default_wallpaper"]
+                case "WallpaperUrlNotAnImage":
+                    return self.__response_exception["url_not_an_image"]
                 case _:
                     return self.__default(stacktrace)
         else:

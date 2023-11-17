@@ -10,10 +10,7 @@ from libs.databases.model.user.user import User
 from libs.databases.model.user.users import Users
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.databases.model.wallpaper.wallpapers import Wallpapers
-from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.handler import Handler
-from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
-from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.log import Log, LogType
 from libs.paginator import Paginator
 from libs.utils import Utils
@@ -194,9 +191,6 @@ class RootCommands(discord.Cog):
                     wallpaper = Wallpaper(wallpaper_name)
                     
                     if url != "":
-                        if not self.__is_url_image(url):
-                            await ctx.respond(self.__response_exception["url_not_an_image"])
-                            return
                         wallpaper.url = url
                     
                     if price != None:
@@ -324,13 +318,6 @@ class RootCommands(discord.Cog):
         if content != "":
             pages.append(content)
         return pages
-    
-    def __is_url_image(self, image_url):
-        image_formats = ("image/png", "image/jpeg", "image/jpg")
-        r = requests.head(image_url)
-        if r.headers["content-type"] in image_formats:
-            return True
-        return False
 
     
 def setup(bot: discord.bot.Bot):

@@ -1,6 +1,8 @@
+import requests
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
 from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
+from libs.exception.wallpaper.wallpaper_url_not_an_image import WallpaperUrlNotAnImage
 
 
 class Wallpaper:
@@ -103,7 +105,18 @@ class Wallpaper:
 
         Args:
             url (str): The new wallpaper url.
+        
+        Raises:
+            WallpaperUrlNotAnImage: Raise when the url is not an image.
         """
+        if not self.__is_url_image(url):
+            raise WallpaperUrlNotAnImage
         self.__db_access.set_wallpaper_url(self.__wallpaper_name, url)
     
 
+    def __is_url_image(self, image_url):
+        image_formats = ("image/png", "image/jpeg", "image/jpg")
+        r = requests.head(image_url)
+        if r.headers["content-type"] in image_formats:
+            return True
+        return False
