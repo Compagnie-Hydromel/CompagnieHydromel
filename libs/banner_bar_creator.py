@@ -32,7 +32,7 @@ class BannerBarCreator:
         Raises:
             UnableToDownloadImageException: If the banner_image can't be downloaded.
         """
-        img = None;
+        img = None
         try: 
             response_banner_image = requests.get(banner_image)
             img = Image.open(BytesIO(response_banner_image.content)).convert('RGBA')
