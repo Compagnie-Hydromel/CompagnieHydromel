@@ -24,12 +24,12 @@ class TestWallpaper(unittest.TestCase):
         self.__level = 1
         self.__wallpaper.price = self.__price
         self.__wallpaper.level = self.__level
-        self.assertEqual(self.__wallpaper.level, self.__price)
-        self.assertEqual(self.__wallpaper.price, self.__level)
+        self.assertEqual(self.__wallpaper.level, self.__level)
+        self.assertEqual(self.__wallpaper.price, self.__price)
         self.__wallpaper.price = self.__old_price
         self.__wallpaper.level = self.__old_level
-        self.assertEqual(self.__wallpaper.level, self.__old_price)
-        self.assertEqual(self.__wallpaper.price, self.__old_level)
+        self.assertEqual(self.__wallpaper.level, self.__old_level)
+        self.assertEqual(self.__wallpaper.price, self.__old_price)
     
     def test_url(self):
         self.assertTrue(isinstance(self.__wallpaper.url, str))
