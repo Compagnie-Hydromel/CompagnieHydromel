@@ -111,6 +111,8 @@ class Config():
             "profile_layout_removed": "Profile layout removed!",
             "profile_layout_updated": "Profile layout updated!",
             "profile_layout_renamed": "Profile layout renamed!",
+            "wallpaper_updated": "Wallpaper updated!",
+            "wallpaper_renamed": "Wallpaper renamed!",
         },
         "exception_response": {
             "default": "An error occured",

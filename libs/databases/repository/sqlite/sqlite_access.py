@@ -471,6 +471,50 @@ class SqliteAccess(DatabaseAccessImplement):
             wallpaper_name (str): The wallpaper name.
         """
         self.__sqliteDB.modify("DELETE FROM wallpapers WHERE name = ?", [wallpaper_name])
+    
+    def set_wallpaper_url(self, wallpaper_name: str, url: str) -> None:
+        """This method is designed to set a wallpaper url.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+            url (str): The new url of the wallpaper.
+        """
+        self.__sqliteDB.modify("UPDATE wallpapers SET url = '" + url + "' WHERE name = '" + wallpaper_name + "';")
+    
+    def set_wallpaper_price(self, wallpaper_name: str, price: int) -> None:
+        """This method is designed to set a wallpaper price.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+            price (int): The new price of the wallpaper.
+        """
+        self.__sqliteDB.modify("UPDATE wallpapers SET price = " + str(price) + " WHERE name = '" + wallpaper_name + "';")
+
+    def set_wallpaper_level(self, wallpaper_name: str, level: int) -> None:
+        """This method is designed to set a wallpaper level.
+
+        Args:
+            wallpaper_name (str): The wallpaper name.
+            level (int): The new level of the wallpaper.
+        """
+        self.__sqliteDB.modify("UPDATE wallpapers SET level = " + str(level) + " WHERE name = '" + wallpaper_name + "';")
+    
+    def rename_wallpaper(self, old_wallpaper_name: str, new_wallpaper_name: str) -> None:
+        """This method is designed to rename a wallpaper.
+
+        Args:
+            old_wallpaper_name (str): The old wallpaper name.
+            new_wallpaper_name (str): The new wallpaper name.
+        """
+        self.__sqliteDB.modify("UPDATE wallpapers SET name = '" + new_wallpaper_name + "' WHERE name = '" + old_wallpaper_name + "';")
+        
+    def get_default_wallpaper_name(self) -> str:
+        """This method is designed to get the default wallpaper name.
+
+        Returns:
+            str: The default wallpaper name.
+        """
+        return self.__sqliteDB.select("SELECT name FROM wallpapers WHERE id = 1")[0][0]
 
     # Public
 

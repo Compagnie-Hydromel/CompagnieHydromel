@@ -54,3 +54,15 @@ class ProfileLayout:
         """
         return self.__db_access.get_profile_layout(self.__profile_layout_name)
     
+    @layout.setter
+    def layout(self, layout: Layout) -> None:
+        """This method is designed to update a profile layout.
+        """
+        self.__db_access.update_profile_layout(self.__profile_layout_name, layout)
+    
+    @name.setter
+    def name(self, new_name: str) -> None:
+        """This method is designed to set the name of a profile layout.
+        """
+        self.__db_access.rename_profile_layout(self.__profile_layout_name, new_name)
+        self.__profile_layout_name = new_name

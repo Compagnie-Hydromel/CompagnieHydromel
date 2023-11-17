@@ -23,6 +23,15 @@ class Wallpaper:
 
         if not self.__db_access.is_wallpaper_exist(self.__wallpaper_name):
             raise WallpaperNotExistException
+        
+    @staticmethod
+    def get_default():
+        """This method is designed to get the default wallpaper.
+
+        Returns:
+            Wallpaper: The default wallpaper.
+        """
+        return Wallpaper(SqliteAccess().get_default_wallpaper_name())
 
     @property
     def name(self) -> str:
@@ -59,5 +68,33 @@ class Wallpaper:
             str: The wallpaper url.
         """
         return self.__db_access.get_wallpaper_url(self.__wallpaper_name)
+    
+    @name.setter 
+    def name(self, name : str) -> None:
+        """This method is designed to set the wallpaper name.
+
+        Args:
+            name (str): The new wallpaper name.
+        """
+        self.__db_access.rename_wallpaper(self.__wallpaper_name, name)
+        self.__wallpaper_name = name
+            
+    @price.setter
+    def price(self, price : int) -> None:
+        """This method is designed to set the wallpaper price.
+
+        Args:
+            price (int): The new wallpaper price.
+        """
+        self.__db_access.set_wallpaper_price(self.__wallpaper_name, price)
+    
+    @level.setter
+    def level(self, level: int) -> None:
+        """This method is designed to set the wallpaper level.
+
+        Args:
+            level (int): The new wallpaper level.
+        """
+        self.__db_access.set_wallpaper_level(self.__wallpaper_name, level)
     
 
