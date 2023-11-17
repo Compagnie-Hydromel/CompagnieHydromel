@@ -1,9 +1,10 @@
 import re
-from libs.databases.badges import Badges
-from libs.databases.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
-from libs.databases.sqlite.sqlite_access import SqliteAccess
-from libs.databases.wallpaper import Wallpaper
-from libs.databases.wallpapers import Wallpapers
+from libs.databases.model.badge.badges import Badges
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
+from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
+from libs.databases.model.profile_layout.profile_layout import ProfileLayout
+from libs.databases.model.wallpaper.wallpaper import Wallpaper
+from libs.databases.model.wallpaper.wallpapers import Wallpapers
 from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.exception.wallpaper.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
@@ -159,6 +160,18 @@ class User:
         """        
         return Wallpapers().create_list_wallpaper_by_list_name(self.__db_access.get_list_posseded_wallpapers(self.__discord_id)) 
     
+    @property 
+    def profiles_layout(self) -> ProfileLayout:
+        """This method is designed to get the profiles layout of the user.
+
+        Raises:
+            ProfileLayoutNotExist: Raise when the profile layout of the user don't exist.
+        
+        Returns:
+            ProfileLayout: The users profiles layout.
+        """
+        return ProfileLayout(self.__db_access.get_user_profile_layout(self.__discord_id))
+    
     def change_current_wallpapers(self, wallpaper: Wallpaper) -> None:
         """This method is designed to change the current wallpaper of the user.
 
@@ -276,6 +289,14 @@ class User:
         """This method is designed to reset the number of buy of the user.
         """
         self.__db_access.reset_number_of_buy(self.__discord_id)
+        
+    def change_profile_layout(self, profile_layout: ProfileLayout) -> None:
+        """This method is designed to change the profile layout of the user.
+
+        Args:
+            profile_layout (ProfileLayout): The new profile layout of the user.
+        """
+        self.__db_access.change_user_profile_layout(self.__discord_id, profile_layout.name)
 
     def __is_wallpaper_posseded(self, wallpaper: Wallpaper) -> bool:
         """This method is designed to check if a wallpaper is posseded by the user.

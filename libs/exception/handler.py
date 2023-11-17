@@ -59,6 +59,16 @@ class Handler:
                     return self.__response_exception["nothing_left_in_queue"]
                 case "NoMusicPlaying":
                     return self.__response_exception["not_playing_music"]
+                case "ProfileLayoutNotExist":
+                    return self.__response_exception["profile_layout_not_exist"]
+                case "ProfileLayoutAlreadyExist":
+                    return self.__response_exception["profile_layout_already_exist"]
+                case "CannotRemoveDefaultProfileLayout":
+                    return self.__response_exception["cannot_remove_default_profile_layout"]
+                case "CannotRemoveDefaultWallpaper":
+                    return self.__response_exception["cannot_remove_default_wallpaper"]
+                case "WallpaperUrlNotAnImage":
+                    return self.__response_exception["url_not_an_image"]
                 case _:
                     return self.__default(stacktrace)
         else:

@@ -11,32 +11,32 @@ class Sqlite():
         """
         self.__db =  sqlite3.connect(file)
 
-    def select(self, query:str) -> dict:
+    def select(self, query:str, parameters: list = []) -> dict:
         """This method is designed to execute a SQL SELECT query.
 
         Args:
             query (str): The SQL query
+            parameters (list): The parameters to pass to the query (default: [])
 
         Returns:
             dict: A dict with the informations who were fetch on the database.
         """
-
         cursor = self.__db.cursor()
-        cursor.execute(query)
+        cursor.execute(query, parameters)
 
         result = cursor.fetchall()
 
         return result
 
-    def modify(self, query:str) -> None:
+    def modify(self, query:str, parameters: list = []) -> None:
         """This method is designed to execute a SQL query (Insert or Update).
 
         Args:
             query (str): The SQL query
+            parameters (list): The parameters to pass to the query (default: [])
         """
-
         cursor = self.__db.cursor()
-        cursor.execute(query)
+        cursor.execute(query, parameters)
 
         self.__db.commit()
 

@@ -1,6 +1,6 @@
-from libs.databases.badge import Badge
-from libs.databases.database_access_implement import DatabaseAccessImplement
-from libs.databases.sqlite.sqlite_access import SqliteAccess
+from libs.databases.model.badge.badge import Badge
+from libs.databases.repository.database_access_implement import DatabaseAccessImplement
+from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 
 
 class Badges:

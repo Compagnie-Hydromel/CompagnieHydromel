@@ -3,7 +3,7 @@ import traceback
 import discord
 from discord.ext import tasks
 
-from libs.databases.user import User
+from libs.databases.model.user.user import User
 from libs.log import Log, LogType
 
 class Listener(discord.Cog):
