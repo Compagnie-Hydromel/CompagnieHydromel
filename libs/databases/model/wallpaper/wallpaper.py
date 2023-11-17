@@ -96,5 +96,14 @@ class Wallpaper:
             level (int): The new wallpaper level.
         """
         self.__db_access.set_wallpaper_level(self.__wallpaper_name, level)
+        
+    @url.setter
+    def url(self, url : str) -> None:
+        """This method is designed to set the wallpaper url.
+
+        Args:
+            url (str): The new wallpaper url.
+        """
+        self.__db_access.set_wallpaper_url(self.__wallpaper_name, url)
     
 
