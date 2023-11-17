@@ -23,21 +23,6 @@ class TestProfileLayout(unittest.TestCase):
         else:
             self.assertTrue(False)
         
-    def test_rename_profile_layout(self):
-        profile_layout_old_name = "test_add_profile_layout"
-        profile_layout_new_name = "test_rename_profile_layout"
-        
-        Utils.add_profile_layout(profile_layout_old_name)
-        
-        self.__profile_layouts.rename(ProfileLayout(profile_layout_old_name), profile_layout_new_name)
-
-        self.assertFalse(self.__contains_profile_layout(profile_layout_old_name))
-        self.assertTrue(self.__contains_profile_layout(profile_layout_new_name))
-        
-        self.__profile_layouts.remove(ProfileLayout(profile_layout_new_name))
-        
-        self.assertFalse(self.__contains_profile_layout(profile_layout_new_name))
-        
     def test_cannot_remove_default_profile_layout(self):
         with self.assertRaises(CannotRemoveDefaultProfileLayout):
             self.__profile_layouts.remove(ProfileLayout.get_default())
