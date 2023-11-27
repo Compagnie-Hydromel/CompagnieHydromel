@@ -8,9 +8,10 @@ from libs.exception.profile_layout.cannot_remove_default_profile_layout import C
 from tests.utils import Utils
 
 class TestProfileLayout(unittest.TestCase):
-    def __init__(self, methodName: str = "runTest") -> None:
+    __profile_layouts: ProfileLayouts
+    
+    def setUp(self) -> None:
         self.__profile_layouts = ProfileLayouts()
-        super().__init__(methodName)
         
     def test_add_remove_profile_layout(self):
         profile_layout_name = "test_add_profile_layout"

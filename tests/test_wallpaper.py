@@ -4,10 +4,9 @@ from libs.databases.model.wallpaper.wallpaper import Wallpaper
 
 class TestWallpaper(unittest.TestCase):
     __wallpaper : Wallpaper
-    
-    def __init__(self, methodName: str = "runTest") -> None:
+        
+    def setUp(self) -> None:
         self.__wallpaper = Wallpaper.get_default()
-        super().__init__(methodName)
     
     def test_get_name(self):
         __old_name = self.__wallpaper.name
