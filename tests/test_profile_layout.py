@@ -15,10 +15,10 @@ class TestProfileLayout(unittest.TestCase):
     def test_name(self):
         __old_name = self.__profile_layout.name
         __name = "default"
-        self.__profile_layout = __name
+        self.__profile_layout.name = __name
         self.__profile_layout = ProfileLayout.get_default()
         self.assertEqual(self.__profile_layout.name, __name)
-        self.__profile_layout = __old_name
+        self.__profile_layout.name = __old_name
         
     def test_layout(self):
         __old_layout = self.__profile_layout.layout
