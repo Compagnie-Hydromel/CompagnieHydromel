@@ -5,9 +5,8 @@ from libs.databases.model.user.users import Users
 class TestUser(unittest.TestCase):
     __users : Users
     
-    def __init__(self, methodName: str = "runTest") -> None:
+    def setUp(self) -> None:
         self.__users = Users()
-        super().__init__(methodName)
         
     def test_get_root_users(self):
         self.assertTrue(len(self.__users.get_root_users) >= 0)
