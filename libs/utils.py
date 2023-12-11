@@ -6,6 +6,7 @@ import requests
 import re
 
 from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
+from libs.log import Log
 
 class Utils():
     """This class is designed to manage the utils.
@@ -17,6 +18,7 @@ class Utils():
             directory (str): The directory to create. (example: "path/to/directory")
         """
         if not os.path.exists(directory):
+            Log().info("Creating directory " + directory)
             os.mkdir(directory)
     
     def __pillow_crop_center(self, pil_img: Image, crop_width: int, crop_height: int):

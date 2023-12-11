@@ -3,10 +3,9 @@ from libs.databases.model.user.user import User
 from libs.exception.handler import Handler
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
-from libs.log import Log
+from libs.log import Log, LogType
 from libs.profile_maker import ProfilMaker
 from libs.utils import Utils
-from libs.log import LogType
 import traceback
 
 class Profile(discord.Cog):
@@ -23,6 +22,7 @@ class Profile(discord.Cog):
             user = User(str(ctx.author.id))
 
             Utils().createDirectoryIfNotExist(".profile")
+            Log("create profile for " + ctx.author)
             pro = ProfilMaker(
                 ".profile/" +str(ctx.author.id) + ".png",
                 ctx.author.name,
@@ -36,9 +36,9 @@ class Profile(discord.Cog):
                 badges = user.badges_list,
                 coords = user.profiles_layout.layout.dict()
             )
+            Log(ctx.author.name + " profile saved at " + pro.profil_path)
 
             await ctx.respond(file=discord.File(pro.profil_path))
-            Log(ctx.author.name + " profile saved at " + pro.profil_path, LogType.INFO)
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 

@@ -51,9 +51,10 @@ class BannerUpdater(discord.Cog):
     async def on_voice_state_update(self, members: discord.member, before: discord.VoiceChannel, after: discord.VoiceChannel) -> None:
         try:
             if self.__config.value["banner"]["enable"]:
+                Log("Updating banner " + image_url, LogType.INFO)
                 image_url = self.__get_bar_image()
                 with open(image_url, "rb") as image:
-                    Log("Banner updated in " + image_url, LogType.INFO)
+                    Log("Banner updated " + image_url, LogType.INFO)
                     await self.__bot.get_guild(self.__config.value["banner"]["guild_id"]).edit(banner=image.read())
         except:
             Log(traceback.format_exc(), LogType.ERROR)
