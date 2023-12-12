@@ -51,7 +51,9 @@ class Utils():
         Returns:
             BytesIO: The image.
         """
+        Log("Downloading image from " + url)
         response_url = requests.get(url)
+        Log("Downloaded image from " + url)
         return BytesIO(response_url.content)
     
     def check_color(self, color: str) -> str:
