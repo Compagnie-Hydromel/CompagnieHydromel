@@ -1,6 +1,6 @@
 import traceback
 import  discord
-from libs.banner_bar_creator import BannerBarCreator
+from libs.image_factory.banner_bar_creator import BannerBarCreator
 from libs.config import Config
 from libs.log import Log, LogType
 
@@ -51,11 +51,11 @@ class BannerUpdater(discord.Cog):
     async def on_voice_state_update(self, members: discord.member, before: discord.VoiceChannel, after: discord.VoiceChannel) -> None:
         try:
             if self.__config.value["banner"]["enable"]:
-                Log("Updating banner " + image_url, LogType.INFO)
                 image_url = self.__get_bar_image()
+                Log("Updating banner " + str(image_url), LogType.INFO)
                 with open(image_url, "rb") as image:
-                    Log("Banner updated " + image_url, LogType.INFO)
                     await self.__bot.get_guild(self.__config.value["banner"]["guild_id"]).edit(banner=image.read())
+                    Log("Banner updated " + str(image_url), LogType.INFO)
         except:
             Log(traceback.format_exc(), LogType.ERROR)
 

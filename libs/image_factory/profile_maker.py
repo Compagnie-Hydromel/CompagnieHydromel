@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 from libs.log import Log, LogType
+from libs.image_factory.utils import Utils as ImageFactoryUtils
 from libs.utils import Utils
 import requests
 from io import BytesIO
@@ -87,8 +88,8 @@ class ProfilMaker():
 
         h, w = pic.size
 
-        pic = Utils().pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
-        pic = Utils().pillow_mask_circle_transparent(pic, 1)
+        pic = ImageFactoryUtils().pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
+        pic = ImageFactoryUtils().pillow_mask_circle_transparent(pic, 1)
 
         img.paste(pic, (coords["profil_picture"]['x'],
                   coords["profil_picture"]['y']), pic)
@@ -135,7 +136,7 @@ class ProfilMaker():
 
         progress = (point * 100 / (calculated_point_per_level))/100
 
-        bar = Utils().pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
+        bar = ImageFactoryUtils().pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
 
         img.paste(bar, (coords['level_bar']['x'], coords['level_bar']['y']), bar)
         # endregion
@@ -148,7 +149,7 @@ class ProfilMaker():
 
     @property
     def profil_path(self) -> str:
-        """This method is designed to get the profil path.
+        """This method is designed to get the saved profil path.
 
         Returns:
             str: The profil path.

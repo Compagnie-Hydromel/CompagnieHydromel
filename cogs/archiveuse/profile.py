@@ -4,7 +4,7 @@ from libs.exception.handler import Handler
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 from libs.log import Log, LogType
-from libs.profile_maker import ProfilMaker
+from libs.image_factory.profile_maker import ProfilMaker
 from libs.utils import Utils
 import traceback
 
@@ -22,7 +22,7 @@ class Profile(discord.Cog):
             user = User(str(ctx.author.id))
 
             Utils().createDirectoryIfNotExist(".profile")
-            Log("create profile for " + ctx.author)
+            Log("create profile for " + str(ctx.author))
             pro = ProfilMaker(
                 ".profile/" +str(ctx.author.id) + ".png",
                 ctx.author.name,

@@ -1,6 +1,6 @@
 from PIL import Image
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
-from libs.utils import Utils
+from libs.image_factory.utils import Utils
 import requests
 from io import BytesIO
 
@@ -63,7 +63,7 @@ class BannerBarCreator:
     
     @property
     def file_path(self) -> str:
-        """This method is a getter to get the file path.
+        """This method is a getter to get the saved banner bar file path.
 
         Returns:
             str: The file path.

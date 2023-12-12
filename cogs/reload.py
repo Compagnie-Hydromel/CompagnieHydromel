@@ -16,9 +16,9 @@ class Reload(discord.Cog):
     async def reload(self, ctx):
         Log(ctx.author.name + " is launching reload commands", LogType.COMMAND)
         if User(str(ctx.author.id)).is_root:    
-            extensions = self.bot.extensions.copy()
+            extensions = self.__bot.extensions.copy()
             for extension in extensions:
-                self.bot.reload_extension(extension)
+                self.__bot.reload_extension(extension)
             Log("Reloaded all cogs from " + str(self.__bot.user))
             await ctx.respond("Reloaded all cogs")
         else: 

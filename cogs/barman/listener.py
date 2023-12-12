@@ -1,6 +1,6 @@
 import traceback
 import  discord
-from libs.banner_bar_creator import BannerBarCreator
+from libs.image_factory.banner_bar_creator import BannerBarCreator
 from libs.config import Config
 
 from libs.databases.model.user.user import User

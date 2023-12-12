@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from libs.banner_bar_creator import BannerBarCreator
+from libs.image_factory.banner_bar_creator import BannerBarCreator
 
 class TestBannerCreator(unittest.TestCase):
     def test_banner_bar_creator(self):
