@@ -18,7 +18,7 @@ class NsfwCommands(discord.Cog):
     @discord.slash_command(description="Get some NSFW content in a NSFW channel")
     @discord.option("choose", description="", choices=["porn", "hentai", "jinx", "002", "overwatch"])
     async def porn(self, ctx: discord.commands.context.ApplicationContext, choose : str):
-        Log(ctx.author.name + " is launching sex commands with " + choose, LogType.COMMAND)
+        Log(ctx.author.name + " is launching NSFW commands with " + choose, LogType.COMMAND)
         try:
             if not ctx.channel.nsfw:
                 await ctx.respond(self.__error_exception["not_nsfw_channel"])
