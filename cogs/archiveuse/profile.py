@@ -21,7 +21,7 @@ class Profile(discord.Cog):
 
             user = User(str(ctx.author.id))
 
-            Utils().createDirectoryIfNotExist(".profile")
+            Utils.createDirectoryIfNotExist(".profile")
             Log("create profile for " + str(ctx.author))
             pro = ProfilMaker(
                 ".profile/" +str(ctx.author.id) + ".png",

@@ -10,7 +10,8 @@ from libs.log import Log
 class Utils():
     """This class is designed to manage the utils.
     """
-    def createDirectoryIfNotExist(self, directory:str):
+    @staticmethod
+    def createDirectoryIfNotExist(directory:str):
         """This method is designed to create a directory if not exist.
 
         Args:
@@ -20,7 +21,8 @@ class Utils():
             Log().info("Creating directory " + directory)
             os.mkdir(directory)
     
-    def download_image_with_list_random(self, list_of_url: list[str]) -> BytesIO:
+    @staticmethod
+    def download_image_with_list_random(list_of_url: list[str]) -> BytesIO:
         """This method is designed to download an image with a list of url.
 
         Args:
@@ -29,9 +31,10 @@ class Utils():
         Returns:
             BytesIO: The image.
         """
-        return Utils().download_image(random.choice(list_of_url))
+        return Utils.download_image(random.choice(list_of_url))
     
-    def random_file(self, path: str) -> str:
+    @staticmethod
+    def random_file(path: str) -> str:
         """This method is designed to get a random file.
 
         Args:
@@ -42,7 +45,8 @@ class Utils():
         """
         return path + "/" + random.choice(os.listdir(path))
     
-    def download_image(self, url: str) -> BytesIO:
+    @staticmethod
+    def download_image(url: str) -> BytesIO:
         """This method is designed to download an image.
 
         Args:
@@ -56,7 +60,8 @@ class Utils():
         Log("Downloaded image from " + url)
         return BytesIO(response_url.content)
     
-    def check_color(self, color: str) -> str:
+    @staticmethod
+    def check_color(color: str) -> str:
         """This method is designed to check if a color is correct.
         
         Color list:

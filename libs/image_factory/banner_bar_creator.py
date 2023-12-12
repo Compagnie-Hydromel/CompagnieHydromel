@@ -51,8 +51,8 @@ class BannerBarCreator:
 
                 h,w = pic.size
 
-                pic = Utils().pillow_crop_max_square(pic).resize((w, h), Image.LANCZOS)
-                pic = Utils().pillow_mask_circle_transparent(pic, 1)
+                pic = Utils.pillow_crop_max_square(pic).resize((w, h), Image.LANCZOS)
+                pic = Utils.pillow_mask_circle_transparent(pic, 1)
 
                 img.paste(pic, (coords[channel]['w']+add, coords[channel]['h']), pic)
                 add+=int(64/(len(people[channel])/3))

@@ -25,7 +25,7 @@ class NsfwCommands(discord.Cog):
                 return 
             path = self.__config.value["nsfw_commands"][choose]
             if path != "" and os.path.isdir(path):
-                await ctx.respond(file=discord.File(Utils().random_file(path)))
+                await ctx.respond(file=discord.File(Utils.random_file(path)))
             else:
                 await ctx.respond(self.__error_exception["folder_not_found"])
         except Exception as e:

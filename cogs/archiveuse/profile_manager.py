@@ -50,7 +50,7 @@ class ProfileManager(discord.Cog):
                 case "all wallpaper":
                     await self.__respond_list(ctx, wallpapers.all)
                 case "wallpaper preview":
-                    await ctx.respond(file=discord.File(Utils().download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
+                    await ctx.respond(file=discord.File(Utils.download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
                 case "name color":
                     user.change_name_color(options_specifies)
                     await ctx.respond(self.__response["namecolor_changed"])

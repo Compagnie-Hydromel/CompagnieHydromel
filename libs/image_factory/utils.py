@@ -2,7 +2,8 @@ from PIL import Image, ImageDraw, ImageFilter
 
 class Utils():
 
-    def pillow_crop_max_square(self, pil_img: Image) -> Image:
+    @staticmethod
+    def pillow_crop_max_square(pil_img: Image) -> Image:
         """This method is designed to crop a pillow image to a max square.
 
         Args:
@@ -11,9 +12,10 @@ class Utils():
         Returns:
             Image: The pillow image cropped.
         """
-        return self.__pillow_crop_center(pil_img, min(pil_img.size), min(pil_img.size))
+        return Utils.pillow_crop_center(pil_img, min(pil_img.size), min(pil_img.size))
 
-    def pillow_mask_circle_transparent(self, pil_img: Image, blur_radius: float, offset: int = 0) -> Image:
+    @staticmethod
+    def pillow_mask_circle_transparent(pil_img: Image, blur_radius: float, offset: int = 0) -> Image:
         """This method is designed to mask a pillow image to a circle.
 
         Args:
@@ -36,7 +38,8 @@ class Utils():
 
         return result
 
-    def pillow_new_bar(self, x: int, y: int, width: int, height: int, progress: int, fg=(173, 255, 47, 255), bg=(0, 0, 0, 0)) -> Image:
+    @staticmethod
+    def pillow_new_bar(x: int, y: int, width: int, height: int, progress: int, fg=(173, 255, 47, 255), bg=(0, 0, 0, 0)) -> Image:
         """This method is designed to create a new bar in an image.
 
         Args:
@@ -69,7 +72,8 @@ class Utils():
 
         return bar
     
-    def __pillow_crop_center(self, pil_img: Image, crop_width: int, crop_height: int) -> Image:
+    @staticmethod
+    def pillow_crop_center(pil_img: Image, crop_width: int, crop_height: int) -> Image:
         img_width, img_height = pil_img.size
         return pil_img.crop(((img_width - crop_width) // 2,
                              (img_height - crop_height) // 2,

@@ -59,7 +59,7 @@ class RootCommands(discord.Cog):
             
             # WARNING: eval = evil 
             # we check it before to avoid security issue
-            embed = discord.Embed(title=title, description=message.replace("\\n", "\n"), color=eval("0x" + Utils().check_color(color)))
+            embed = discord.Embed(title=title, description=message.replace("\\n", "\n"), color=eval("0x" + Utils.check_color(color)))
             
             await information_channel.send(embed=embed)
             await ctx.respond(self.__response["message_sent"])

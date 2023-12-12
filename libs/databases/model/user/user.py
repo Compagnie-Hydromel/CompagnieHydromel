@@ -205,7 +205,7 @@ class User:
         Args:
             color (str): The new color as Hex RGB or color name (example: #00ff00, #ff00ffaf, red, orange, etc..).
         """
-        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor, Utils().check_color(color))
+        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor, Utils.check_color(color))
 
     def change_bar_color(self, color: str) -> None:
         """This method is designed to change the bar color of the user.
@@ -226,7 +226,7 @@ class User:
         Args:
             color (str): The new color as Hex RGB or color name (example: #00ff00, #ff00ffaf, red, orange, etc..).
         """        
-        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, Utils().check_color(color))
+        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, Utils.check_color(color))
 
     @property
     def badges_list(self) -> list[str]:

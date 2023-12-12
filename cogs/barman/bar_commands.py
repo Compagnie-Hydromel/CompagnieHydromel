@@ -38,7 +38,7 @@ class BarCommands(discord.Cog):
             price = drinks_in_config["price"]
             list_of_url = drinks_in_config["list"]
             
-            img_file = discord.File(Utils().download_image_with_list_random(list_of_url), drink + ".png")
+            img_file = discord.File(Utils.download_image_with_list_random(list_of_url), drink + ".png")
             
             user = User(str(ctx.author.id))
             

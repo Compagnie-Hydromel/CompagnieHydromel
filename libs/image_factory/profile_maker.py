@@ -64,7 +64,7 @@ class ProfilMaker():
         # region [background]
         img = None
         try: 
-            img = Image.open(Utils().download_image(background_url)).convert('RGBA').resize((500, 281))
+            img = Image.open(Utils.download_image(background_url)).convert('RGBA').resize((500, 281))
         except Exception as e:
             Log(str(e), LogType.ERROR)
             raise WallpaperIsNotDownloadableException
@@ -88,8 +88,8 @@ class ProfilMaker():
 
         h, w = pic.size
 
-        pic = ImageFactoryUtils().pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
-        pic = ImageFactoryUtils().pillow_mask_circle_transparent(pic, 1)
+        pic = ImageFactoryUtils.pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
+        pic = ImageFactoryUtils.pillow_mask_circle_transparent(pic, 1)
 
         img.paste(pic, (coords["profil_picture"]['x'],
                   coords["profil_picture"]['y']), pic)
@@ -136,7 +136,7 @@ class ProfilMaker():
 
         progress = (point * 100 / (calculated_point_per_level))/100
 
-        bar = ImageFactoryUtils().pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
+        bar = ImageFactoryUtils.pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
 
         img.paste(bar, (coords['level_bar']['x'], coords['level_bar']['y']), bar)
         # endregion
