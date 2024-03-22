@@ -10,9 +10,8 @@ from tests.utils import Utils
 class TestUser(unittest.TestCase):
     __user : User 
     
-    def __init__(self, methodName: str = "runTest") -> None:
+    def setUp(self) -> None:
         self.__user = User("TestUser")
-        super().__init__(methodName)
     
     def test_get_discord_id(self):
         self.assertEqual(self.__user.discord_id, "TestUser")

@@ -1,8 +1,9 @@
 import traceback
 import  discord
-from libs.banner_bar_creator import BannerBarCreator
+from libs.image_factory.banner_bar_creator import BannerBarCreator
 from libs.config import Config
-from libs.log import Log, LogType
+from libs.log import Log
+from typing import Union
 
 class BannerUpdater(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
@@ -31,7 +32,7 @@ class BannerUpdater(discord.Cog):
             people[coord] = []
             vocal_id = coords[coord]["id"]
             if vocal_id == 0:
-                Log("BannerUpdater: The vocal id of " + coord + " is 0, so it will be ignored.", LogType.WARNING)
+                Log.warning("BannerUpdater: The vocal id of " + coord + " is 0, so it will be ignored.")
                 continue
             vocal = self.__get_voice_channel(vocal_id, guild)
             for member in vocal.members:
@@ -40,7 +41,7 @@ class BannerUpdater(discord.Cog):
 
         return BannerBarCreator('.banner.png', self.__config.value["banner"]["banner_image"], coords, people).file_path
 
-    def __get_voice_channel(self, id: int, guild: discord.guild) -> discord.VoiceChannel or None:
+    def __get_voice_channel(self, id: int, guild: discord.guild) -> Union[discord.VoiceChannel, None]:
         channels = guild.channels
         for i in channels:
             if isinstance(i, discord.VoiceChannel) and i.id == id:
@@ -52,11 +53,12 @@ class BannerUpdater(discord.Cog):
         try:
             if self.__config.value["banner"]["enable"]:
                 image_url = self.__get_bar_image()
+                Log.info("Updating banner " + str(image_url))
                 with open(image_url, "rb") as image:
-                    Log("Banner updated in " + image_url, LogType.INFO)
                     await self.__bot.get_guild(self.__config.value["banner"]["guild_id"]).edit(banner=image.read())
+                    Log.info("Banner updated " + str(image_url))
         except:
-            Log(traceback.format_exc(), LogType.ERROR)
+            Log.error(traceback.format_exc())
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(BannerUpdater(bot))

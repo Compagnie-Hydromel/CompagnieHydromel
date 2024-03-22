@@ -7,18 +7,18 @@ from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
 
 
 class TestProfileLayout(unittest.TestCase):
-    def __init__(self, methodName: str = "runTest") -> None:
+    __profile_layout: ProfileLayout
+    
+    def setUp(self) -> None:
         self.__profile_layout = ProfileLayout.get_default()
-        self.__profile_layouts = ProfileLayouts()
-        super().__init__(methodName)
     
     def test_name(self):
         __old_name = self.__profile_layout.name
         __name = "default"
-        self.__profile_layout = __name
+        self.__profile_layout.name = __name
         self.__profile_layout = ProfileLayout.get_default()
         self.assertEqual(self.__profile_layout.name, __name)
-        self.__profile_layout = __old_name
+        self.__profile_layout.name = __old_name
         
     def test_layout(self):
         __old_layout = self.__profile_layout.layout

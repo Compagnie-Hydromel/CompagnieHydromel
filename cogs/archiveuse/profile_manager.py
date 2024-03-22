@@ -15,7 +15,7 @@ from libs.exception.wallpaper.wallpaper_already_posseded_exception import Wallpa
 from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
 from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper.wallpaper_not_posseded_exception import WallpaperNotPossededException
-from libs.log import Log, LogType
+from libs.log import Log
 from libs.paginator import Paginator
 from libs.utils import Utils
 
@@ -31,7 +31,7 @@ class ProfileManager(discord.Cog):
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color", "list profile layout", "change profile layout"])
     @discord.option("options_specifies", description="Specifies wallpaper or name color and bar color", required=False)
     async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option : str, options_specifies : str = ""):
-        Log(ctx.author.name + " is launching wallpaper commands with " + option + " " + str(options_specifies), LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching wallpaper commands with " + option + " " + str(options_specifies))
         try:
             await ctx.defer()
             user = User(str(ctx.author.id))
@@ -50,7 +50,7 @@ class ProfileManager(discord.Cog):
                 case "all wallpaper":
                     await self.__respond_list(ctx, wallpapers.all)
                 case "wallpaper preview":
-                    await ctx.respond(file=discord.File(Utils().download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
+                    await ctx.respond(file=discord.File(Utils.download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
                 case "name color":
                     user.change_name_color(options_specifies)
                     await ctx.respond(self.__response["namecolor_changed"])

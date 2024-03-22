@@ -11,7 +11,7 @@ from libs.databases.model.user.users import Users
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.databases.model.wallpaper.wallpapers import Wallpapers
 from libs.exception.handler import Handler
-from libs.log import Log, LogType
+from libs.log import Log
 from libs.paginator import Paginator
 from libs.utils import Utils
 
@@ -27,7 +27,7 @@ class RootCommands(discord.Cog):
     @discord.option("channel", discord.abc.GuildChannel, require=True)
     @discord.option("message", require=True)
     async def broadcast(self, ctx: discord.commands.context.ApplicationContext, channel: discord.abc.GuildChannel, message: str):
-        Log(ctx.author.name + " is launching broadcast commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching broadcast commands")
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -45,7 +45,7 @@ class RootCommands(discord.Cog):
     @discord.option("title", require=False)
     @discord.option("color", require=False)
     async def info(self, ctx: discord.commands.context.ApplicationContext, message: str, title: str = "Information", color: str = "#ffffff"):
-        Log(ctx.author.name + " is launching info commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching info commands")
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -59,7 +59,7 @@ class RootCommands(discord.Cog):
             
             # WARNING: eval = evil 
             # we check it before to avoid security issue
-            embed = discord.Embed(title=title, description=message.replace("\\n", "\n"), color=eval("0x" + Utils().check_color(color)))
+            embed = discord.Embed(title=title, description=message.replace("\\n", "\n"), color=eval("0x" + Utils.check_color(color)))
             
             await information_channel.send(embed=embed)
             await ctx.respond(self.__response["message_sent"])
@@ -68,7 +68,7 @@ class RootCommands(discord.Cog):
             
     @discord.slash_command(description="Clear message in a channel as root")
     async def clear(self, ctx: discord.commands.context.ApplicationContext):
-        Log(ctx.author.name + " is launching clear commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching clear commands")
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -82,7 +82,7 @@ class RootCommands(discord.Cog):
     @discord.option("option", description="list/add/remove", choices=["list", "add", "remove"])
     @discord.option("user", discord.User, require=False)
     async def root(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User = None):
-        Log(ctx.author.name + " is launching root commands with " + option, LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching root commands with " + option)
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -111,7 +111,7 @@ class RootCommands(discord.Cog):
     @discord.option("user", discord.User, require=True)
     @discord.option("message", require=True)
     async def message_user(self, ctx: discord.commands.context.ApplicationContext, user: discord.User, message: str):
-        Log(ctx.author.name + " is launching send commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching send commands")
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -131,7 +131,7 @@ class RootCommands(discord.Cog):
     @discord.option("user", discord.User, require=True)
     @discord.option("amount", int, require=False)
     async def manage_smartpoint(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User, amount: int = 0):
-        Log(ctx.author.name + " is launching manage smartpoint commands with " + option, LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching manage smartpoint commands with " + option)
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -164,7 +164,7 @@ class RootCommands(discord.Cog):
     @discord.option("level", int, require=False)
     @discord.option("new_name", str, require=False)
     async def manage_wallpaper(self, ctx: discord.commands.context.ApplicationContext, option: str, wallpaper_name: str, url: str = "", price: int = None, level: int = None, new_name: str = None):
-        Log(ctx.author.name + " is launching manage wallpaper commands with " + option, LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching manage wallpaper commands with " + option)
         try:
             if not await self.__check_if_root(ctx):
                 return
@@ -233,7 +233,7 @@ class RootCommands(discord.Cog):
     @discord.option("level_bar_y", int, require=False)
     @discord.option("new_name", str, require=False)
     async def manage_profile_layout(self, ctx: discord.commands.context.ApplicationContext, option: str, profile_layout_name: str, profile_picture_x: int = None, profile_picture_y: int = None, name_x: int = None, name_y: int = None, username_x: int = None, username_y: int = None, level_x: int = None, level_y: int = None, badge_x: int = None, badge_y: int = None, level_bar_x: int = None, level_bar_y: int = None, new_name: str = None):
-        Log(ctx.author.name + " is launching manage profile layout commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching manage profile layout commands")
         try:
             if not await self.__check_if_root(ctx):
                 return

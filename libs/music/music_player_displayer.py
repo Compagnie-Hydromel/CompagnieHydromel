@@ -4,7 +4,7 @@ from math import floor
 from libs.exception.music.no_playing_instance_exception import NoPlayingInstanceException
 from libs.exception.music.nothing_left_in_back_queue import NothingLeftInBackQueueException
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
-from libs.log import Log, LogType
+from libs.log import Log
 
 from libs.music.music_manager import MusicManager
 
@@ -41,7 +41,7 @@ class MusicPlayerDisplayer(discord.ui.View):
         except NothingLeftInBackQueueException:
             pass
         except:
-            Log(traceback.format_exc(), LogType.ERROR)
+            Log.error(traceback.format_exc())
         finally:
             await self.refresh(interaction.response)
                         
@@ -56,7 +56,7 @@ class MusicPlayerDisplayer(discord.ui.View):
         except NoPlayingInstanceException:
             pass
         except:
-            Log(traceback.format_exc(), LogType.ERROR)
+            Log.error(traceback.format_exc())
     
     @discord.ui.button(style=discord.ButtonStyle.danger, emoji="⏹")
     async def stop(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
@@ -65,7 +65,7 @@ class MusicPlayerDisplayer(discord.ui.View):
         except NoPlayingInstanceException:
             pass
         except:
-            Log(traceback.format_exc(), LogType.ERROR)
+            Log.error(traceback.format_exc())
         finally:
             await self.refresh(interaction.response)
             
@@ -78,7 +78,7 @@ class MusicPlayerDisplayer(discord.ui.View):
         except NoPlayingInstanceException:
             pass
         except:
-            Log(traceback.format_exc(), LogType.ERROR)
+            Log.error(traceback.format_exc())
         finally:
             await self.refresh(interaction.response)
     

@@ -5,11 +5,10 @@ from libs.databases.model.wallpaper.wallpapers import Wallpapers
 from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
 
 class TestWallpapers(unittest.TestCase):
-    __wallpaper : Wallpapers
+    __wallpapers : Wallpapers
     
-    def __init__(self, methodName: str = "runTest") -> None:
+    def setUp(self) -> None:
         self.__wallpapers = Wallpapers()
-        super().__init__(methodName)
         
     def test_all(self):
         self.assertTrue(len(self.__wallpapers.all) > 0)

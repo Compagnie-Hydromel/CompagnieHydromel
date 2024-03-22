@@ -4,9 +4,8 @@ from libs.exception.handler import Handler
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 from libs.log import Log
-from libs.profile_maker import ProfilMaker
+from libs.image_factory.profile_maker import ProfilMaker
 from libs.utils import Utils
-from libs.log import LogType
 import traceback
 
 class Profile(discord.Cog):
@@ -16,13 +15,14 @@ class Profile(discord.Cog):
         
     @discord.slash_command(description="Get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):
-        Log(ctx.author.name + " is launching profile commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching profile commands")
         try: 
             await ctx.defer()
 
             user = User(str(ctx.author.id))
 
-            Utils().createDirectoryIfNotExist(".profile")
+            Utils.createDirectoryIfNotExist(".profile")
+            Log.info("create profile for " + str(ctx.author))
             pro = ProfilMaker(
                 ".profile/" +str(ctx.author.id) + ".png",
                 ctx.author.name,
@@ -36,9 +36,9 @@ class Profile(discord.Cog):
                 badges = user.badges_list,
                 coords = user.profiles_layout.layout.dict()
             )
+            Log.info(ctx.author.name + " profile saved at " + pro.profil_path)
 
             await ctx.respond(file=discord.File(pro.profil_path))
-            Log(ctx.author.name + " profile saved at " + pro.profil_path, LogType.INFO)
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 

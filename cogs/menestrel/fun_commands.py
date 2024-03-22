@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from libs.config import Config
 from libs.exception.handler import Handler
 
-from libs.log import Log, LogType
+from libs.log import Log
 
 load_dotenv()
 
@@ -20,7 +20,7 @@ class FunCommands(discord.Cog):
     @discord.slash_command(description="Command to play *Rock, Paper, Scissors*.")
     @discord.option(name="choice", choices=["Rock", "Paper", "Scissors"])
     async def rock_paper_scissors(self, ctx : discord.ApplicationContext, choice : str):
-        Log(ctx.author.name + " is launching rock_paper_scissors commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching rock_paper_scissors commands")
         try: 
             possibilities = ["Rock", "Paper", "Scissors"]
             possibilities_emojis = [":rock:", ":page_facing_up:", ":scissors:"]
@@ -59,7 +59,7 @@ class FunCommands(discord.Cog):
     @discord.slash_command(description="Get a random joke")
     @discord.option(name="type",choices=["Global", "Dev", "Beauf"])
     async def joke(self, ctx : discord.ApplicationContext, type : str):
-        Log(ctx.author.name + " is launching joke commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching joke commands")
         try:
             if os.getenv("BLAGUES_API_KEY") is None:
                 await ctx.respond("Not api access!")
@@ -77,7 +77,7 @@ class FunCommands(discord.Cog):
         
     @discord.slash_command(name="meme", description="Get a random meme from reddit")
     async def meme(self, ctx : discord.ApplicationContext):
-        Log(ctx.author.name + " is launching meme commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching meme commands")
         try:
             await ctx.defer()
             

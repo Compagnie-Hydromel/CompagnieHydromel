@@ -139,7 +139,7 @@ reactions:
 
 ### Music
 
-To use the music feature you need to install [Lavalink](https://github.com/lavalink-devs/Lavalink)
+To use the music feature you need to install [Lavalink](https://github.com/lavalink-devs/Lavalink/releases/tag/3.7.11)
 
 and then you need to configure the config.yml file with the ip and port of the lavalink server
 the password need to be in the .env file with the key LAVALINK_PASSWORD seen before
