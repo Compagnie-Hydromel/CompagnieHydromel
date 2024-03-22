@@ -1,6 +1,6 @@
 import discord 
 from libs.config import Config
-from libs.log import Log, LogType
+from libs.log import Log
 
 from libs.databases.model.user.user import User 
 
@@ -14,12 +14,12 @@ class Reload(discord.Cog):
     
     @discord.command(name="reload", help="Reload all cogs")
     async def reload(self, ctx):
-        Log(ctx.author.name + " is launching reload commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching reload commands")
         if User(str(ctx.author.id)).is_root:    
             extensions = self.__bot.extensions.copy()
             for extension in extensions:
                 self.__bot.reload_extension(extension)
-            Log("Reloaded all cogs from " + str(self.__bot.user))
+            Log.info("Reloaded all cogs from " + str(self.__bot.user))
             await ctx.respond("Reloaded all cogs")
         else: 
             await ctx.respond(self.__response_exception["not_root"])

@@ -4,7 +4,7 @@ from libs.config import Config
 
 from libs.databases.model.user.users import Users
 from libs.exception.handler import Handler
-from libs.log import Log, LogType
+from libs.log import Log
 
 class Top(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
@@ -13,7 +13,7 @@ class Top(discord.Cog):
 
     @discord.slash_command(description="Get the top level up player")
     async def top(self, ctx: discord.commands.context.ApplicationContext):
-        Log(ctx.author.name + " is launching top commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching top commands")
         try:
             list_of_best_users = Users().get_top_users
             message = ""

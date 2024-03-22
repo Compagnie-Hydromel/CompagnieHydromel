@@ -7,7 +7,7 @@ from libs.config import Config
 from libs.exception.handler import Handler
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
 from libs.music.guild_music_manager import GuildMusicManager
-from libs.log import Log, LogType
+from libs.log import Log
 from libs.paginator import Paginator
 from libs.music.music_player_displayer import MusicPlayerDisplayer
 
@@ -38,29 +38,29 @@ class Music(discord.Cog):
     async def on_wavelink_track_start(self, player: wavelink.Player, track: wavelink.Track):
         music_manager = self.__guild_music_manager.get(player.guild.id)
         try: 
-            Log("Playing " + track.info['uri'] + " in " + player.channel.name)
+            Log.info("Playing " + track.info['uri'] + " in " + player.channel.name)
         except:
-            Log(traceback.format_exc(), LogType.ERROR)
+            Log.error(traceback.format_exc())
 
     @discord.Cog.listener()
     async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.Track, reason):
         try:
             match reason:
                 case "LOAD_FAILED":
-                    Log("Load failed in " + player.channel.name, LogType.ERROR)
+                    Log.error("Load failed in " + player.channel.name)
                 case "FINISHED":
                     await self.__guild_music_manager.get(player.guild.id).skip(old_song=track)
-                    Log("Skipping music in " + player.channel.name)
+                    Log.info("Skipping music in " + player.channel.name)
         except NothingLeftInQueueException:
             await self.__guild_music_manager.get(player.guild.id).disconnect()
-            Log("Disconnect bot in " + player.channel.name)
+            Log.info("Disconnect bot in " + player.channel.name)
         except:
-            Log(traceback.format_exc(), LogType.ERROR)
+            Log.error(traceback.format_exc())
 
     @discord.slash_command(description="Command that can play music that we want.")
     @discord.option("search", description="Search or youtube link")
     async def play(self, ctx : discord.ApplicationContext, *, search: str):
-        Log(ctx.author.name + " is launching play commands with " + search, LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching play commands with " + search)
         try:
             await ctx.defer()
             
@@ -75,7 +75,7 @@ class Music(discord.Cog):
 
     @discord.slash_command(description="Command that stop the music and make the bot leave the channel.")
     async def stop(self, ctx : discord.ApplicationContext):
-        Log(ctx.author.name + " is launching stop commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching stop commands")
         try: 
             await self.__guild_music_manager.get(ctx.guild.id).stop()
             await ctx.respond(self.__response["music_stopping"])
@@ -84,7 +84,7 @@ class Music(discord.Cog):
             
     @discord.slash_command(description="Command that pause the music.")
     async def pause(self, ctx : discord.ApplicationContext):
-        Log(ctx.author.name + " is launching pause commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching pause commands")
         try:
             await self.__guild_music_manager.get(ctx.guild.id).pause()
             await ctx.respond(self.__response["pausing_music"].replace("{music}", str(self.__guild_music_manager.get(ctx.guild.id).now)))
@@ -93,7 +93,7 @@ class Music(discord.Cog):
         
     @discord.slash_command(description="Command that resume the music.")
     async def resume(self, ctx : discord.ApplicationContext):
-        Log(ctx.author.name + " is launching resume commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching resume commands")
         try:
             await self.__guild_music_manager.get(ctx.guild.id).resume()
             await ctx.respond(self.__response["resuming_music"].replace("{music}", str(self.__guild_music_manager.get(ctx.guild.id).now)))
@@ -102,7 +102,7 @@ class Music(discord.Cog):
     
     @discord.slash_command(description="Command that come back to the previous music.")
     async def back(self, ctx : discord.ApplicationContext):
-        Log(ctx.author.name + " is launching back commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching back commands")
         try:
             await ctx.defer()
             
@@ -113,7 +113,7 @@ class Music(discord.Cog):
 
     @discord.slash_command(description="Command that skip the music.")
     async def skip(self, ctx : discord.ApplicationContext):
-        Log(ctx.author.name + " is launching skip commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching skip commands")
         try:
             await ctx.defer()
             
@@ -124,7 +124,7 @@ class Music(discord.Cog):
     
     @discord.slash_command(description="Command that get the queue.")
     async def queue(self, ctx : discord.ApplicationContext):
-        Log(ctx.author.name + " is launching queue commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching queue commands")
         try:
             songs =  self.__guild_music_manager.get(ctx.guild.id).queue
             
@@ -135,7 +135,7 @@ class Music(discord.Cog):
         
     @discord.slash_command(description="Command to get the current music.")
     async def now(self, ctx : discord.ApplicationContext):
-        Log(ctx.author.name + " is launching now commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching now commands")
         try:
             music_manager = self.__guild_music_manager.get(ctx.guild.id)
             player_displayer = MusicPlayerDisplayer(music_manager)
@@ -167,6 +167,6 @@ class Music(discord.Cog):
 def setup(bot):
     if Config().value["music"]["enable"]:
         if os.getenv("LAVALINK_PASSWORD") == None:
-            Log("No lavalink password found.", LogType.WARNING)
+            Log.warning("No lavalink password found.")
         else: 
             bot.add_cog(Music(bot))

@@ -18,7 +18,7 @@ class Utils():
             directory (str): The directory to create. (example: "path/to/directory")
         """
         if not os.path.exists(directory):
-            Log().info("Creating directory " + directory)
+            Log.info("Creating directory " + directory)
             os.mkdir(directory)
     
     @staticmethod
@@ -55,9 +55,9 @@ class Utils():
         Returns:
             BytesIO: The image.
         """
-        Log("Downloading image from " + url)
+        Log.info("Downloading image from " + url)
         response_url = requests.get(url)
-        Log("Downloaded image from " + url)
+        Log.info("Downloaded image from " + url)
         return BytesIO(response_url.content)
     
     @staticmethod

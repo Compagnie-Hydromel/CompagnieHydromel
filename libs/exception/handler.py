@@ -1,7 +1,7 @@
 import traceback
 from libs.config import Config
 from libs.exception.bot_exception import BotException
-from libs.log import Log, LogType
+from libs.log import Log
 
 class Handler:
     """Handler class for handling exception
@@ -42,7 +42,7 @@ class Handler:
                 case "WallpaperIsNotDownloadableException":
                     return self.__response_exception["unable_to_download_image"]
                 case "WallpaperIsNotDownloadableException":
-                    Log(stacktrace, LogType.ERROR)
+                    Log.error(stacktrace)
                     return self.__response_exception["unable_to_download_image"]
                 # music exception
                 case "AlreadyPlayingException": 
@@ -83,5 +83,5 @@ class Handler:
         Returns:
             str: the default response message
         """        
-        Log(stacktrace, LogType.ERROR)
+        Log.error(stacktrace)
         return self.__response_exception["default"]

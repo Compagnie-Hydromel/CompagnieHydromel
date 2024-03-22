@@ -51,7 +51,7 @@ class MusicManager:
         if not self.voice_clients:
             if voice_state == None:
                 raise NotConnectedToVoiceChannelException
-            Log("Connecting to " + voice_state.channel.name)
+            Log.info("Connecting to " + voice_state.channel.name)
             self.voice_clients = await voice_state.channel.connect(cls=wavelink.Player)
     
     async def skip(self, old_song: wavelink.abc.Playable = None):
@@ -76,7 +76,7 @@ class MusicManager:
             self.voice_back.put(old_song)
         
         song = self.voice_queues.pop()
-        Log("Playing " + str(song) + " in " + self.voice_clients.channel.name)
+        Log.info("Playing " + str(song) + " in " + self.voice_clients.channel.name)
         await self.voice_clients.play(song, replace=True)
     
     async def back(self):
@@ -96,7 +96,7 @@ class MusicManager:
             self.voice_queues.put(current_song)
             
         song = self.voice_queues.pop()        
-        Log("Playing " + str(song) + " in " + self.voice_clients.channel.name)
+        Log.info("Playing " + str(song) + " in " + self.voice_clients.channel.name)
         await self.voice_clients.play(song, replace=True)
     
     async def resume(self):
@@ -106,7 +106,7 @@ class MusicManager:
             NoPlayingInstanceException: if there is no playing instance.
         """        
         if self.is_paused:
-            Log("Resuming music in " + self.voice_clients.channel.name)
+            Log.info("Resuming music in " + self.voice_clients.channel.name)
             await self.voice_clients.resume()
 
     @property
@@ -152,10 +152,10 @@ class MusicManager:
         """
         self.__raise_if_there_no_playing_instance()
         
-        Log("Stopping music in " + self.voice_clients.channel.name)
+        Log.info("Stopping music in " + self.voice_clients.channel.name)
         await self.voice_clients.stop()
         if disconnect:
-            Log("Disconnect from " + self.voice_clients.channel.name)
+            Log.info("Disconnect from " + self.voice_clients.channel.name)
             await self.disconnect()
     
     async def disconnect(self):
@@ -178,7 +178,7 @@ class MusicManager:
             NoPlayingInstanceException: if there is no playing instance.
         """
         if not self.is_paused:
-            Log("Pausing music in " + self.voice_clients.channel.name)
+            Log.info("Pausing music in " + self.voice_clients.channel.name)
             await self.voice_clients.pause()
     
     @property

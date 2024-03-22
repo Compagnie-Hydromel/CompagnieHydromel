@@ -38,7 +38,7 @@ class Log():
             log.write(self.__log + "\n")
             
     @staticmethod
-    def logMessage(channel: discord.abc.Messageable, message: str, author: str, bot: str, onlyDm: bool = False):
+    def message(channel: discord.abc.Messageable, message: str, author: str, bot: str, onlyDm: bool = False) -> "Log":
         """This method is designed to log a message.
 
         Args:
@@ -54,4 +54,41 @@ class Log():
         else: 
             channelName = channel.name
         if (onlyDm and isinstance(channel, discord.DMChannel)) or not onlyDm:
-            Log("(" + channelName + ")" + author + ": " + message, LogType.MESSAGE)
+            return Log("(" + channelName + ")" + author + ": " + message, LogType.MESSAGE)
+    
+    @staticmethod
+    def info(message: str) -> "Log":
+        """This method is designed to log an information.
+
+        Args:
+            message (str): The information to log.
+        """
+        return Log(message, LogType.INFO)
+        
+    @staticmethod
+    def error(message: str) -> "Log":
+        """This method is designed to log an error.
+
+        Args:
+            message (str): The error to log.
+        """
+        return Log(message, LogType.ERROR)
+        
+    @staticmethod
+    def warning(message: str) -> "Log":
+        """This method is designed to log a warning.
+
+        Args:
+            message (str): The warning to log.
+        """
+        return Log(message, LogType.WARNING)
+        
+        
+    @staticmethod
+    def command(message: str) -> "Log":
+        """This method is designed to log a command.
+
+        Args:
+            message (str): The command to log.
+        """
+        return Log(message, LogType.COMMAND)
