@@ -2,7 +2,7 @@ import  discord
 from libs.config import Config
 from libs.exception.music.already_playing_exception import AlreadyPlayingException
 
-from libs.log import Log, LogType
+from libs.log import Log
 from libs.music.guild_music_manager import GuildMusicManager
 import wavelink
 import os
@@ -36,7 +36,7 @@ class MusicOnJoin(discord.Cog):
         match reason:
             case "FINISHED": 
                 await self.__guild_music_manager.get(player.guild.id).disconnect()
-                Log("Disconnect bot in " + player.channel.name)
+                Log.info("Disconnect bot in " + player.channel.name)
 
         
     @discord.Cog.listener()
@@ -69,6 +69,6 @@ class MusicOnJoin(discord.Cog):
 def setup(bot: discord.bot.Bot):
     if Config().value["music"]["music_on_join"]["enable"]:
         if os.getenv("LAVALINK_PASSWORD") == None:
-            Log("No lavalink password found.", LogType.WARNING)
+            Log.warning("No lavalink password found.")
         else: 
             bot.add_cog(MusicOnJoin(bot))

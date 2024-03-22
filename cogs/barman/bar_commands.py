@@ -5,7 +5,7 @@ from libs.config import Config
 from libs.databases.model.user.user import User
 from libs.exception.handler import Handler
 from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
-from libs.log import Log, LogType
+from libs.log import Log
 from libs.paginator import Paginator
 from libs.utils import Utils
 
@@ -32,13 +32,13 @@ class BarCommands(discord.Cog):
         await self.handler(ctx, "water")
                     
     async def handler(self, ctx: discord.commands.context.ApplicationContext, drink: str):
-        Log(ctx.author.name + " is launching " + drink + " commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching " + drink + " commands")
         try:
             drinks_in_config = self.__config.value["bar_commands"][drink]
             price = drinks_in_config["price"]
             list_of_url = drinks_in_config["list"]
             
-            img_file = discord.File(Utils().download_image_with_list_random(list_of_url), drink + ".png")
+            img_file = discord.File(Utils.download_image_with_list_random(list_of_url), drink + ".png")
             
             user = User(str(ctx.author.id))
             

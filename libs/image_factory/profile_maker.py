@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 from PIL import Image, ImageDraw, ImageFont, ImageColor
-from libs.log import Log, LogType
+from libs.log import Log
+from libs.image_factory.utils import Utils as ImageFactoryUtils
 from libs.utils import Utils
 import requests
 from io import BytesIO
@@ -63,9 +64,9 @@ class ProfilMaker():
         # region [background]
         img = None
         try: 
-            img = Image.open(Utils().download_image(background_url)).convert('RGBA').resize((500, 281))
+            img = Image.open(Utils.download_image(background_url)).convert('RGBA').resize((500, 281))
         except Exception as e:
-            Log(str(e), LogType.ERROR)
+            Log.error(str(e))
             raise WallpaperIsNotDownloadableException
 
         # endregion
@@ -82,13 +83,13 @@ class ProfilMaker():
             pic = Image.open(BytesIO(response_profile_picture.content)).convert(
                 'RGBA').resize((128, 128))
         except Exception as e:
-            Log(str(e), LogType.ERROR)
+            Log.error(str(e))
             raise WallpaperIsNotDownloadableException
 
         h, w = pic.size
 
-        pic = Utils().pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
-        pic = Utils().pillow_mask_circle_transparent(pic, 1)
+        pic = ImageFactoryUtils.pillow_crop_max_square(pic).resize((w, h), Image.Resampling.LANCZOS)
+        pic = ImageFactoryUtils.pillow_mask_circle_transparent(pic, 1)
 
         img.paste(pic, (coords["profil_picture"]['x'],
                   coords["profil_picture"]['y']), pic)
@@ -120,7 +121,7 @@ class ProfilMaker():
                 response_background_url = requests.get(badge.url)
                 tempImg = Image.open(BytesIO(response_background_url.content)).convert('RGBA')
             except Exception as e:
-                Log(str(e), LogType.ERROR)
+                Log.error(str(e))
                 raise WallpaperIsNotDownloadableException
             tempImg.thumbnail((32, 32), Image.LANCZOS)
             img.paste(tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
@@ -135,7 +136,7 @@ class ProfilMaker():
 
         progress = (point * 100 / (calculated_point_per_level))/100
 
-        bar = Utils().pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
+        bar = ImageFactoryUtils.pillow_new_bar(1, 1, 500, 25, progress, fg=_bar_color)
 
         img.paste(bar, (coords['level_bar']['x'], coords['level_bar']['y']), bar)
         # endregion
@@ -148,7 +149,7 @@ class ProfilMaker():
 
     @property
     def profil_path(self) -> str:
-        """This method is designed to get the profil path.
+        """This method is designed to get the saved profil path.
 
         Returns:
             str: The profil path.

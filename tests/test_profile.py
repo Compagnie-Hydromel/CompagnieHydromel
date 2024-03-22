@@ -1,6 +1,6 @@
 import unittest
 import os
-from libs.profile_maker import ProfilMaker 
+from libs.image_factory.profile_maker import ProfilMaker 
 
 class TestProfileMaker(unittest.TestCase):
     def test_profile_create_file(self):

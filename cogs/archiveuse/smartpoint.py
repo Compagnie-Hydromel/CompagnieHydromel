@@ -4,7 +4,7 @@ from libs.config import Config
 
 from libs.databases.model.user.user import User
 from libs.exception.handler import Handler
-from libs.log import Log, LogType
+from libs.log import Log
 
 class smartpoint(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
@@ -12,7 +12,7 @@ class smartpoint(discord.Cog):
         self.__error_handler = Handler()
 
     async def __smartpoint(self, ctx: discord.commands.context.ApplicationContext):
-        Log(ctx.author.name + " is launching smartpoint commands", LogType.COMMAND)
+        Log.command(ctx.author.name + " is launching smartpoint commands")
         try:
             user = User(str(ctx.author.id))
 
