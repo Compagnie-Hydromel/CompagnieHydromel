@@ -44,6 +44,14 @@ class Handler:
                 case "WallpaperIsNotDownloadableException":
                     Log.error(stacktrace)
                     return self.__response_exception["unable_to_download_image"]
+                case "LevelShouldBeGreaterThanOneException":
+                    return self.__response_exception["level_should_be_greater_than_one"]
+                case "RoleAlreadyExistException":
+                    return self.__response_exception["role_already_exist"]
+                case "RoleNotExistException":
+                    return self.__response_exception["role_not_exist"]
+                case "RoleLevelAlreadyExistException":
+                    return self.__response_exception["role_level_already_exist"]
                 # music exception
                 case "AlreadyPlayingException": 
                     return self.__response_exception["already_playing"]

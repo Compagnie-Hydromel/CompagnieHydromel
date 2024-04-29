@@ -113,6 +113,9 @@ class Config():
             "profile_layout_renamed": "Profile layout renamed!",
             "wallpaper_updated": "Wallpaper updated!",
             "wallpaper_renamed": "Wallpaper renamed!",
+            "role_added": "Role added!",
+            "role_removed": "Role removed!",
+            "role_updated": "Role updated!"
         },
         "exception_response": {
             "default": "An error occured",
@@ -147,6 +150,11 @@ class Config():
             "enter_new_name": "Please enter a new name!",
             "cannot_remove_default_profile_layout": "Cannot remove default profile layout!",
             "cannot_remove_default_wallpaper": "Cannot remove default wallpaper!",
+            "level_should_be_greater_than_one": "Level should be set and greater than one!",
+            "role_already_exist": "Role already exist!",
+            "role_not_exist": "Role not exist!",
+            "cannot_manage_default_role": "Cannot manage default role! @(everyone)",
+            "role_level_already_exist": "Role level already exist!",
         }
     }
     __config_file = "config.yml"
