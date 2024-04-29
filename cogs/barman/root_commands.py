@@ -6,6 +6,8 @@ from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
 from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
+from libs.databases.model.roles.role import Role
+from libs.databases.model.roles.roles import Roles
 from libs.databases.model.user.user import User
 from libs.databases.model.user.users import Users
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
@@ -285,7 +287,46 @@ class RootCommands(discord.Cog):
             
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
-        
+    
+    @discord.slash_command(description="Manage role")
+    @discord.option("option", description="add/remove/show", choices=["add", "remove", "show", "update"])
+    @discord.option("role", discord.role.Role, require=True)
+    @discord.option("level", int, require=False)
+    async def manage_role(self, ctx: discord.commands.context.ApplicationContext, option: str, role: discord.role.Role, level: int = None):
+        Log.command(ctx.author.name + " is launching manage role commands with " + option)
+        try:
+            if not await self.__check_if_root(ctx):
+                return
+            
+            roles = Roles()
+
+            role_id = str(role.id)
+            
+            if role.is_default():
+                if option == "show":
+                    await ctx.respond(self.__all_roles())
+                else:
+                    await ctx.respond(self.__response_exception["cannot_manage_default_role"])
+                return 
+            
+            match option:
+                case "show":
+                    await ctx.respond("**Name** " + role.name + "\n**Level** " + str(Role(role_id).level))
+                case "add":
+                    roles.add(role_id, self.__not_none(level))
+                    await ctx.respond(self.__response["role_added"])
+                case "remove":
+                    roles.remove(role_id)
+                    await ctx.respond(self.__response["role_removed"])
+                case "update":
+                    Role(role_id).level = self.__not_none(level)
+                    await ctx.respond(self.__response["role_updated"])
+                case _:
+                    await ctx.respond(self.__response_exception["option_not_found"])
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
+
+
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
         if not User(str(ctx.author.id)).is_root:
             await ctx.respond(self.__response_exception["not_root"])
@@ -318,6 +359,15 @@ class RootCommands(discord.Cog):
         if content != "":
             pages.append(content)
         return pages
+    
+    def __all_roles(self) -> str:
+        roles = Roles().all
+        if len(roles) == 0:
+            return "No roles found"
+        content = ""
+        for role in roles:
+            content += "**<@&" + role.discord_id + ">** " + str(role.level) + "\n"
+        return content
 
     
 def setup(bot: discord.bot.Bot):
