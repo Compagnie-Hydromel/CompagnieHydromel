@@ -475,4 +475,82 @@ class DatabaseAccessImplement:
         """
         pass
 
+    def get_all_roles(self) -> list[str]:
+        """This method is designed to get all roles.
+
+        Returns:
+            list[str]: All roles discordId.
+        """
+        pass
+    
+    def get_role_discord_id_by_role_level(self, leve: int) -> str:
+        """This method is designed to get a role discordId by role level.
+
+        Args:
+            leve (int): The role level.
+        
+        Returns:
+            str: The role discordId.
+        """
+        pass
+    
+    def is_role_exist(self, role_discord_id: str) -> bool:
+        """This method is designed to check if a role exist.
+
+        Args:
+            role_discord_id (str): The role discordId.
+        
+        Returns:
+            bool: True if the role exist, False if not.
+        """
+        pass
+
+    def is_role_exist_by_level(self, role_level: int) -> bool:
+        """This method is designed to check if a role exist.
+
+        Args:
+            role_level (int): The role of the role.
+        
+        Returns:
+            bool: True if the role exist, False if not.
+        """
+        pass
+    
+    def get_role_level(self, role_discord_id: str) -> int:
+        """This method is designed to get a level which the user need to get the role.
+
+        Args:
+            role_discord_id (str): The role discordId.
+        
+        Returns:
+            int: The role level.
+        """
+        pass
+
+    def add_role(self, role_discord_id: str, level: int) -> None:
+        """This method is designed to add a role.
+
+        Args:
+            role_discord_id (str): The role discordId.
+            level (int): The role level.
+        """
+        pass
+
+    def remove_role(self, role_discord_id: str) -> None:
+        """This method is designed to remove a role.
+
+        Args:
+            role_discord_id (str): The role discordId.
+        """
+        pass
+
+    def update_role_level(self, role_discord_id: str, level: int) -> None:
+        """This method is designed to update a role level.
+
+        Args:
+            role_discord_id (str): The role discordId.
+            level (int): The new role level.
+        """
+        pass
+
     # Public
