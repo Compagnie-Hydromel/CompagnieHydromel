@@ -5,7 +5,7 @@ from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import Wal
 
 from libs.log import Log
 from libs.image_factory.profile_maker import ProfilMaker
-from libs.utils import Utils
+from libs.utils.utils import Utils
 import traceback
 
 class Profile(discord.Cog):

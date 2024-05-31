@@ -2,7 +2,7 @@
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 from libs.log import Log
 from libs.image_factory.utils import Utils as ImageFactoryUtils
-from libs.utils import Utils
+from libs.utils.utils import Utils
 import requests
 from io import BytesIO
 from libs.databases.model.badge.badge import Badge

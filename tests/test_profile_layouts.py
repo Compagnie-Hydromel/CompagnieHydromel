@@ -1,6 +1,4 @@
 import unittest
-from libs.databases.dto.coords import Coords
-from libs.databases.dto.layout import Layout
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
 
 from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts

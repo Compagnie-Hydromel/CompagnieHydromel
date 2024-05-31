@@ -26,6 +26,22 @@ class Roles:
         """
         return self.__create_list_of_role_by_list_role_discord_id(self.__db_access.get_all_roles())
     
+    def by_level(self, level) -> Role:
+        """This method is designed to get a role by the level.
+
+        Args:
+            level (int): The level of the role.
+
+        Returns:
+            Role: The role.
+
+        Raises:
+            RoleNotExistException: If the role does not exist in the database.
+        """
+        if not self.__db_access.is_role_exist_by_level(level):
+            raise RoleNotExistException()
+        return Role(self.__db_access.get_role_discord_id_by_role_level(level))
+    
     def add(self, discordId: str, level: int) -> None:
         """This method is designed to add a role in the database.
 

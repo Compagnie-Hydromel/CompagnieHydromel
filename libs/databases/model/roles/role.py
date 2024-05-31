@@ -25,7 +25,7 @@ class Role:
         if not self.__db_access.is_role_exist(self.__discord_id):
             raise RoleNotExistException()
         
-    def __eq__(self, value: object) -> bool:
+    def __eq__(self, value: "Role") -> bool:
         """This method is designed to compare two roles.
 
         Args:
