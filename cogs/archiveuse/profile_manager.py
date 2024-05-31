@@ -17,7 +17,7 @@ from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotE
 from libs.exception.wallpaper.wallpaper_not_posseded_exception import WallpaperNotPossededException
 from libs.log import Log
 from libs.paginator import Paginator
-from libs.utils import Utils
+from libs.utils.utils import Utils
 
 class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:

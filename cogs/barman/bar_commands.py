@@ -7,7 +7,8 @@ from libs.exception.handler import Handler
 from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.log import Log
 from libs.paginator import Paginator
-from libs.utils import Utils
+from libs.utils.level_utils import LevelUtils
+from libs.utils.utils import Utils
 
 class BarCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
@@ -45,7 +46,7 @@ class BarCommands(discord.Cog):
             if price > 0:
                 self.__payement_process(user, price)
                 await ctx.respond("Little " + drink, file=img_file)
-                user.add_point(10)
+                LevelUtils.add_point(ctx.author, 10)
                 user.increase_number_of_buy()
             else: 
                 await ctx.respond(file=img_file)

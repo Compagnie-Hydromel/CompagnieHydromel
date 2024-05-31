@@ -4,6 +4,12 @@ CREATE TABLE IF NOT EXISTS badges (
   url TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS roles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  discordId TEXT NOT NULL UNIQUE,
+  level INTEGER NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS wallpapers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL UNIQUE,
@@ -24,6 +30,7 @@ CREATE TABLE IF NOT EXISTS users (
   nameColor TEXT DEFAULT '0000FF',
   numberOfBuy INTEGER DEFAULT '0',
   profilesLayoutId INTEGER DEFAULT '1',
+  acceptedRules INTEGER DEFAULT '0',
   CONSTRAINT current_profiles_layout_id_foreign_key FOREIGN KEY (profilesLayoutId) REFERENCES profilesLayout (id),
   CONSTRAINT current_wallpapers_id_foreign_key FOREIGN KEY (wallpapersId) REFERENCES wallpapers (id)
 );
