@@ -66,3 +66,11 @@ class ProfileLayout:
         """
         self.__db_access.rename_profile_layout(self.__profile_layout_name, new_name)
         self.__profile_layout_name = new_name
+
+    def __str__(self) -> str:
+        """This method is designed to represent the object as a string.
+
+        Returns:
+            str: The string representation of the object.
+        """
+        return "ProfileLayout(name: " + self.__profile_layout_name + ", layout: " + str(self.layout) + ")"

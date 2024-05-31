@@ -138,3 +138,16 @@ class TestUser(unittest.TestCase):
         
         self.__user.change_profile_layout(ProfileLayout.get_default())
         ProfileLayouts().remove(profile_layout)
+
+    def test_has_user_accepted_rules(self):
+        self.assertEqual(self.__user.has_accepted_rules, False)
+
+    def test_toggle_user_accepted_rules(self):
+        self.__user.toggle_accepted_rules()
+        self.assertEqual(self.__user.has_accepted_rules, True)
+        self.__user.toggle_accepted_rules()
+
+    def test_toggle_user_accepted_rules(self):
+        self.__user.toggle_accepted_rules(True)
+        self.assertEqual(self.__user.has_accepted_rules, True)
+        self.__user.toggle_accepted_rules(False)

@@ -1,17 +1,14 @@
-import re
 from libs.databases.model.badge.badges import Badges
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
 from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.databases.model.wallpaper.wallpapers import Wallpapers
-from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
 from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.exception.wallpaper.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
 from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
-from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper.wallpaper_not_posseded_exception import WallpaperNotPossededException
-from libs.utils import Utils
+from libs.utils.utils import Utils
 
 class User:
     """This class is designed to manage a single user.
@@ -132,6 +129,15 @@ class User:
         """
         return self.__db_access.get_if_user_is_root(self.__discord_id)
     
+    @property
+    def has_accepted_rules(self) -> bool:
+        """This method is designed to check if the user has accepted the rules.
+
+        Returns:
+            bool: True if the user has accepted the rules, False if not.
+        """
+        return self.__db_access.is_user_accepted_rules(self.__discord_id)
+    
     def toggle_root(self, root: bool | None = None) -> None:
         """This method is designed to toggle the root of the user.
 
@@ -141,6 +147,16 @@ class User:
         if root is None:
             root = not self.is_root
         self.__db_access.set_user_root(self.__discord_id, root)
+
+    def toggle_accepted_rules(self, accepted_rules: bool | None = None) -> None:
+        """This method is designed to toggle the accepted rules of the user.
+
+        Args:
+            accepted_rules (bool | None, optional): if bool set the bool if none toggle. Defaults to None.
+        """
+        if accepted_rules is None:
+            accepted_rules = not self.has_accepted_rules
+        self.__db_access.set_user_accepted_rules(self.__discord_id, accepted_rules)
     
     @property
     def current_wallpaper(self) -> Wallpaper:

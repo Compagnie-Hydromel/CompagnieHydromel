@@ -6,6 +6,7 @@ from libs.config import Config
 from libs.databases.model.user.user import User
 from libs.exception.handler import Handler
 from libs.log import Log
+from libs.utils.level_utils import LevelUtils
 
 class Listener(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
@@ -42,7 +43,7 @@ class Listener(discord.Cog):
     @discord.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         Log.info(member.name + " joined the server " + member.guild.name)
-        User(str(member.id)).add_point()
+        LevelUtils.add_point(member)
         
     @discord.Cog.listener()
     async def on_member_remove(self, member: discord.Member):

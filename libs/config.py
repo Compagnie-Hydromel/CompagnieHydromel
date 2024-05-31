@@ -67,9 +67,16 @@ class Config():
             "enable": False,
             "list": [
                 {
+                    "emoji": "🎨",
+                    "role_id": 0,
+                    "message_id": 0,
+                    "action": "emoji_to_role"
+                },
+                {
                     "emoji": "✅",
                     "role_id": 0,
                     "message_id": 0,
+                    "action": "accept_rules"
                 }
             ]
         },
@@ -113,6 +120,10 @@ class Config():
             "profile_layout_renamed": "Profile layout renamed!",
             "wallpaper_updated": "Wallpaper updated!",
             "wallpaper_renamed": "Wallpaper renamed!",
+            "role_added": "Role added!",
+            "role_removed": "Role removed!",
+            "role_updated": "Role updated!",
+            "level_up": "You just level up ! your now level {level} !"
         },
         "exception_response": {
             "default": "An error occured",
@@ -147,6 +158,11 @@ class Config():
             "enter_new_name": "Please enter a new name!",
             "cannot_remove_default_profile_layout": "Cannot remove default profile layout!",
             "cannot_remove_default_wallpaper": "Cannot remove default wallpaper!",
+            "level_should_be_greater_than_one": "Level should be set and greater than one!",
+            "role_already_exist": "Role already exist!",
+            "role_not_exist": "Role not exist!",
+            "cannot_manage_default_role": "Cannot manage default role! @(everyone)",
+            "role_level_already_exist": "Role level already exist!",
         }
     }
     __config_file = "config.yml"
@@ -164,7 +180,7 @@ class Config():
             data (dict[str: any]): The data to write.
         """
         with open(self.__config_file, "w") as f:
-            yaml.dump(data, f)
+            yaml.dump(data, f, encoding='utf-8', allow_unicode=True)
             
     def __is_config_exist(self) -> bool:
         """This method is designed to check if the config exist.
@@ -212,6 +228,9 @@ class Config():
                     self.__need_to_rewrite = True
                 else:
                     subfield[field] = self.__check_subfield_exist(subfield[field], default_subfield[field])
+        elif isinstance(default_subfield, list):
+            for subfield_number in range(len(subfield)):
+                subfield[subfield_number] = self.__check_subfield_exist(subfield[subfield_number], default_subfield[0])
     
         return subfield
     
