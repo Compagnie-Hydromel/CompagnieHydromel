@@ -1,4 +1,3 @@
-
 import discord
 
 from libs.config import Config
@@ -7,6 +6,7 @@ from libs.databases.model.roles.roles import Roles
 from libs.databases.model.user.user import User
 from libs.databases.model.user.users import Users
 from libs.exception.role.role_not_exist_exception import RoleNotExistException
+from libs.log import Log
 from libs.utils.role_utils import RoleUtils
 
 class ReactionRole(discord.Cog):
@@ -54,8 +54,11 @@ class ReactionRole(discord.Cog):
                     await RoleUtils.add_role(reaction.member, user)
 
                 case "emoji_to_role" | _:
-                    role: discord.role = discord.utils.get(reaction.member.guild.roles, id=role_id)
-                    await reaction.member.add_roles(role)
+                    try:
+                        role: discord.role = discord.utils.get(reaction.member.guild.roles, id=role_id)
+                        await reaction.member.add_roles(role)
+                    except:
+                        Log.warning(f"Role {role_id} not found")
 
     async def remove_role_with_reaction(self, reaction: discord.RawReactionActionEvent, message_id: int, emoji: str, role_id: int, action: str) -> None:
         """This method is designed to remove a role with a reaction.
@@ -75,8 +78,11 @@ class ReactionRole(discord.Cog):
                     user.toggle_accepted_rules(False)
                     await RoleUtils.remove_all_roles(member)
                 case "emoji_to_role" | _:
-                    role: discord.Role = discord.utils.get(guild.roles, id=role_id)
-                    await member.remove_roles(role)
+                    try:
+                        role: discord.Role = discord.utils.get(guild.roles, id=role_id)
+                        await member.remove_roles(role)
+                    except:
+                        Log.warning(f"Role {role_id} not found")
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(ReactionRole(bot))
