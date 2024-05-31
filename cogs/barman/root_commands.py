@@ -16,6 +16,7 @@ from libs.exception.handler import Handler
 from libs.log import Log
 from libs.paginator import Paginator
 from libs.utils.utils import Utils
+from libs.utils.role_utils import RoleUtils
 
 class RootCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
@@ -315,12 +316,15 @@ class RootCommands(discord.Cog):
                 case "add":
                     roles.add(role_id, self.__not_none(level))
                     await ctx.respond(self.__response["role_added"])
+                    await RoleUtils.update_all_user_role(ctx.guild)
                 case "remove":
                     roles.remove(role_id)
                     await ctx.respond(self.__response["role_removed"])
+                    await RoleUtils.update_all_user_role(ctx.guild)
                 case "update":
                     Role(role_id).level = self.__not_none(level)
                     await ctx.respond(self.__response["role_updated"])
+                    await RoleUtils.update_all_user_role(ctx.guild)
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
         except Exception as e:
