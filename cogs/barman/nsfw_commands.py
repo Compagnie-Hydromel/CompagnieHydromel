@@ -5,7 +5,7 @@ import discord
 import os
 
 from libs.config import Config
-from libs.utils import Utils
+from libs.utils.utils import Utils
 
 class NsfwCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:

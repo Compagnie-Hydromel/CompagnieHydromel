@@ -15,7 +15,7 @@ from libs.databases.model.wallpaper.wallpapers import Wallpapers
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.paginator import Paginator
-from libs.utils import Utils
+from libs.utils.utils import Utils
 
 class RootCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:

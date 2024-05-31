@@ -3,7 +3,7 @@ from libs.databases.repository.database_access_implement import DatabaseAccessIm
 from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper.wallpaper_url_not_an_image import WallpaperUrlNotAnImage
-from libs.utils import Utils
+from libs.utils.utils import Utils
 
 
 class Wallpaper:
