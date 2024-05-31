@@ -16,6 +16,14 @@ class SqliteAccess(DatabaseAccessImplement):
 
     # Public 
 
+    def get_all_users(self) -> list[str]:
+        """This method is designed to get all users.
+
+        Returns:
+            list[str]: All users discordId.
+        """
+        return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users"))
+
     def get_user_level(self, discord_id: str) -> int:
         """This method is designed to get a user level number.
 
@@ -524,16 +532,16 @@ class SqliteAccess(DatabaseAccessImplement):
         """
         return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM roles ORDER BY level ASC"))
     
-    def get_role_discord_id_by_role_level(self, leve: int) -> str:
+    def get_role_discord_id_by_role_level(self, level: int) -> str:
         """This method is designed to get a role discordId by role level.
 
         Args:
-            leve (int): The role level.
+            level (int): The role level.
         
         Returns:
             str: The role discordId.
         """
-        return self.__sqliteDB.select("SELECT discordId FROM roles WHERE level = ?", [leve])[0][0]
+        return self.__sqliteDB.select("SELECT discordId FROM roles WHERE level = ?", [level])[0][0]
     
     def is_role_exist(self, role_discord_id: str) -> bool:
         """This method is designed to check if a role exist.
@@ -593,6 +601,26 @@ class SqliteAccess(DatabaseAccessImplement):
             level (int): The new role level.
         """
         self.__sqliteDB.modify("UPDATE roles SET level = ? WHERE discordId = ?", [level, role_discord_id])
+
+    def is_user_accepted_rules(self, discord_id: str) -> bool:
+        """This method is designed to check if a user accepted the rules.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        
+        Returns:
+            bool: True if the user accepted the rules, False if not.
+        """
+        return bool(self.__select_user(discord_id, "acceptedRules")[0][0])
+    
+    def set_user_accepted_rules(self, discord_id: str, accepted: bool) -> None:
+        """This method is designed to set a user accepted the rules.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            accepted (bool): True if the user accepted the rules, False if not.
+        """
+        self.__sqliteDB.modify("UPDATE users SET acceptedRules = ? WHERE discordId = ?", [accepted, discord_id])
 
     # Public
 

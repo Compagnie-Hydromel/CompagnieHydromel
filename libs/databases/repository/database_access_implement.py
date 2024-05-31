@@ -16,6 +16,14 @@ class DatabaseAccessImplement:
 
     # Public 
 
+    def get_all_users(self) -> list[str]:
+        """This method is designed to get all users.
+
+        Returns:
+            list[str]: All users discordId.
+        """
+        pass
+
     def get_user_level(self, discord_id: str) -> int:
         """This method is designed to get a user level number.
 
@@ -483,11 +491,11 @@ class DatabaseAccessImplement:
         """
         pass
     
-    def get_role_discord_id_by_role_level(self, leve: int) -> str:
+    def get_role_discord_id_by_role_level(self, level: int) -> str:
         """This method is designed to get a role discordId by role level.
 
         Args:
-            leve (int): The role level.
+            level (int): The role level.
         
         Returns:
             str: The role discordId.
@@ -550,6 +558,26 @@ class DatabaseAccessImplement:
         Args:
             role_discord_id (str): The role discordId.
             level (int): The new role level.
+        """
+        pass
+
+    def is_user_accepted_rules(self, discord_id: str) -> bool:
+        """This method is designed to check if a user accepted the rules.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        
+        Returns:
+            bool: True if the user accepted the rules, False if not.
+        """
+        pass
+
+    def set_user_accepted_rules(self, discord_id: str, accepted: bool) -> None:
+        """This method is designed to set a user accepted the rules.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            accepted (bool): True if the user accepted the rules, False if not.
         """
         pass
 
