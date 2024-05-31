@@ -67,9 +67,16 @@ class Config():
             "enable": False,
             "list": [
                 {
+                    "emoji": "🎨",
+                    "role_id": 0,
+                    "message_id": 0,
+                    "action": "emoji_to_role"
+                },
+                {
                     "emoji": "✅",
                     "role_id": 0,
                     "message_id": 0,
+                    "action": "accept_rules"
                 }
             ]
         },
@@ -172,7 +179,7 @@ class Config():
             data (dict[str: any]): The data to write.
         """
         with open(self.__config_file, "w") as f:
-            yaml.dump(data, f)
+            yaml.dump(data, f, encoding='utf-8', allow_unicode=True)
             
     def __is_config_exist(self) -> bool:
         """This method is designed to check if the config exist.
@@ -220,6 +227,9 @@ class Config():
                     self.__need_to_rewrite = True
                 else:
                     subfield[field] = self.__check_subfield_exist(subfield[field], default_subfield[field])
+        elif isinstance(default_subfield, list):
+            for subfield_number in range(len(subfield)):
+                subfield[subfield_number] = self.__check_subfield_exist(subfield[subfield_number], default_subfield[0])
     
         return subfield
     
