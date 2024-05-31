@@ -3,8 +3,10 @@ import traceback
 import discord
 from discord.ext import tasks
 
+from libs.config import Config
 from libs.databases.model.user.user import User
 from libs.log import Log
+from libs.utils.level_utils import LevelUtils
 
 class Listener(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
@@ -21,7 +23,7 @@ class Listener(discord.Cog):
         if message.author == self.__bot.user:
             return
 
-        User(str(message.author.id)).add_point()
+        await LevelUtils.add_point(message.author)
         
     @discord.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
@@ -35,7 +37,7 @@ class Listener(discord.Cog):
 
     @tasks.loop(seconds = 299)
     async def loop_check_point_in_vocal(self):
-        try: 
+        try:
             guilds = self.__bot.guilds
             for guild in guilds:
                 channels = guild.channels
@@ -46,8 +48,9 @@ class Listener(discord.Cog):
                             if not member.voice.self_deaf:
                                 if len(members) == 1 and random.randint(0,3) != 2:
                                     return
-                                user = User(str(member.id))
-                                user.add_point()
+                                
+                                await LevelUtils.add_point(member)
+                                
         except:
             Log.error(traceback.format_exc())
 

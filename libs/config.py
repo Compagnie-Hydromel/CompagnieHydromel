@@ -122,7 +122,8 @@ class Config():
             "wallpaper_renamed": "Wallpaper renamed!",
             "role_added": "Role added!",
             "role_removed": "Role removed!",
-            "role_updated": "Role updated!"
+            "role_updated": "Role updated!",
+            "level_up": "You just level up ! your now level {level} !"
         },
         "exception_response": {
             "default": "An error occured",
