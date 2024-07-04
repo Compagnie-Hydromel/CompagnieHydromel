@@ -16,19 +16,20 @@ class MusicPlayerDisplayer(discord.ui.View):
     
     @property
     def embed(self) -> discord.Embed: 
-        current_music_info = self.__music_manager.now.info
+        current_music_info = self.__music_manager.now
         embed = discord.Embed(
             title="Now playing 🎶",  
             color=0x2F3136
         )
-        duration_minutes = self.__music_manager.now.duration / 60
+        duration_seconds = current_music_info.length / 1000
+        duration_minutes = duration_seconds / 60
         duration_seconds = (duration_minutes - floor(duration_minutes)) * 60
         duration = str(floor(duration_minutes)) + ":" + str(floor(duration_seconds))
         
-        embed.add_field(name="Title", value="[" + current_music_info["title"] + "](" + current_music_info["uri"] + ")", inline=True)
-        embed.add_field(name="Author", value=current_music_info["author"], inline=True)
+        embed.add_field(name="Title", value="[" + current_music_info.title + "](" + current_music_info.uri + ")", inline=True)
+        embed.add_field(name="Author", value=current_music_info.author, inline=True)
         embed.add_field(name="Duration", value=duration, inline=True)
-        embed.set_footer(text="source: " + current_music_info["sourceName"])
+        embed.set_footer(text="source: " + current_music_info.source)
         return embed
         
         
