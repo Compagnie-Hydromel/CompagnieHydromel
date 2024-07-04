@@ -33,7 +33,7 @@ Before starting the Bot, you'll need to modify/create some files, create the 3 B
 
 First, let's start with the files needed to be modified:
 - In the root folder of the discord bot, create a file named **.env** with the informations below (remember to replace where it says **COMPLETE_IT** with the real informations)
-``` Env
+```env
 BARMAN_TOKEN = "COMPLETE_IT"
 MENESTREL_TOKEN = "COMPLETE_IT"
 ARCHIVEUSE_TOKEN = "COMPLETE_IT"
@@ -119,30 +119,22 @@ https://discord.com/blog/slash-commands-permissions-discord-apps-bots
 ## Configuration
 You can configure the bot with the **config.yml** file in the root folder of the bot. You can change the prefix, the language, the music, the reddit and the database. The file is generate automatically if it doesn't exist.
 
-`WARNING`: if you delete a field the bot don't check if he still exist 
-
 exemple of config.yml
 ```yaml
 ...
-music:
-  enable: false
-  lavalink_ip: 127.0.0.1
-  lavalink_port: 2333
 reactions:
-  enable: false
+  enable: true
   list:
-  - emoji: "\u2705" # means ✅
-    message_id: 0
+  - action: accept_rules
+    emoji: ✅
+    message_id: 1139191289737388113
     role_id: 0
 ...
 ```
 
 ### Music
 
-To use the music feature you need to install [Lavalink](https://github.com/lavalink-devs/Lavalink/releases/tag/3.7.11)
-
-and then you need to configure the config.yml file with the ip and port of the lavalink server
-the password need to be in the .env file with the key LAVALINK_PASSWORD seen before
+To use the music feature refer to this documentation [here](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Lavalink-server-integration)
 
 ## Usefull links
 - https://docs.pycord.dev/en/stable/
