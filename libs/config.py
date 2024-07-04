@@ -8,12 +8,13 @@ class Config():
         "banner": {
             "enable": False,
             "banner_image": "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",
-            "coords": {
-                'bar': {"w":390,"h":215, "id": 0},
-                'table1': {"w":110,"h":279, "id": 0},
-                'table2': {"w":607,"h":293, "id": 0},
-                'table3': {"w":450,"h":457, "id": 0}
-            },
+            "coords": [
+                {"w":390,"h":215, "id": 0},
+                {"w":110,"h":279, "id": 0},
+                {"w":607,"h":293, "id": 0},
+                {"w":450,"h":457, "id": 0},
+                {"w":795,"h":145, "id": 0}
+            ],
             "guild_id": 0
         },
         "nsfw_commands": {
