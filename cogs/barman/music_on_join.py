@@ -7,37 +7,26 @@ from libs.music.guild_music_manager import GuildMusicManager
 import wavelink
 import os
 
-from libs.music.music_manager import MusicManager
-
 class MusicOnJoin(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.config = Config()
         self.__music_config = self.config.value["music"]
         self.__music_on_join_config = self.__music_config["music_on_join"]
-        self.__guild_music_manager = GuildMusicManager()
     
     @discord.Cog.listener()
     async def on_ready(self):
-        await self.lavalink_nodes_connect()
-        
-    async def lavalink_nodes_connect(self):
-        """Connect to our Lavalink nodes."""
-        
-        await wavelink.NodePool.create_node(
-            bot=self.__bot,
-            host=self.__music_config["lavalink_ip"],
-            port=self.__music_config["lavalink_port"],
-            password=os.getenv("LAVALINK_PASSWORD")
+        self.__node = wavelink.Node(
+            uri="http://" + self.__music_config["lavalink_ip"] + ":" + str(self.__music_config["lavalink_port"]), 
+            password=os.getenv("LAVALINK_PASSWORD"),
+            client=self.__bot
         )
-        
-    @discord.Cog.listener()
-    async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.Track, reason):
-        match reason:
-            case "FINISHED": 
-                await self.__guild_music_manager.get(player.guild.id).disconnect()
-                Log.info("Disconnect bot in " + player.channel.name)
 
+        await wavelink.Pool.connect(nodes=[self.__node])
+
+        self.__guild_music_manager = GuildMusicManager(
+            self.__node
+        )
         
     @discord.Cog.listener()
     async def on_voice_state_update(self, members: discord.member, before: discord.VoiceState, after: discord.VoiceState) -> None:

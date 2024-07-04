@@ -22,7 +22,7 @@ class Log():
             message (str): The message to log.
             type (LogType, optional): The type of log (LogType.INFO, LogType.ERROR, etc...). Defaults to LogType.INFO.
         """
-        self.__log = str(datetime.datetime.now()) + " ["+type.value+"] : " + message
+        self.__log = str(datetime.datetime.now()) + " ["+type.value+"] : " + str(message)
         self.__print()
         self.__write_log()
 

@@ -1,3 +1,4 @@
+import traceback
 import discord
 import wavelink
 from libs.exception.music.already_playing_exception import AlreadyPlayingException
@@ -13,30 +14,62 @@ from libs.log import Log
 class MusicManager:
     """Class that manage the music.
     """
-    def __init__(self) -> None:
+    def __init__(self, node: wavelink.Node) -> None:
         """Constructor of MusicManager class.
         """
-        self.voice_clients: discord.VoiceClient = None
-        self.voice_queues: wavelink.Queue = wavelink.Queue()
-        self.voice_back: wavelink.Queue = wavelink.Queue()
+        self.voice_clients: wavelink.Player = None
+        self.back_queue: wavelink.Queue = wavelink.Queue()
+        node.client.add_listener(self.on_track_end, "on_wavelink_track_end")
+        self.__node = node
+
+    async def on_track_end(self, payload: wavelink.TrackEndEventPayload):
+        """Event that is called when the track ends.
+        
+        Args:
+            payload (wavelink.TrackEndEventPayload): The payload of the event.
+        """
+        match(payload.reason):
+            case "finished":
+                Log.info("Track end with reason: " + payload.reason)
+
+                try: 
+                    await self.skip()
+                    self.back_queue.put_at(0, payload.track)
+                except NoPlayingInstanceException:
+                    Log.info("No playing instance")
+                    await self.disconnect()
+                    return
+                except NothingLeftInQueueException:
+                    Log.info("Queue is empty")
+                    await self.disconnect()
+                    return
+                except Exception as e:
+                    Log.error("An error occurred: " + traceback.format_exc())
+            case "stopped":
+                pass
+            case _:
+                Log.warning("Track end with reason: " + payload.reason)
     
-    async def play(self, voice_state: discord.VoiceState | None, song: wavelink.abc.Playable):        
+    
+    async def play(self, voice_state: discord.VoiceState | None, song: wavelink.Playable):        
         """Play a song.
 
         Args:
             voice_state (discord.VoiceState | None): Voice state of the user if it's connected to a voice channel if is not it's none.
-            song (wavelink.abc.Playable): The song to play.
+            song (wavelink.Playable): The song to play.
         
         Raises:
             NotConnectedToVoiceChannelException: if the user is not connected to a voice channel.
         """
         await self.join(voice_state)
-        
-        self.voice_queues.put_at_front(song)
-        if self.voice_clients.is_playing():
+
+        if self.voice_clients.playing:
+            self.voice_clients.auto_queue.put(song)
             raise AlreadyPlayingException
-            
-        await self.skip()
+        
+        await self.voice_clients.play(song)
+        Log.info("Playing " + str(song) + " / " + str(song.uri) + " in " + self.voice_clients.channel.name)
+        self.voice_clients.autoplay = wavelink.AutoPlayMode.disabled # partial auto play mode isn't working
             
     async def join(self, voice_state: discord.VoiceState):
         """Connect to the voice channel if the bot is not connected.
@@ -51,34 +84,31 @@ class MusicManager:
         if not self.voice_clients:
             if voice_state == None:
                 raise NotConnectedToVoiceChannelException
-            Log.info("Connecting to " + voice_state.channel.name)
+            Log.info("Connecting to " + voice_state.channel.name + " | " + str(voice_state.channel.id))
             self.voice_clients = await voice_state.channel.connect(cls=wavelink.Player)
-    
-    async def skip(self, old_song: wavelink.abc.Playable = None):
+
+    async def skip(self):
         """Skip the current song.
 
-        Args:
-            old_song (wavelink.abc.Playable, optional): The old song to put in the back queue. Used for the callback on_wavelink_track_end. Defaults to None. 
-        
         Raises:
             NothingLeftInQueueException: if the queue is empty.
             NoPlayingInstanceException: if there is no playing instance.            
         """
         self.__raise_if_there_no_playing_instance()
-        
-        if self.voice_queues.is_empty:
+
+        if self.voice_clients.auto_queue.is_empty:
             raise NothingLeftInQueueException
-        
-        current_song = self.voice_clients.source
-        if current_song != None:
-            self.voice_back.put(current_song)
-        elif old_song != None:
-            self.voice_back.put(old_song)
-        
-        song = self.voice_queues.pop()
-        Log.info("Playing " + str(song) + " in " + self.voice_clients.channel.name)
-        await self.voice_clients.play(song, replace=True)
-    
+        if self.voice_clients.playing:
+            last_song = await self.voice_clients.stop()
+            self.back_queue.put_at(0, last_song)
+
+        song = await self.voice_clients.play(self.voice_clients.auto_queue.get())
+        self.voice_clients.auto_queue.remove(song)
+
+        Log.info("Playing " + str(song) + " / " + str(song.uri) + " in " + self.voice_clients.channel.name)
+
+        await self.resume()
+
     async def back(self):
         """Play the previous song.
         
@@ -88,16 +118,22 @@ class MusicManager:
         """
         self.__raise_if_there_no_playing_instance()
         
-        if self.voice_back.is_empty:
+        if self.back_queue.is_empty:
             raise NothingLeftInBackQueueException
         
-        current_song = self.voice_clients.source
+        current_song = self.voice_clients.current
         if current_song != None:
-            self.voice_queues.put(current_song)
-            
-        song = self.voice_queues.pop()        
-        Log.info("Playing " + str(song) + " in " + self.voice_clients.channel.name)
-        await self.voice_clients.play(song, replace=True)
+            self.voice_clients.auto_queue.put_at(0, current_song)
+
+        song = self.back_queue.get()
+        self.back_queue.remove(song)
+
+        Log.info("Playing " + str(song) + " / " + str(song.uri) + " in " + self.voice_clients.channel.name)
+
+        await self.voice_clients.stop()
+        await self.voice_clients.play(song)
+
+        await self.resume()
     
     async def resume(self):
         """Resume the current song.
@@ -107,7 +143,7 @@ class MusicManager:
         """        
         if self.is_paused:
             Log.info("Resuming music in " + self.voice_clients.channel.name)
-            await self.voice_clients.resume()
+            await self.voice_clients.pause(False)
 
     @property
     def is_paused(self) -> bool:
@@ -121,24 +157,30 @@ class MusicManager:
         """
         self.__raise_if_there_no_playing_instance()
         
-        return self.voice_clients.is_paused()
+        return self.voice_clients.paused
     
-    async def search(self, search: str) -> wavelink.abc.Playable:
+    async def search(self, search: str) -> wavelink.Playable:
         """Search a song.
 
         Args:
             search (str): the string to search on youtube.
 
         Returns:
-            wavelink.abc.Playable: the song to play.
+            wavelink.Playable: the song to play.
         
         Raises:
             NoResultsFoundException: if there is no results found.
         """
-        try: 
-            return await wavelink.YouTubeTrack.search(query=search, return_first=True)
-        except:
+        music_list: list[wavelink.Playable] = await wavelink.Playable.search(search, node = self.__node)
+
+        if type(music_list) == wavelink.Playlist:
+            music_list_playlist : wavelink.Playlist = music_list
+            return music_list_playlist.pop()
+
+        if len(music_list) == 0:
             raise NoResultsFoundException
+
+        return music_list[0]
          
         
     async def stop(self, disconnect: bool = True):
@@ -166,9 +208,8 @@ class MusicManager:
         """
         self.__raise_if_there_no_playing_instance()
         
+        Log.info("Disconnect from " + self.voice_clients.channel.name)
         await self.voice_clients.disconnect()
-        self.voice_queues.clear()
-        self.voice_back.clear()
         self.voice_clients = None
     
     async def pause(self):
@@ -179,10 +220,10 @@ class MusicManager:
         """
         if not self.is_paused:
             Log.info("Pausing music in " + self.voice_clients.channel.name)
-            await self.voice_clients.pause()
+            await self.voice_clients.pause(True)
     
     @property
-    def now(self) -> wavelink.abc.Playable | None:
+    def now(self) -> wavelink.Playable | None:
         """Get the current song.
 
         Raises:
@@ -190,29 +231,31 @@ class MusicManager:
             NoPlayingInstanceException: if there is no playing instance.
 
         Returns:
-            wavelink.abc.Playable | None: the current song.
+            wavelink.Playable | None: the current song.
         """
         self.__raise_if_there_no_playing_instance()
             
-        current_music = self.voice_clients.source 
+        current_music = self.voice_clients.current 
         if current_music is None:
             raise NoMusicPlayingException
         return current_music
     
     @property
-    def queue(self) -> list[wavelink.abc.Playable]:
+    def queue(self) -> list[wavelink.Playable]:
         """Get the queue.
 
         Raises:
             NothingLeftInQueueException: if the queue is empty.
 
         Returns:
-            list[wavelink.abc.Playable]: the queue.
+            list[wavelink.Playable]: the queue.
         """
-        if self.voice_queues.is_empty:
+        if self.voice_clients is None:
+            raise NothingLeftInQueueException
+        if self.voice_clients.auto_queue.is_empty:
             raise NothingLeftInQueueException
         songs = []
-        for song in self.voice_queues:
+        for song in reversed(self.voice_clients.auto_queue):
             songs.append(song)
         return songs
     
