@@ -17,45 +17,21 @@ class Music(discord.Cog):
         self.__config = Config()
         self.__music_config = self.__config.value["music"]
         self.__response = self.__config.value["response"]
-        self.__guild_music_manager = GuildMusicManager()
         self.__error_handler = Handler()
     
     @discord.Cog.listener()
     async def on_ready(self):
-        await self.lavalink_nodes_connect()
+        self.__node = wavelink.Node(
+            uri="http://" + self.__music_config["lavalink_ip"] + ":" + str(self.__music_config["lavalink_port"]), 
+            password=os.getenv("LAVALINK_PASSWORD"),
+            client=self.__bot
+        )
 
-    async def lavalink_nodes_connect(self):
-        """Connect to our Lavalink nodes."""
-        
-        await wavelink.NodePool.create_node(
-            bot=self.__bot,
-            host=self.__music_config["lavalink_ip"],
-            port=self.__music_config["lavalink_port"],
-            password=os.getenv("LAVALINK_PASSWORD")
-        ) 
+        await wavelink.Pool.connect(nodes=[self.__node])
 
-    @discord.Cog.listener()
-    async def on_wavelink_track_start(self, player: wavelink.Player, track: wavelink.Track):
-        music_manager = self.__guild_music_manager.get(player.guild.id)
-        try: 
-            Log.info("Playing " + track.info['uri'] + " in " + player.channel.name)
-        except:
-            Log.error(traceback.format_exc())
-
-    @discord.Cog.listener()
-    async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.Track, reason):
-        try:
-            match reason:
-                case "LOAD_FAILED":
-                    Log.error("Load failed in " + player.channel.name)
-                case "FINISHED":
-                    await self.__guild_music_manager.get(player.guild.id).skip(old_song=track)
-                    Log.info("Skipping music in " + player.channel.name)
-        except NothingLeftInQueueException:
-            await self.__guild_music_manager.get(player.guild.id).disconnect()
-            Log.info("Disconnect bot in " + player.channel.name)
-        except:
-            Log.error(traceback.format_exc())
+        self.__guild_music_manager = GuildMusicManager(
+            self.__node
+        )
 
     @discord.slash_command(description="Command that can play music that we want.")
     @discord.option("search", description="Search or youtube link")
@@ -99,7 +75,7 @@ class Music(discord.Cog):
             await ctx.respond(self.__response["resuming_music"].replace("{music}", str(self.__guild_music_manager.get(ctx.guild.id).now)))
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
-    
+
     @discord.slash_command(description="Command that come back to the previous music.")
     async def back(self, ctx : discord.ApplicationContext):
         Log.command(ctx.author.name + " is launching back commands")
@@ -145,14 +121,14 @@ class Music(discord.Cog):
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
             
 
-    def __generate_pages(self, songs: list[wavelink.abc.Playable]) -> list:
+    def __generate_pages(self, songs: list[wavelink.Playable]) -> list:
         pages = []
         song_per_page = 3
         counter = 0
         content = ""
         songs.reverse()
         for song in songs:
-            content += ("**[" + str(song) + "](" + song.info["uri"] + ")**\n" + song.info["author"] + "\n\n")
+            content += ("**[" + str(song) + "](" + song.uri + ")**\n" + song.author + "\n\n")
             
             counter += 1
             if counter > song_per_page:
