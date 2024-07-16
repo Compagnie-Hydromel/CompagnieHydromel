@@ -1,13 +1,19 @@
 import unittest
 
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
+from tests.utils import Utils
 
 class TestWallpaper(unittest.TestCase):
     __wallpaper : Wallpaper
         
     def setUp(self) -> None:
+        DatabasesSelecter.databases_file_override = "test_database.db"
         self.__wallpaper = Wallpaper.get_default()
     
+    def tearDown(self) -> None:
+        Utils.deleteFileIfExist("test_database.db")
+
     def test_get_name(self):
         __old_name = self.__wallpaper.name
         __name = "default"

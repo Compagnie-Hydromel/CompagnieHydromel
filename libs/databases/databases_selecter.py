@@ -7,6 +7,7 @@ class DatabasesSelecter:
     """
     __config: Config
     __databases_type: str
+    databases_file_override: str = ""
 
     def __init__(self):
         self.__config = Config()
@@ -18,6 +19,9 @@ class DatabasesSelecter:
 
     @property
     def databases(self) -> DatabaseAccessImplement:
+        if DatabasesSelecter.databases_file_override != "":
+            return SqliteAccess(self.databases_file_override)
+
         match(self.databases_type):
             case "sqlite":
                 return SqliteAccess(self.__config.value["database"]["sqlite"]["file"])
