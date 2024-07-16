@@ -1,7 +1,6 @@
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.model.badge.badge import Badge
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
-
 
 class Badges:
     """This class is designed to manage a lot of badges.
@@ -9,7 +8,7 @@ class Badges:
     __db_access : DatabaseAccessImplement
 
     def __init__(self) -> None:
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
     
     def create_list_badges_by_list_name(self, list_name: list[str]) -> list[Badge]:
         """This method is designed to create a list of badges by a list of name.

@@ -4,30 +4,38 @@ from libs.image_factory.utils import Utils
 import requests
 from io import BytesIO
 
+from libs.log import Log
+
 class BannerBarCreator:
     """This class is designed to make a banner bar.    
     """
     __file_path: str 
     
-    def __init__(self, file_path:str, banner_image: str, coords: dict[str, int], people):
+    def __init__(self, file_path:str, banner_image: str, coords: list[dict[str, int]], people: dict[int, list[dict[str, str]]]) -> None:
         """This method is designed to initialize the BannerBarCreator class and make the banner bar.
         
-        coords = {
-            'bar': {"w":390,"h":215, "id": 1131446227431587870},
-            'table1': {"w":110,"h":279, "id": 1131446228916387900},
-            'table2': {"w":607,"h":293, "id": 1131446229738467410},
-            'table3': {"w":450,"h":457, "id": 1131446231160328212}
-        }
+        coords = [
+            {"w":390,"h":215, "id": 1131446231160328212},
+            {"w":110,"h":279, "id": 1131446228916387900},
+            {"w":607,"h":293, "id": 1131446229738467410},
+            {"w":450,"h":457, "id": 1131446231160328212}
+        ]
         
         people = {
-            'bar': [
+            1131446231160328212: [
                 {"username": "People 1", "profil": "https://discord.com/path/to/profile/picture" }
             ],
-            'table1': [
+            1131446231160328212: [
                 ...
             ],
             ...
         }
+
+        Args:
+            file_path (str): The file path to save the banner bar.
+            banner_image (str): The banner image path.
+            coords (list[dict[str, int]]): The coordinates of the people.
+            people (dict[int, list[dict[str, str]]]): The people to add to the banner bar.
         
         Raises:
             UnableToDownloadImageException: If the banner_image can't be downloaded.
@@ -54,8 +62,14 @@ class BannerBarCreator:
                 pic = Utils.pillow_crop_max_square(pic).resize((w, h), Image.LANCZOS)
                 pic = Utils.pillow_mask_circle_transparent(pic, 1)
 
-                img.paste(pic, (coords[channel]['w']+add, coords[channel]['h']), pic)
-                add+=int(64/(len(people[channel])/3))
+                channel = self.__search_in_coords(coords, channel)
+
+                if channel is None:
+                    continue
+
+                img.paste(pic, (channel['w']+add, channel['h']), pic)
+                Log.info("BannerBarCreator: Added " + member["username"] + " to the banner bar.")
+                add+=int(64/(len(channel)/3))
         # image
 
         img.save(file_path)
@@ -69,3 +83,19 @@ class BannerBarCreator:
             str: The file path.
         """
         return self.__file_path
+    
+    def __search_in_coords(self, coords: list[dict[str, int]], channel: int) -> dict[str, int] | None:
+        """This method is designed to search in the coords list.
+
+        Args:
+            coords (list[dict[str, int]]): The coords list.
+            channel (int): The channel to search.
+
+        Returns:
+            dict[str, int]: The found channel.
+            None: If the channel is not found.
+        """
+        for coord in coords:
+            if coord['id'] == channel:
+                return coord
+        return None

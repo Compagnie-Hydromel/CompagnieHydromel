@@ -1,9 +1,10 @@
+import os
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
 from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.databases.model.wallpaper.wallpapers import Wallpapers
-
 
 class Utils:
     @staticmethod
@@ -34,3 +35,13 @@ class Utils:
         )
         ProfileLayouts().add(profile_layout_name, layout)
         return layout
+    
+    @staticmethod
+    def deleteFileIfExist(file:str):
+        """This method is designed to delete a file if exist.
+
+        Args:
+            file (str): The file to delete. (example: "path/to/file")
+        """
+        if os.path.exists(file):
+            os.remove(file)

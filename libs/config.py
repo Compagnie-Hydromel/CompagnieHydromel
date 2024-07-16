@@ -4,16 +4,22 @@ class Config():
     """This class is designed to manage the config.
     """
     __default_config = {
-        "database": "sqlite",
+        "database": {
+            "type": "sqlite",
+            "sqlite": {
+                "file": "database.db"
+            }
+        },
         "banner": {
             "enable": False,
             "banner_image": "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",
-            "coords": {
-                'bar': {"w":390,"h":215, "id": 0},
-                'table1': {"w":110,"h":279, "id": 0},
-                'table2': {"w":607,"h":293, "id": 0},
-                'table3': {"w":450,"h":457, "id": 0}
-            },
+            "coords": [
+                {"w":390,"h":215, "id": 0},
+                {"w":110,"h":279, "id": 0},
+                {"w":607,"h":293, "id": 0},
+                {"w":450,"h":457, "id": 0},
+                {"w":795,"h":145, "id": 0}
+            ],
             "guild_id": 0
         },
         "nsfw_commands": {
@@ -123,7 +129,8 @@ class Config():
             "role_added": "Role added!",
             "role_removed": "Role removed!",
             "role_updated": "Role updated!",
-            "level_up": "You just level up ! your now level {level} !"
+            "level_up": "You just level up ! your now level {level} !",
+            "all_users_moved": "All users moved!"
         },
         "exception_response": {
             "default": "An error occured",
@@ -163,6 +170,8 @@ class Config():
             "role_not_exist": "Role not exist!",
             "cannot_manage_default_role": "Cannot manage default role! @(everyone)",
             "role_level_already_exist": "Role level already exist!",
+            "same_channel": "Cannot move to the same channel!",
+            "no_user_in_channel": "No user in the channel!",
         }
     }
     __config_file = "config.yml"

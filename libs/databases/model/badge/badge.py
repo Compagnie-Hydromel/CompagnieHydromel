@@ -1,5 +1,5 @@
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.exception.badge.badge_not_exist_exception import BadgeNotExistException
 
 
@@ -19,7 +19,7 @@ class Badge:
             BadgeNotExistException: If the badge doesn't exist.
         """        
         self.__badge_name = badge_name
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
 
         if not self.__db_access.is_badge_exist(self.__badge_name):
             raise BadgeNotExistException

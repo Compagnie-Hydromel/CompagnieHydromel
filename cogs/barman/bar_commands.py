@@ -46,7 +46,7 @@ class BarCommands(discord.Cog):
             if price > 0:
                 self.__payement_process(user, price)
                 await ctx.respond("Little " + drink, file=img_file)
-                LevelUtils.add_point(ctx.author, 10)
+                await LevelUtils.add_point(ctx.author, 10)
                 user.increase_number_of_buy()
             else: 
                 await ctx.respond(file=img_file)

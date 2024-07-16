@@ -1,14 +1,20 @@
 import unittest
 
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.databases.model.wallpaper.wallpapers import Wallpapers
 from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
+from tests.utils import Utils
 
 class TestWallpapers(unittest.TestCase):
     __wallpapers : Wallpapers
     
     def setUp(self) -> None:
+        DatabasesSelecter.databases_file_override = "test_database.db"
         self.__wallpapers = Wallpapers()
+
+    def tearDown(self) -> None:
+        Utils.deleteFileIfExist("test_database.db")
         
     def test_all(self):
         self.assertTrue(len(self.__wallpapers.all) > 0)

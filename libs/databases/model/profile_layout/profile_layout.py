@@ -1,7 +1,6 @@
 
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
-from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
 from libs.exception.profile_layout.profile_layout_not_exist import ProfileLayoutNotExist
 
@@ -22,7 +21,7 @@ class ProfileLayout:
             ProfileLayoutNotExist: If the profile layout doesn't exist.
         """        
         self.__profile_layout_name = profile_layout_name
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
         
         if not self.__db_access.is_profile_layout_exist(self.__profile_layout_name):
             raise ProfileLayoutNotExist
@@ -34,7 +33,7 @@ class ProfileLayout:
         Returns:
             ProfileLayout: The default profile layout.
         """
-        return ProfileLayout(SqliteAccess().get_default_profile_layout_name())
+        return ProfileLayout(DatabasesSelecter().databases.get_default_profile_layout_name())
         
     @property
     def name(self) -> str:
