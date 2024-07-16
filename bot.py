@@ -20,7 +20,7 @@ match sys.argv[1]:
         exit()
 
 intents: discord.Intents = discord.Intents.all()
-bot: discord.bot.Bot = discord.Bot(intents=intents)
+bot: discord.bot.Bot = discord.Bot(intents=intents, max_messages=1000000)
 
 # Load specific bot cogs
 for filename in os.listdir('./cogs/' + bot_name):
