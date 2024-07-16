@@ -1,6 +1,5 @@
-import requests
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
 from libs.exception.wallpaper.wallpaper_url_not_an_image import WallpaperUrlNotAnImage
 from libs.utils.utils import Utils
@@ -22,7 +21,7 @@ class Wallpaper:
             WallpaperNotExistException: Raise when a wallpaper not exist.
         """        
         self.__wallpaper_name = wallpaper_name
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
 
         if not self.__db_access.is_wallpaper_exist(self.__wallpaper_name):
             raise WallpaperNotExistException
@@ -34,7 +33,7 @@ class Wallpaper:
         Returns:
             Wallpaper: The default wallpaper.
         """
-        return Wallpaper(SqliteAccess().get_default_wallpaper_name())
+        return Wallpaper(DatabasesSelecter().databases.get_default_wallpaper_name())
 
     @property
     def name(self) -> str:

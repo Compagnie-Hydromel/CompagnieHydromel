@@ -1,6 +1,6 @@
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.model.roles.role import Role
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.exception.role.level_should_be_greater_than_one_exception import LevelShouldBeGreaterThanOneException
 from libs.exception.role.role_already_exist_exception import RoleAlreadyExistException
 from libs.exception.role.role_level_already_exist_exception import RoleLevelAlreadyExistException
@@ -15,7 +15,7 @@ class Roles:
     def __init__(self) -> None:
         """This method is designed to initialize the Roles class.
         """
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
 
     @property
     def all(self) -> list[Role]:

@@ -7,10 +7,10 @@ from libs.databases.dto.layout import Layout
 class SqliteAccess(DatabaseAccessImplement):
     __sqliteDB : Sqlite
     
-    def __init__(self) -> None:
+    def __init__(self, databases_file: str) -> None:
         """This method is designed to initialize the database. Used to initiate the databases and create db if not exist.
         """
-        self.__sqliteDB = Sqlite("database.db")
+        self.__sqliteDB = Sqlite(databases_file)
         if len(self.__sqliteDB.select("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")) == 0:
             self.__create_db()
 

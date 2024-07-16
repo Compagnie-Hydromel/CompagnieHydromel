@@ -1,20 +1,23 @@
 import unittest
 
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.model.roles.role import Role
 from libs.databases.model.roles.roles import Roles
 from libs.exception.role.level_should_be_greater_than_one_exception import LevelShouldBeGreaterThanOneException
 from libs.exception.role.role_not_exist_exception import RoleNotExistException
+from tests.utils import Utils
 
 
 class TestRole(unittest.TestCase):
     __role: Role
 
     def setUp(self) -> None:
+        DatabasesSelecter.databases_file_override = "test_database.db"
         Roles().add("TestRole", 1)
         self.__role = Role("TestRole")
 
     def tearDown(self) -> None:
-        Roles().remove("TestRole")
+        Utils.deleteFileIfExist("test_database.db")
 
     def test_get_role(self):
         self.assertTrue(Role("TestRole") == self.__role)

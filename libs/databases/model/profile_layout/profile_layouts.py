@@ -1,6 +1,6 @@
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.dto.layout import Layout
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
 from libs.exception.profile_layout.cannot_remove_default_profile_layout import CannotRemoveDefaultProfileLayout
 from libs.exception.profile_layout.profile_layout_already_exist import ProfileLayoutAlreadyExist
@@ -15,7 +15,7 @@ class ProfileLayouts():
     def __init__(self) -> None:
         """This method is designed to initialize the ProfileLayouts class.
         """
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
         
     @property
     def get_all_profile_layouts(self) -> list[ProfileLayout]:

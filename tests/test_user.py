@@ -1,4 +1,5 @@
 import unittest
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
 from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
 
@@ -11,8 +12,12 @@ class TestUser(unittest.TestCase):
     __user : User 
     
     def setUp(self) -> None:
+        DatabasesSelecter.databases_file_override = "test_database.db"
         self.__user = User("TestUser")
     
+    def tearDown(self) -> None:
+        Utils.deleteFileIfExist("test_database.db")
+
     def test_get_discord_id(self):
         self.assertEqual(self.__user.discord_id, "TestUser")
         

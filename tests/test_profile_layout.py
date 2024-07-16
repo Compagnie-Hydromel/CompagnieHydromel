@@ -1,16 +1,22 @@
 import unittest
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
 
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
 from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
+from tests.utils import Utils
 
 
 class TestProfileLayout(unittest.TestCase):
     __profile_layout: ProfileLayout
     
     def setUp(self) -> None:
+        DatabasesSelecter.databases_file_override = "test_database.db"
         self.__profile_layout = ProfileLayout.get_default()
+
+    def tearDown(self) -> None:
+        Utils.deleteFileIfExist("test_database.db")
     
     def test_name(self):
         __old_name = self.__profile_layout.name

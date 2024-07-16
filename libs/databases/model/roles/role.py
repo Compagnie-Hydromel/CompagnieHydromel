@@ -1,5 +1,5 @@
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.exception.role.level_should_be_greater_than_one_exception import LevelShouldBeGreaterThanOneException
 from libs.exception.role.role_not_exist_exception import RoleNotExistException
 
@@ -20,7 +20,7 @@ class Role:
             RoleNotExistException: If the role does not exist in the database.
         """
         self.__discord_id = discord_id
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
 
         if not self.__db_access.is_role_exist(self.__discord_id):
             raise RoleNotExistException()
