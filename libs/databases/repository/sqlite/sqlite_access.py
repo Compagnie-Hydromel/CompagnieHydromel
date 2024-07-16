@@ -23,6 +23,14 @@ class SqliteAccess(DatabaseAccessImplement):
             list[str]: All users discordId.
         """
         return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users"))
+    
+    def get_most_smart_users(self) -> list[str]:
+        """This method is designed to get the most smart users.
+
+        Returns:
+            list[str]: The most smart users list.
+        """
+        return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users ORDER BY smartpoint DESC LIMIT 10"))
 
     def get_user_level(self, discord_id: str) -> int:
         """This method is designed to get a user level number.

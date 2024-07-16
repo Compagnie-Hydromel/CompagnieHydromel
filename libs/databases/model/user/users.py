@@ -23,6 +23,15 @@ class Users:
         return self.__create_list_of_users_by_list_user_name(self.__db_access.get_top_users())
     
     @property
+    def get_most_smart_users(self) -> list[User]:
+        """This method is designed to get the most smart users.
+
+        Returns:
+            list[User]: A list of User object.
+        """
+        return self.__create_list_of_users_by_list_user_name(self.__db_access.get_most_smart_users())
+    
+    @property
     def get_root_users(self) -> list[User]:
         """This method is designed to get the root users.
 

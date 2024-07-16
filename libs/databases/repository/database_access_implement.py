@@ -24,6 +24,14 @@ class DatabaseAccessImplement:
         """
         pass
 
+    def get_most_smart_users(self) -> list[str]:
+        """This method is designed to get the most smart users.
+
+        Returns:
+            list[str]: The most smart users list.
+        """
+        pass
+
     def get_user_level(self, discord_id: str) -> int:
         """This method is designed to get a user level number.
 

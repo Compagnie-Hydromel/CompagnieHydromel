@@ -7,6 +7,7 @@ import asyncio
 from libs.config import Config
 from libs.databases.model.user.user import User
 from libs.databases.model.user.users import Users
+from libs.utils.utils import Utils
 
 class ScheduledTask(discord.Cog):
     __bot : discord.bot.Bot
@@ -44,17 +45,8 @@ class ScheduledTask(discord.Cog):
             embed = discord.Embed(title="Monthly Top Users", color=eval("0x" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])))
 
             for user in most_active_users:
-                discord_id = 0 
-                try: # to avoid error if discord_id is not an convertible in int
-                    discord_id = int(user.discord_id)
-                except:
-                    pass
-
-                discord_user = self.__bot.get_user(discord_id)
-                if discord_user is None:
-                    embed.add_field(name=user.discord_id, value=user.monthly_point, inline=False)
-                else:
-                    embed.add_field(name=discord_user.name, value=user.monthly_point, inline=False)
+                username = Utils.get_user_name_or_id_by_discord_id(user.discord_id, self.__bot)
+                embed.add_field(name=username, value=user.monthly_point, inline=False)
 
             await information_channel.send(embed=embed)
 
