@@ -80,6 +80,8 @@ python3 -m pip install virtualenv
 python3 -m venv env 
 # enable the environement with
 source env/bin/activate
+# WARNING: use this for windows
+.\env\Scripts\Activate.ps1
 # Too check if it work execute 'pip list' and it will be almost empty if you were already owning some python package or not
 ```
 now you can install the dependency with
