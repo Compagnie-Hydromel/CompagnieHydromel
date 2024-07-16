@@ -330,6 +330,31 @@ class RootCommands(discord.Cog):
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
+    @discord.slash_command(description="Move all users in a voice channel to a another voice channel")
+    @discord.option("from_channel", discord.VoiceChannel, require=True)
+    @discord.option("to_channel", discord.VoiceChannel, require=True)
+    async def move_all_users(self, ctx: discord.commands.context.ApplicationContext, from_channel: discord.VoiceChannel, to_channel: discord.VoiceChannel):
+        Log.command(ctx.author.name + " is launching move all users commands")
+        try:
+            if not await self.__check_if_root(ctx):
+                return
+            
+            if from_channel == to_channel:
+                await ctx.respond(self.__response_exception["same_channel"])
+                return
+
+            if len(from_channel.members) == 0:
+                await ctx.respond(self.__response_exception["no_user_in_channel"])
+                return
+            
+            for member in from_channel.members:
+                await member.move_to(to_channel)
+
+            Log.info("Moving all users from " + from_channel.name + " to " + to_channel.name)
+
+            await ctx.respond(self.__response["all_users_moved"])
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
         if not User(str(ctx.author.id)).is_root:
