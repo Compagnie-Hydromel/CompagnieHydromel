@@ -1,6 +1,7 @@
 from io import BytesIO
 import os
 import random
+import discord
 import requests
 import re
 
@@ -116,3 +117,22 @@ class Utils():
         if r.headers["content-type"] in image_formats:
             return True
         return False
+    
+    @staticmethod
+    def get_user_by_discord_id(discord_id: str, bot: discord.Bot) -> discord.User | None:
+        user_id = 0
+        try:  # to avoid error if discord_id is not an convertible in int
+            user_id = int(discord_id)
+        except: 
+            pass
+
+        return bot.get_user(user_id)
+    
+    @staticmethod
+    def get_user_name_or_id_by_discord_id(discord_id: str, bot: discord.Bot) -> str:
+        discord_user: discord.User | None = Utils.get_user_by_discord_id(discord_id, bot)
+        
+        if discord_user is None:
+            return discord_id
+        else:
+            return discord_user.name

@@ -151,3 +151,20 @@ class TestUser(unittest.TestCase):
         self.__user.toggle_accepted_rules(True)
         self.assertEqual(self.__user.has_accepted_rules, True)
         self.__user.toggle_accepted_rules(False)
+
+    def test_user_reset_monthly_point(self):
+        self.__user.add_point(10)
+        self.__user.reset_monthly_point()
+        self.assertEqual(self.__user.monthly_point, 0)
+        
+    def test_user_add_monthly_point(self):
+        self.__user.add_monthly_point(10)
+        self.assertEqual(self.__user.monthly_point, 10)
+        self.__user.reset_monthly_point()
+        
+    def test_user_remove_monthly_point(self):
+        self.__user.add_monthly_point(10)
+        self.__user.remove_monthly_point(5)
+        
+        self.assertEqual(self.__user.monthly_point, 5)
+        self.__user.reset_monthly_point()

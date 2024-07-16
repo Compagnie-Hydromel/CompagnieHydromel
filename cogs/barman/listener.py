@@ -32,8 +32,8 @@ class Listener(discord.Cog):
     
     @discord.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
-        log_content = "deleted a message : " + message.content
-        Log.message(message.channel, log_content, message.author.name, self.__bot.user.name)
+        log_content = "a message was deleted from " + str(message.author) + " | " + str(message.author.id) + " : " + message.content
+        Log.info(log_content)
         
     @discord.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
@@ -43,7 +43,7 @@ class Listener(discord.Cog):
     @discord.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         Log.info(member.name + " joined the server " + member.guild.name)
-        LevelUtils.add_point(member)
+        await LevelUtils.add_point(member)
         
     @discord.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
@@ -51,12 +51,12 @@ class Listener(discord.Cog):
         
     @discord.Cog.listener()
     async def on_raw_reaction_add(self, added_reaction: discord.RawReactionActionEvent) -> None:
-        Log.info("Reaction added by " + added_reaction.member.name)
+        Log.info("Reaction " + str(added_reaction.emoji) + " added by " + str(added_reaction.member) + " in " + str(added_reaction.channel_id) + " on message " + str(added_reaction.message_id))
     
     @discord.Cog.listener()
     async def on_raw_reaction_remove(self, added_reaction: discord.RawReactionActionEvent) -> None:
         username = self.__bot.get_user(added_reaction.user_id).name
-        Log.info("Reaction removed by " + username)
+        Log.info("Reaction " + str(added_reaction.emoji) + " removed by " + username + " in " + str(added_reaction.channel_id) + " on message " + str(added_reaction.message_id))
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(Listener(bot))
