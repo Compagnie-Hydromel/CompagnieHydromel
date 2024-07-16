@@ -103,6 +103,43 @@ class DatabaseAccessImplement:
             amount (int, optional): The number of smartpoint to remove. Defaults to 1.
         """
         pass
+    
+    def add_user_monthly_point(self, discord_id: str, point: int = 1) -> None:
+        """This method is designed to add monthly point to a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            point (int, optional): The number of point to add. Defaults to 1.
+        """
+        pass
+    
+    def remove_user_monthly_point(self, discord_id: str, point: int = 1) -> None:
+        """This method is designed to remove monthly point to a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            point (int, optional): The number of point to remove. Defaults to 1.
+        """
+        pass
+    
+    def get_user_monthly_point(self, discord_id: str) -> int:
+        """This method is designed to get a user number of monthly point.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+
+        Returns:
+            int: The user number of monthly point.
+        """
+        pass
+    
+    def reset_user_monthly_point(self, discord_id: str) -> None:
+        """This method is designed to reset monthly point to 0.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        pass
 
     def add_user_if_not_exist(self, discord_id: str) -> None:
         """This method is designed to add a user if he doesn't exist.
@@ -578,6 +615,14 @@ class DatabaseAccessImplement:
         Args:
             discord_id (str): Discord user id as a string.
             accepted (bool): True if the user accepted the rules, False if not.
+        """
+        pass
+
+    def get_5_monthly_most_active_users(self) -> list[str]:
+        """This method is designed to get the 5 monthly most active users.
+
+        Returns:
+            list[str]: The 5 monthly most active users list.
         """
         pass
 

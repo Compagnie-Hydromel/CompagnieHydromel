@@ -103,6 +103,43 @@ class SqliteAccess(DatabaseAccessImplement):
             amount (int, optional): The number of smartpoint to remove. Defaults to 1.
         """
         self.__sqliteDB.modify("UPDATE users SET smartpoint = smartpoint - ? WHERE discordId = ?", [amount, discord_id])
+        
+    def add_user_monthly_point(self, discord_id: str, point: int = 1) -> None:
+        """This method is designed to add monthly point to a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            point (int, optional): The number of point to add. Defaults to 1.
+        """
+        self.__sqliteDB.modify("UPDATE users SET monthlyPoint = monthlyPoint + ? WHERE discordId = ?", [point, discord_id])
+    
+    def remove_user_monthly_point(self, discord_id: str, point: int = 1) -> None:
+        """This method is designed to remove monthly point to a user.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+            point (int, optional): The number of point to remove. Defaults to 1.
+        """
+        self.__sqliteDB.modify("UPDATE users SET monthlyPoint = monthlyPoint - ? WHERE discordId = ?", [point, discord_id])
+    
+    def get_user_monthly_point(self, discord_id: str) -> int:
+        """This method is designed to get a user number of monthly point.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+
+        Returns:
+            int: The user number of monthly point.
+        """
+        return self.__select_user(discord_id, "monthlyPoint")[0][0]
+    
+    def reset_user_monthly_point(self, discord_id: str) -> None:
+        """This method is designed to reset monthly point to 0.
+
+        Args:
+            discord_id (str): Discord user id as a string.
+        """
+        self.__sqliteDB.modify("UPDATE users SET monthlyPoint = 0 WHERE discordId = ?", [discord_id])
     
     def add_user_if_not_exist(self, discord_id: str) -> None:
         """This method is designed to add a user if he doesn't exist.
@@ -621,6 +658,14 @@ class SqliteAccess(DatabaseAccessImplement):
             accepted (bool): True if the user accepted the rules, False if not.
         """
         self.__sqliteDB.modify("UPDATE users SET acceptedRules = ? WHERE discordId = ?", [accepted, discord_id])
+
+    def get_5_monthly_most_active_users(self) -> list[str]:
+        """This method is designed to get the 5 monthly most active users.
+
+        Returns:
+            list[str]: The 5 monthly most active users list.
+        """
+        return self.__reorder_list(self.__sqliteDB.select("SELECT discordId FROM users ORDER BY monthlyPoint DESC LIMIT 5"))
 
     # Public
 

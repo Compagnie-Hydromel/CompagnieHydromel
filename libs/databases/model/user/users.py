@@ -32,6 +32,15 @@ class Users:
         return self.__create_list_of_users_by_list_user_name(self.__db_access.get_root_users())
     
     @property
+    def get_5_monthly_most_active_users(self) -> list[User]:
+        """This method is designed to get the 5 monthly most active users.
+
+        Returns:
+            list[User]: A list of User object.
+        """
+        return self.__create_list_of_users_by_list_user_name(self.__db_access.get_5_monthly_most_active_users())
+    
+    @property
     def all(self) -> list[User]:
         """This method is designed to get all the users.
 

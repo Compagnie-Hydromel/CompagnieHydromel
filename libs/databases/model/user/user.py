@@ -9,6 +9,7 @@ from libs.exception.wallpaper.wallpaper_already_posseded_exception import Wallpa
 from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
 from libs.exception.wallpaper.wallpaper_not_posseded_exception import WallpaperNotPossededException
 from libs.utils.utils import Utils
+from math import floor
 
 class User:
     """This class is designed to manage a single user.
@@ -54,6 +55,15 @@ class User:
         return self.__db_access.get_user_point(self.__discord_id)
     
     @property
+    def monthly_point(self) -> int:
+        """This method is designed to get the monthly point of the user.
+
+        Returns:
+            int: The monthly point of the user.
+        """
+        return self.__db_access.get_user_monthly_point(self.__discord_id)
+    
+    @property
     def number_of_buy(self) -> int:
         """This method is designed to get the number of buy of the user.
 
@@ -80,6 +90,27 @@ class User:
         """This method is designed to reset the level of the user. (WARNING essentially for test)
         """
         self.__db_access.reset_level(self.__discord_id)
+        
+    def reset_monthly_point(self) -> None:
+        """This method is designed to reset the monthly point of the user.
+        """
+        self.__db_access.reset_user_monthly_point(self.__discord_id)
+        
+    def add_monthly_point(self, point : int = 1) -> None:
+        """This method is designed to add monthly point to the user.
+
+        Args:
+            point (int, optional): Number of monthly point to add. Defaults to 1.
+        """
+        self.__db_access.add_user_monthly_point(self.__discord_id, point)
+        
+    def remove_monthly_point(self, point : int = 1) -> None:
+        """This method is designed to remove monthly point to the user.
+
+        Args:
+            point (int, optional): Number of monthly point to remove. Defaults to 1.
+        """
+        self.__db_access.remove_user_monthly_point(self.__discord_id, point)
 
     def add_smartpoint(self, amount : int = 1) -> None: 
         """This method is designed to add smartpoint to the user.
