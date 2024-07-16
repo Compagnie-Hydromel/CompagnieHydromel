@@ -1,6 +1,6 @@
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.model.badge.badges import Badges
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.databases.model.profile_layout.profile_layout import ProfileLayout
 from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.databases.model.wallpaper.wallpapers import Wallpapers
@@ -9,7 +9,6 @@ from libs.exception.wallpaper.wallpaper_already_posseded_exception import Wallpa
 from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
 from libs.exception.wallpaper.wallpaper_not_posseded_exception import WallpaperNotPossededException
 from libs.utils.utils import Utils
-from math import floor
 
 class User:
     """This class is designed to manage a single user.
@@ -24,7 +23,7 @@ class User:
             discord_id (str): The discord id of the user.
         """
         self.__discord_id = discord_id
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
         self.__db_access.add_user_if_not_exist(discord_id)
     
     @property

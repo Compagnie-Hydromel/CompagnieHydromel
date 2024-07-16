@@ -4,7 +4,12 @@ class Config():
     """This class is designed to manage the config.
     """
     __default_config = {
-        "database": "sqlite",
+        "database": {
+            "type": "sqlite",
+            "sqlite": {
+                "file": "database.db"
+            }
+        },
         "banner": {
             "enable": False,
             "banner_image": "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",

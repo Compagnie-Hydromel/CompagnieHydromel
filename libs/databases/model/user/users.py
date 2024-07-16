@@ -1,5 +1,5 @@
+from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
-from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 from libs.databases.model.user.user import User
 
 
@@ -11,7 +11,7 @@ class Users:
     def __init__(self) -> None:
         """This method is designed to initialize the Users class.
         """
-        self.__db_access = SqliteAccess()
+        self.__db_access = DatabasesSelecter().databases
 
     @property
     def get_top_users(self) -> list[User]:
