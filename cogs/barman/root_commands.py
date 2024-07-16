@@ -336,6 +336,7 @@ class RootCommands(discord.Cog):
     async def move_all_users(self, ctx: discord.commands.context.ApplicationContext, from_channel: discord.VoiceChannel, to_channel: discord.VoiceChannel):
         Log.command(ctx.author.name + " is launching move all users commands")
         try:
+            await ctx.defer()
             if not await self.__check_if_root(ctx):
                 return
             
