@@ -44,7 +44,13 @@ class ScheduledTask(discord.Cog):
             embed = discord.Embed(title="Monthly Top Users", color=eval("0x" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])))
 
             for user in most_active_users:
-                discord_user = self.__bot.get_user(int(user.discord_id))
+                discord_id = 0 
+                try: # to avoid error if discord_id is not an convertible in int
+                    discord_id = int(user.discord_id)
+                except:
+                    pass
+
+                discord_user = self.__bot.get_user(discord_id)
                 if discord_user is None:
                     embed.add_field(name=user.discord_id, value=user.monthly_point, inline=False)
                 else:
