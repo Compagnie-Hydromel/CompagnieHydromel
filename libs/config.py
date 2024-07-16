@@ -129,7 +129,8 @@ class Config():
             "role_added": "Role added!",
             "role_removed": "Role removed!",
             "role_updated": "Role updated!",
-            "level_up": "You just level up ! your now level {level} !"
+            "level_up": "You just level up ! your now level {level} !",
+            "all_users_moved": "All users moved!"
         },
         "exception_response": {
             "default": "An error occured",
@@ -169,6 +170,8 @@ class Config():
             "role_not_exist": "Role not exist!",
             "cannot_manage_default_role": "Cannot manage default role! @(everyone)",
             "role_level_already_exist": "Role level already exist!",
+            "same_channel": "Cannot move to the same channel!",
+            "no_user_in_channel": "No user in the channel!",
         }
     }
     __config_file = "config.yml"
