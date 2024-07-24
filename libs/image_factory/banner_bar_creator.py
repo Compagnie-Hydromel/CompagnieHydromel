@@ -1,8 +1,7 @@
 from PIL import Image
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
-from libs.image_factory.utils import Utils
-import requests
-from io import BytesIO
+from libs.image_factory.utils import Utils as ImageFactoryUtils
+from libs.utils.utils import Utils
 
 from libs.log import Log
 
@@ -42,8 +41,7 @@ class BannerBarCreator:
         """
         img = None
         try: 
-            response_banner_image = requests.get(banner_image)
-            img = Image.open(BytesIO(response_banner_image.content)).convert('RGBA')
+            img = Image.open(Utils.download_image(banner_image)).convert('RGBA')
         except: 
             raise WallpaperIsNotDownloadableException
 
@@ -52,24 +50,23 @@ class BannerBarCreator:
             add = 0
             for member in people[channel]:
                 try: 
-                    response_profile = requests.get(member["profil"])
-                    pic = Image.open(BytesIO(response_profile.content)).convert('RGBA').resize((64,64))
+                    pic = Image.open(Utils.download_image(member["profil"])).convert('RGBA').resize((64,64))
                 except: 
                     raise WallpaperIsNotDownloadableException
 
                 h,w = pic.size
 
-                pic = Utils.pillow_crop_max_square(pic).resize((w, h), Image.LANCZOS)
-                pic = Utils.pillow_mask_circle_transparent(pic, 1)
+                pic = ImageFactoryUtils.pillow_crop_max_square(pic).resize((w, h), Image.LANCZOS)
+                pic = ImageFactoryUtils.pillow_mask_circle_transparent(pic, 1)
 
-                channel = self.__search_in_coords(coords, channel)
+                channel_found = self.__search_in_coords(coords, channel)
 
-                if channel is None:
+                if channel_found is None:
                     continue
 
-                img.paste(pic, (channel['w']+add, channel['h']), pic)
+                img.paste(pic, (channel_found['w']+add, channel_found['h']), pic)
                 Log.info("BannerBarCreator: Added " + member["username"] + " to the banner bar.")
-                add+=int(64/(len(channel)/3))
+                add+=int(64/(len(people[channel])/3))
         # image
 
         img.save(file_path)
