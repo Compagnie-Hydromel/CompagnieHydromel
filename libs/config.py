@@ -231,6 +231,9 @@ class Config():
             any: the subfield modified or not modified.
         """
         if isinstance(default_subfield, dict) and default_subfield not in self.__no_check_fields:
+            if not isinstance(subfield, dict):
+                subfield = default_subfield
+                self.__need_to_rewrite = True
             for field in default_subfield:
                 if field not in subfield:
                     subfield[field] = default_subfield[field]
