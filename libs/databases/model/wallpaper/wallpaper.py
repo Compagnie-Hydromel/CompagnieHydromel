@@ -109,7 +109,7 @@ class Wallpaper:
         Raises:
             WallpaperUrlNotAnImage: Raise when the url is not an image.
         """
-        if not Utils.is_url_image(url):
+        if not (Utils.is_url_image(url) or Utils.is_url_animated_gif(url)):
             raise WallpaperUrlNotAnImage
         self.__db_access.set_wallpaper_url(self.__wallpaper_name, url)
     

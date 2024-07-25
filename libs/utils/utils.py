@@ -1,4 +1,4 @@
-from io import BytesIO
+from io import BufferedReader, BytesIO
 import os
 import random
 import discord
@@ -56,6 +56,9 @@ class Utils():
         Returns:
             BytesIO: The image.
         """
+        if not url.startswith("http://") and not url.startswith("https://"):
+            return BytesIO(open(url, "rb").read())
+        
         Log.info("Downloading image from " + url)
         response_url = requests.get(url)
         Log.info("Downloaded image from " + url)
@@ -112,9 +115,26 @@ class Utils():
         
     @staticmethod
     def is_url_image(image_url):
+        if not image_url.startswith("http://") and not image_url.startswith("https://"):
+            file = open(image_url, "rb")
+            if file.read(2) == b"\xff\xd8":
+                return True
+            return False
         image_formats = ("image/png", "image/jpeg", "image/jpg")
         r = requests.head(image_url)
         if r.headers["content-type"] in image_formats:
+            return True
+        return False
+    
+    @staticmethod
+    def is_url_animated_gif(image_url):
+        if not image_url.startswith("http://") and not image_url.startswith("https://"):
+            file = open(image_url, "rb")
+            if file.read(3) == b"GIF":
+                return True
+            return False
+        r = requests.head(image_url)
+        if r.headers["content-type"] == "image/gif":
             return True
         return False
     

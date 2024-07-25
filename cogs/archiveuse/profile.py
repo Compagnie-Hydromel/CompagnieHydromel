@@ -22,9 +22,15 @@ class Profile(discord.Cog):
             user = User(str(ctx.author.id))
 
             Utils.createDirectoryIfNotExist(".profile")
+            
+            output_end = ".png"
+            
+            if Utils.is_url_animated_gif(user.current_wallpaper.url):
+                output_end = ".gif"
+            
             Log.info("create profile for " + str(ctx.author))
             pro = ProfilMaker(
-                ".profile/" +str(ctx.author.id) + ".png",
+                ".profile/" + str(ctx.author.id) + output_end,
                 ctx.author.name,
                 ctx.author.display_avatar.url,
                 user.level,

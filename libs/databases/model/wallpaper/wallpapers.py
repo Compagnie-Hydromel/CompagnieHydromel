@@ -4,6 +4,8 @@ from libs.databases.model.wallpaper.wallpaper import Wallpaper
 from libs.exception.wallpaper.cannot_remove_default_wallpaper import CannotRemoveDefaultWallpaper
 from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
 from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
+from libs.exception.wallpaper.wallpaper_url_not_an_image import WallpaperUrlNotAnImage
+from libs.utils.utils import Utils
 
 class Wallpapers:
     """This class is designed to manage wallpapers.
@@ -56,6 +58,8 @@ class Wallpapers:
             Wallpaper(wallpaper_name)
             raise WallpaperAlreadyExistException
         except WallpaperNotExistException:
+            if not (Utils.is_url_image(url) or Utils.is_url_animated_gif(url)):
+                raise WallpaperUrlNotAnImage
             self.__db_access.add_wallpaper(wallpaper_name, url, price, level)
         
     def remove(self, wallpaper: Wallpaper):
