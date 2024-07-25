@@ -1,5 +1,6 @@
+from io import BytesIO
 from PIL import Image, ImageDraw, ImageFilter
-
+import os
 class Utils():
 
     @staticmethod
@@ -79,3 +80,58 @@ class Utils():
                              (img_height - crop_height) // 2,
                              (img_width + crop_width) // 2,
                              (img_height + crop_height) // 2))
+
+    @staticmethod
+    def analyseImage(image: BytesIO):
+        '''
+        Pre-process pass over the image to determine the mode (full or additive).
+        Necessary as assessing single frames isn't reliable. Need to know the mode 
+        before processing all frames.
+        '''
+        im = Image.open(image)
+        results = {
+            'size': im.size,
+            'mode': 'full',
+        }
+        try:
+            while True:
+                if im.tile:
+                    tile = im.tile[0]
+                    update_region = tile[1]
+                    update_region_dimensions = update_region[2:]
+                    if update_region_dimensions != im.size:
+                        results['mode'] = 'partial'
+                        break
+                im.seek(im.tell() + 1)
+        except EOFError:
+            pass
+        return results
+
+    @staticmethod
+    def gif_to_image_list(image: BytesIO):
+        mode = Utils.analyseImage(image)['mode']
+        
+        frames: list[Image.Image] = []
+        
+        im = Image.open(image)
+
+        i = 0
+        last_frame = im.convert('RGBA')
+        
+        try:
+            while True:
+                new_frame = Image.new('RGBA', im.size)
+
+                if mode == 'partial':
+                    new_frame.paste(last_frame)
+                
+                new_frame.paste(im, (0,0), im.convert('RGBA'))
+                frames.append(new_frame)
+
+                i += 1
+                last_frame = new_frame
+                im.seek(im.tell() + 1)
+        except EOFError:
+            pass
+        
+        return frames

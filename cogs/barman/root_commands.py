@@ -182,9 +182,6 @@ class RootCommands(discord.Cog):
                                       "\n**price** " + str(wallpaper.price) + " smartpoint" + 
                                       "\n**level to obtain** " + str(wallpaper.level))
                 case "add":
-                    if not Utils.is_url_image(url):
-                        await ctx.respond(self.__response_exception["url_not_an_image"])
-                        return
                     wallpapers.add(wallpaper_name, url, self.__not_none(price), self.__not_none(level))
                     await ctx.respond(self.__response["wallpaper_added"])
                 case "remove":
