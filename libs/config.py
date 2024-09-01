@@ -24,11 +24,9 @@ class Config():
         },
         "nsfw_commands": {
             "enable": False,
-            "porn": "",
-            "hentai": "",
-            "jinx": "",
-            "002": "",
-            "overwatch": ""
+            "nsfw_content": {
+                "porn": ""
+            }
         },
         "bar_commands": {
             "beer": {
@@ -175,7 +173,7 @@ class Config():
         }
     }
     __config_file = "config.yml"
-    __no_check_fields = ["discord_id_to_song"]
+    __no_check_fields = ["discord_id_to_song", "nsfw_content"]
     
     def __init__(self) -> None:
         """This method is designed to initialize the Config class.
