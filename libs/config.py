@@ -95,7 +95,8 @@ class Config():
                     "0": ""
                 }
             }
-        },  
+        },
+        "monthlytop_channel_id": 0,
         "information_channel_id": 0,
         "response": {
             "wallpaper_changed": "Wallpaper changed!",

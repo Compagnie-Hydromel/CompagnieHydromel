@@ -23,7 +23,7 @@ class ScheduledTask(discord.Cog):
         loop = asyncio.get_running_loop()
         self.__schedule = Scheduler(loop=loop)
         
-        self.__schedule.daily(timing = datetime.time(8, 5), handle = self.monthly_top_adder)
+        self.__schedule.daily(timing = datetime.time(14, 17), handle = self.monthly_top_adder)
         
         while True:
             await asyncio.sleep(1)
@@ -39,7 +39,7 @@ class ScheduledTask(discord.Cog):
             user.add_point(most_active_reward[i])
             user.add_smartpoint(most_active_reward[i])
 
-        information_channel = self.__bot.get_channel(self.__config.value["information_channel_id"])
+        information_channel = self.__bot.get_channel(self.__config.value["monthlytop_channel_id"])
 
         if information_channel is not None:
             embed = discord.Embed(title="Monthly Top Users", color=eval("0x" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])))
