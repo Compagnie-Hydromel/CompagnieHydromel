@@ -1,5 +1,5 @@
 blagues_api==1.0.2
-py-cord[voice]==2.5.0
+py-cord[voice]==2.6.1
 Pillow==10.3.0
 python-dotenv==1.0.0
 PyYAML==6.0.1
