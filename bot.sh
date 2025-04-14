@@ -2,6 +2,16 @@ cd $(dirname "$0")
 
 source env/bin/activate
 
+case $1 in
+    "format")
+        python3 libs/format.py format
+        ;;
+    "check-format")
+        python3 libs/format.py check
+        ;;
+esac
+exit $?
+
 python3 bot.py barman &
 barman_pid=$!
 

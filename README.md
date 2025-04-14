@@ -146,6 +146,12 @@ To use the music feature refer to this documentation [here](https://github.com/C
 
 ## Contributing
 Please open an issue first to discuss what you would like to change.
+Format code with pep8 
+```bash
+./bot.sh format
+# or
+./bot.sh check-format
+```
 
 ## License
 [MIT](LICENSE)
