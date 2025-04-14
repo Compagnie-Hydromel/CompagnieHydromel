@@ -9,6 +9,9 @@ case $1 in
     "check-format")
         python3 libs/format.py check
         ;;
+    "test")
+        python3 -m unittest tests/test_*.py
+        ;;
 esac
 exit $?
 

@@ -65,11 +65,11 @@ If you want to make the bot work, you'll need some things.
 
 - For Linux users
 ``` bash
-sudo apt install python3.11
+sudo apt install python3.12
 ```
 
 - For Windows or mac users
-    - [Download Python 3.11](https://www.python.org/downloads/release/python-3114/)
+    - [Download Python 3.12](https://www.python.org/downloads/release/python-31210/)
 
 Now, not all things are installed but these ones are for both OS. Open a **CMD/Terminal** and copy/paste these commands below. This command will automatically install the required dependencies for this project.
 To manage dependency you need to use [python-venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
