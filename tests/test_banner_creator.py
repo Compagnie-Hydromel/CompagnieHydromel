@@ -2,10 +2,12 @@ import unittest
 import os
 
 from libs.image_factory.banner_bar_creator import BannerBarCreator
+from libs.utils.utils import Utils
 
 
 class TestBannerCreator(unittest.TestCase):
     def test_banner_bar_creator(self):
+        Utils.createDirectoryIfNotExist(".profile")
         self.assertFalse(os.path.isfile(".profile/test_banner.png"))
 
         bar_channel = [

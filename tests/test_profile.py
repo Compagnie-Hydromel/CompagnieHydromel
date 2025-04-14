@@ -1,9 +1,15 @@
 import unittest
 import os
 from libs.image_factory.profile_maker import ProfilMaker
+from libs.utils.utils import Utils
 
 
 class TestProfileMaker(unittest.TestCase):
+    def setUp(self):
+        Utils.createDirectoryIfNotExist(".profile")
+
+        return super().setUp()
+
     def test_profile_create_file(self):
         self.assertFalse(os.path.isfile(".profile/test.png"))
 
