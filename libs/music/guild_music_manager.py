@@ -1,15 +1,16 @@
 import wavelink
 from libs.music.music_manager import MusicManager
 
+
 class GuildMusicManager:
     """Class that manage the music for each guild.
     """
     guild: dict[int, MusicManager] = {}
-    
+
     def __init__(self, node: wavelink.Node) -> None:
         """Constructor of GuildMusicManager class."""
-        self.__node = node 
-    
+        self.__node = node
+
     def get(self, guild_id: int) -> MusicManager:
         """Get the MusicManager for the guild.
 
@@ -22,7 +23,7 @@ class GuildMusicManager:
         if guild_id not in self.guild:
             self.add(guild_id)
         return self.guild[guild_id]
-    
+
     def add(self, guild_id: int):
         """Add a MusicManager for the guild.
 

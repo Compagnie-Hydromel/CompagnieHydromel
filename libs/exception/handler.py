@@ -3,15 +3,17 @@ from libs.config import Config
 from libs.exception.bot_exception import BotException
 from libs.log import Log
 
+
 class Handler:
     """Handler class for handling exception
-    """    
+    """
+
     def __init__(self) -> None:
         """Constructor of Handler class
-        """        
+        """
         self.__config = Config()
         self.__response_exception = self.__config.value["exception_response"]
-        
+
     def response_handler(self, exception: Exception, stacktrace: str) -> str:
         """Response handler for exception to convert exception to response message
 
@@ -27,7 +29,7 @@ class Handler:
                 # wallpaper exception
                 case "WallpaperNotExistException":
                     return self.__response_exception["wallpaper_not_exist"]
-                case "WallpaperAlreadyExistException": 
+                case "WallpaperAlreadyExistException":
                     return self.__response_exception["wallpaper_already_exist"]
                 case "WallpaperNotPossededException":
                     return self.__response_exception["wallpaper_not_posseded"]
@@ -53,7 +55,7 @@ class Handler:
                 case "RoleLevelAlreadyExistException":
                     return self.__response_exception["role_level_already_exist"]
                 # music exception
-                case "AlreadyPlayingException": 
+                case "AlreadyPlayingException":
                     return self.__response_exception["already_playing"]
                 case "NotConnectedToVoiceChannelException":
                     return self.__response_exception["not_connected_to_voice_channel"]
@@ -81,7 +83,7 @@ class Handler:
                     return self.__default(stacktrace)
         else:
             return self.__default(stacktrace)
-        
+
     def __default(self, stacktrace: str) -> str:
         """Default response for exception
 
@@ -90,6 +92,6 @@ class Handler:
 
         Returns:
             str: the default response message
-        """        
+        """
         Log.error(stacktrace)
         return self.__response_exception["default"]

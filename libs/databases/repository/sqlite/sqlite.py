@@ -1,7 +1,8 @@
 import sqlite3
 
+
 class Sqlite():
-    __db : sqlite3.Connection
+    __db: sqlite3.Connection
 
     def __init__(self, file: str) -> None:
         """This method is designed to initialize the Sqlite class.
@@ -9,9 +10,9 @@ class Sqlite():
         Args:
             file (str): The path to the database file.
         """
-        self.__db =  sqlite3.connect(file)
+        self.__db = sqlite3.connect(file)
 
-    def select(self, query:str, parameters: list = []) -> dict:
+    def select(self, query: str, parameters: list = []) -> dict:
         """This method is designed to execute a SQL SELECT query.
 
         Args:
@@ -28,7 +29,7 @@ class Sqlite():
 
         return result
 
-    def modify(self, query:str, parameters: list = []) -> None:
+    def modify(self, query: str, parameters: list = []) -> None:
         """This method is designed to execute a SQL query (Insert or Update).
 
         Args:
@@ -39,4 +40,3 @@ class Sqlite():
         cursor.execute(query, parameters)
 
         self.__db.commit()
-

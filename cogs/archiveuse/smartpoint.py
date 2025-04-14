@@ -1,10 +1,11 @@
 import traceback
-import  discord
+import discord
 from libs.config import Config
 
 from libs.databases.model.user.user import User
 from libs.exception.handler import Handler
 from libs.log import Log
+
 
 class smartpoint(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
@@ -27,6 +28,7 @@ class smartpoint(discord.Cog):
     @discord.slash_command(description="Get your number of smartpoint")
     async def iq(self, ctx: discord.commands.context.ApplicationContext):
         await self.__smartpoint(ctx)
+
 
 def setup(bot: discord.bot.Bot):
     bot.add_cog(smartpoint(bot))

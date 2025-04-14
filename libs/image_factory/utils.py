@@ -1,6 +1,8 @@
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFilter
 import os
+
+
 class Utils():
 
     @staticmethod
@@ -72,7 +74,7 @@ class Utils():
         draw.ellipse((x, y, x+height, y+height), fill=fg)
 
         return bar
-    
+
     @staticmethod
     def pillow_crop_center(pil_img: Image, crop_width: int, crop_height: int) -> Image:
         img_width, img_height = pil_img.size
@@ -110,22 +112,22 @@ class Utils():
     @staticmethod
     def gif_to_image_list(image: BytesIO):
         mode = Utils.analyseImage(image)['mode']
-        
+
         frames: list[Image.Image] = []
-        
+
         im = Image.open(image)
 
         i = 0
         last_frame = im.convert('RGBA')
-        
+
         try:
             while True:
                 new_frame = Image.new('RGBA', im.size)
 
                 if mode == 'partial':
                     new_frame.paste(last_frame)
-                
-                new_frame.paste(im, (0,0), im.convert('RGBA'))
+
+                new_frame.paste(im, (0, 0), im.convert('RGBA'))
                 frames.append(new_frame)
 
                 i += 1
@@ -133,5 +135,5 @@ class Utils():
                 im.seek(im.tell() + 1)
         except EOFError:
             pass
-        
+
         return frames

@@ -10,7 +10,7 @@ from libs.exception.role.role_not_exist_exception import RoleNotExistException
 class Roles:
     """This class is designed to get many role in the database.
     """
-    __db_access : DatabaseAccessImplement
+    __db_access: DatabaseAccessImplement
 
     def __init__(self) -> None:
         """This method is designed to initialize the Roles class.
@@ -25,7 +25,7 @@ class Roles:
             list: A list with all the roles.
         """
         return self.__create_list_of_role_by_list_role_discord_id(self.__db_access.get_all_roles())
-    
+
     def by_level(self, level) -> Role:
         """This method is designed to get a role by the level.
 
@@ -41,7 +41,7 @@ class Roles:
         if not self.__db_access.is_role_exist_by_level(level):
             raise RoleNotExistException()
         return Role(self.__db_access.get_role_discord_id_by_role_level(level))
-    
+
     def add(self, discordId: str, level: int) -> None:
         """This method is designed to add a role in the database.
 
@@ -71,7 +71,7 @@ class Roles:
         if not self.__db_access.is_role_exist(discordId):
             raise RoleNotExistException()
         self.__db_access.remove_role(discordId)
-    
+
     def __create_list_of_role_by_list_role_discord_id(self, list_name: list[str]) -> list[Role]:
         """This method is designed to create a list of role by a list of discord id.
 

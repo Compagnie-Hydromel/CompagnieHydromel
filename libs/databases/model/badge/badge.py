@@ -6,10 +6,10 @@ from libs.exception.badge.badge_not_exist_exception import BadgeNotExistExceptio
 class Badge:
     """This class is designed to manage a badge.
     """
-    __badge_name : str
-    __db_access : DatabaseAccessImplement
-    
-    def __init__(self, badge_name : str) -> None:
+    __badge_name: str
+    __db_access: DatabaseAccessImplement
+
+    def __init__(self, badge_name: str) -> None:
         """This method is the constructor of the class.
 
         Args:
@@ -17,13 +17,13 @@ class Badge:
 
         Raises:
             BadgeNotExistException: If the badge doesn't exist.
-        """        
+        """
         self.__badge_name = badge_name
         self.__db_access = DatabasesSelecter().databases
 
         if not self.__db_access.is_badge_exist(self.__badge_name):
             raise BadgeNotExistException
-    
+
     @property
     def name(self) -> str:
         """This method is designed to get the name of the badge.

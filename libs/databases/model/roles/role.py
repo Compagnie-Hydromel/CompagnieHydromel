@@ -7,10 +7,10 @@ from libs.exception.role.role_not_exist_exception import RoleNotExistException
 class Role:
     """This class is designed to represent a role in the database.
     """
-    __discord_id : str
-    __db_access : DatabaseAccessImplement
+    __discord_id: str
+    __db_access: DatabaseAccessImplement
 
-    def __init__(self, discord_id : str) -> None:
+    def __init__(self, discord_id: str) -> None:
         """This method is designed to initialize the User class.
 
         Args:
@@ -24,7 +24,7 @@ class Role:
 
         if not self.__db_access.is_role_exist(self.__discord_id):
             raise RoleNotExistException()
-        
+
     def __eq__(self, value: "Role") -> bool:
         """This method is designed to compare two roles.
 
@@ -53,14 +53,14 @@ class Role:
             int: The level of the user.
         """
         return self.__db_access.get_role_level(self.__discord_id)
-    
+
     @level.setter
     def level(self, value: int) -> None:
         """This method is designed to set the level of the user.
 
         Args:
             value (int): The level of the user.
-        
+
         Raises:
             LevelShouldBeGreaterThanOneException: If the level is less than 1.
         """

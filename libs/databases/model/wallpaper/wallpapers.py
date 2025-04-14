@@ -7,10 +7,11 @@ from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotE
 from libs.exception.wallpaper.wallpaper_url_not_an_image import WallpaperUrlNotAnImage
 from libs.utils.utils import Utils
 
+
 class Wallpapers:
     """This class is designed to manage wallpapers.
     """
-    __db_access : DatabaseAccessImplement
+    __db_access: DatabaseAccessImplement
 
     def __init__(self) -> None:
         """This method is designed to initialize the Wallpapers class. 
@@ -25,7 +26,7 @@ class Wallpapers:
             list[Wallpaper]: A list of All Wallpaper object.
         """
         return self.create_list_wallpaper_by_list_name(self.__db_access.get_all_wallpapers())
-    
+
     def create_list_wallpaper_by_list_name(self, list_name: list[str]) -> list[Wallpaper]:
         """This method is designed to create a list of Wallpaper object by a list of wallpaper name.
 
@@ -41,7 +42,7 @@ class Wallpapers:
             list_of_wallpapers.append(Wallpaper(wallpaper))
 
         return list_of_wallpapers
-    
+
     def add(self, wallpaper_name: str, url: str, price: int = 0, level: int = 0) -> None:
         """This method is designed to add a wallpaper to the database.
 
@@ -50,18 +51,18 @@ class Wallpapers:
             url (str): the url of the wallpaper
             price (int, optional): the price of the wallpaper. Defaults to 0.
             level (int, optional): the level of the wallpaper. Defaults to 0.
-    
+
         Raises:
             WallpaperAlreadyExistException: If the wallpaper already exist.
         """
-        try: 
+        try:
             Wallpaper(wallpaper_name)
             raise WallpaperAlreadyExistException
         except WallpaperNotExistException:
             if not (Utils.is_url_image(url) or Utils.is_url_animated_gif(url)):
                 raise WallpaperUrlNotAnImage
             self.__db_access.add_wallpaper(wallpaper_name, url, price, level)
-        
+
     def remove(self, wallpaper: Wallpaper):
         """This method is designed to remove a wallpaper from the database.
 

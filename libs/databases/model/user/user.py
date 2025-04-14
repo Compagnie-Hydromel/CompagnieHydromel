@@ -10,13 +10,14 @@ from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import Wallpap
 from libs.exception.wallpaper.wallpaper_not_posseded_exception import WallpaperNotPossededException
 from libs.utils.utils import Utils
 
+
 class User:
     """This class is designed to manage a single user.
     """
-    __discord_id : str
-    __db_access : DatabaseAccessImplement
-    
-    def __init__(self, discord_id : str) -> None:
+    __discord_id: str
+    __db_access: DatabaseAccessImplement
+
+    def __init__(self, discord_id: str) -> None:
         """This method is designed to initialize the User class.
 
         Args:
@@ -25,16 +26,16 @@ class User:
         self.__discord_id = discord_id
         self.__db_access = DatabasesSelecter().databases
         self.__db_access.add_user_if_not_exist(discord_id)
-    
+
     @property
     def discord_id(self) -> str:
         """This method is designed to get the discord id of the user.
 
         Returns:
             str: The discord id of the user.
-        """        
+        """
         return self.__discord_id
-    
+
     @property
     def level(self) -> int:
         """This method is designed to get the level of the user.
@@ -52,7 +53,7 @@ class User:
             int: The point of the user.
         """
         return self.__db_access.get_user_point(self.__discord_id)
-    
+
     @property
     def monthly_point(self) -> int:
         """This method is designed to get the monthly point of the user.
@@ -61,7 +62,7 @@ class User:
             int: The monthly point of the user.
         """
         return self.__db_access.get_user_monthly_point(self.__discord_id)
-    
+
     @property
     def number_of_buy(self) -> int:
         """This method is designed to get the number of buy of the user.
@@ -70,8 +71,8 @@ class User:
             int: The number of buy of the user.
         """
         return self.__db_access.get_number_of_buy(self.__discord_id)
-    
-    def add_point(self, point : int = 1) -> None:
+
+    def add_point(self, point: int = 1) -> None:
         """This method is designed to add point to the user.
 
         Args:
@@ -84,26 +85,26 @@ class User:
         """This method is designed to reset the point of the user.
         """
         self.__db_access.reset_point(self.__discord_id)
-    
+
     def reset_level(self) -> None:
         """This method is designed to reset the level of the user. (WARNING essentially for test)
         """
         self.__db_access.reset_level(self.__discord_id)
-        
+
     def reset_monthly_point(self) -> None:
         """This method is designed to reset the monthly point of the user.
         """
         self.__db_access.reset_user_monthly_point(self.__discord_id)
-        
-    def add_monthly_point(self, point : int = 1) -> None:
+
+    def add_monthly_point(self, point: int = 1) -> None:
         """This method is designed to add monthly point to the user.
 
         Args:
             point (int, optional): Number of monthly point to add. Defaults to 1.
         """
         self.__db_access.add_user_monthly_point(self.__discord_id, point)
-        
-    def remove_monthly_point(self, point : int = 1) -> None:
+
+    def remove_monthly_point(self, point: int = 1) -> None:
         """This method is designed to remove monthly point to the user.
 
         Args:
@@ -111,7 +112,7 @@ class User:
         """
         self.__db_access.remove_user_monthly_point(self.__discord_id, point)
 
-    def add_smartpoint(self, amount : int = 1) -> None: 
+    def add_smartpoint(self, amount: int = 1) -> None:
         """This method is designed to add smartpoint to the user.
 
         Args:
@@ -119,7 +120,7 @@ class User:
         """
         self.__db_access.add_smartpoint(self.__discord_id, amount)
 
-    def remove_smartpoint(self, amount : int = 1) -> None:
+    def remove_smartpoint(self, amount: int = 1) -> None:
         """This method is designed to remove smartpoint to the user.
 
         Args:
@@ -131,7 +132,7 @@ class User:
         if self.smartpoint - amount < 0:
             raise NotEnougtSmartpointException
         self.__db_access.remove_smartpoint(self.__discord_id, amount)
-    
+
     @property
     def name_color(self) -> str:
         """This method is designed to get the name color of the user.
@@ -140,7 +141,7 @@ class User:
             str: The name color of the user as Hex RGB (example: #00ff00, #ff00ffaf, etc..).
         """
         return "#" + self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor)
-    
+
     @property
     def bar_color(self) -> str:
         """This method is designed to get the bar color of the user.
@@ -149,7 +150,7 @@ class User:
             str: The bar color of the user as Hex RGB (example: #00ff00, #ff00ffaf, etc..).
         """
         return "#" + self.__db_access.get_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor)
-    
+
     @property
     def is_root(self) -> bool:
         """This method is designed to check if the user is root.
@@ -158,7 +159,7 @@ class User:
             bool: True if the user is root, False if not.
         """
         return self.__db_access.get_if_user_is_root(self.__discord_id)
-    
+
     @property
     def has_accepted_rules(self) -> bool:
         """This method is designed to check if the user has accepted the rules.
@@ -167,7 +168,7 @@ class User:
             bool: True if the user has accepted the rules, False if not.
         """
         return self.__db_access.is_user_accepted_rules(self.__discord_id)
-    
+
     def toggle_root(self, root: bool | None = None) -> None:
         """This method is designed to toggle the root of the user.
 
@@ -186,8 +187,9 @@ class User:
         """
         if accepted_rules is None:
             accepted_rules = not self.has_accepted_rules
-        self.__db_access.set_user_accepted_rules(self.__discord_id, accepted_rules)
-    
+        self.__db_access.set_user_accepted_rules(
+            self.__discord_id, accepted_rules)
+
     @property
     def current_wallpaper(self) -> Wallpaper:
         """This method is designed to get the current wallpaper of the user.
@@ -196,28 +198,28 @@ class User:
             Wallpaper: The current wallpaper of the user.
         """
         return Wallpaper(self.__db_access.get_user_current_wallpaper(self.__discord_id))
-    
+
     @property
-    def list_of_posseded_wallpapers(self) -> list[Wallpaper]: 
+    def list_of_posseded_wallpapers(self) -> list[Wallpaper]:
         """This method is designed to get the list of posseded wallpapers of the user.
 
         Returns:
             list[Wallpaper]: The list of posseded wallpapers of the user.
-        """        
-        return Wallpapers().create_list_wallpaper_by_list_name(self.__db_access.get_list_posseded_wallpapers(self.__discord_id)) 
-    
-    @property 
+        """
+        return Wallpapers().create_list_wallpaper_by_list_name(self.__db_access.get_list_posseded_wallpapers(self.__discord_id))
+
+    @property
     def profiles_layout(self) -> ProfileLayout:
         """This method is designed to get the profiles layout of the user.
 
         Raises:
             ProfileLayoutNotExist: Raise when the profile layout of the user don't exist.
-        
+
         Returns:
             ProfileLayout: The users profiles layout.
         """
         return ProfileLayout(self.__db_access.get_user_profile_layout(self.__discord_id))
-    
+
     def change_current_wallpapers(self, wallpaper: Wallpaper) -> None:
         """This method is designed to change the current wallpaper of the user.
 
@@ -228,10 +230,11 @@ class User:
             WallpaperNotPossededException: Raise when the user don't possed the wallpaper.
         """
         if self.__is_wallpaper_posseded(wallpaper):
-            self.__db_access.change_user_current_wallpaper(self.__discord_id, wallpaper.name)
+            self.__db_access.change_user_current_wallpaper(
+                self.__discord_id, wallpaper.name)
         else:
             raise WallpaperNotPossededException
-    
+
     def change_name_color(self, color: str) -> None:
         """This method is designed to change the name color of the user.
 
@@ -251,11 +254,12 @@ class User:
         Args:
             color (str): The new color as Hex RGB or color name (example: #00ff00, #ff00ffaf, red, orange, etc..).
         """
-        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.NameColor, Utils.check_color(color))
+        self.__db_access.change_user_profile_custom_color(
+            self.__discord_id, ProfileColoredPart.NameColor, Utils.check_color(color))
 
     def change_bar_color(self, color: str) -> None:
         """This method is designed to change the bar color of the user.
-        
+
         Color list:
             - blue - #0000FF
             - white - #FFFFFF
@@ -268,11 +272,12 @@ class User:
             - purple - #990099
             - brown - #D2691E
             - grey - #808080
-        
+
         Args:
             color (str): The new color as Hex RGB or color name (example: #00ff00, #ff00ffaf, red, orange, etc..).
-        """        
-        self.__db_access.change_user_profile_custom_color(self.__discord_id, ProfileColoredPart.BarColor, Utils.check_color(color))
+        """
+        self.__db_access.change_user_profile_custom_color(
+            self.__discord_id, ProfileColoredPart.BarColor, Utils.check_color(color))
 
     @property
     def badges_list(self) -> list[str]:
@@ -282,7 +287,7 @@ class User:
             list[str]: The user badges list (example: ['badge_name', 'badge_name']).
         """
         return Badges().create_list_badges_by_list_name(self.__db_access.get_users_badge_list(self.__discord_id))
-    
+
     @property
     def smartpoint(self) -> int:
         """This method is designed to get the smartpoint of the user.
@@ -291,7 +296,7 @@ class User:
             int: The smartpoint of the user.
         """
         return self.__db_access.get_smartpoint(self.__discord_id)
-    
+
     def add_posseded_wallpaper(self, wallpaper: Wallpaper) -> None:
         """This method is designed to add a posseded wallpaper to the user.
 
@@ -303,8 +308,9 @@ class User:
         """
         if self.__is_wallpaper_posseded(wallpaper):
             raise WallpaperAlreadyPossededException
-        self.__db_access.add_posseded_wallpaper(self.__discord_id, wallpaper.name)
-    
+        self.__db_access.add_posseded_wallpaper(
+            self.__discord_id, wallpaper.name)
+
     def buy_wallpaper(self, wallpaper: Wallpaper) -> None:
         """This method is designed to handle a buy of wallpaper by user.
 
@@ -325,24 +331,25 @@ class User:
             raise NotEnougtSmartpointException
         self.remove_smartpoint(wallpaper_price)
         self.add_posseded_wallpaper(wallpaper)
-        
+
     def increase_number_of_buy(self) -> None:
         """This method is designed to increase the number of buy of the user.
         """
         self.__db_access.increase_number_of_buy(self.__discord_id)
-    
+
     def reset_number_of_buy(self) -> None:
         """This method is designed to reset the number of buy of the user.
         """
         self.__db_access.reset_number_of_buy(self.__discord_id)
-        
+
     def change_profile_layout(self, profile_layout: ProfileLayout) -> None:
         """This method is designed to change the profile layout of the user.
 
         Args:
             profile_layout (ProfileLayout): The new profile layout of the user.
         """
-        self.__db_access.change_user_profile_layout(self.__discord_id, profile_layout.name)
+        self.__db_access.change_user_profile_layout(
+            self.__discord_id, profile_layout.name)
 
     def __is_wallpaper_posseded(self, wallpaper: Wallpaper) -> bool:
         """This method is designed to check if a wallpaper is posseded by the user.
@@ -368,14 +375,15 @@ class User:
         if level > 15:
             calculated_point_per_level = 200 * 15
             calculated_money_per_level = 100+(15*100)
-        
+
         if point >= calculated_point_per_level:
             self.__db_access.add_user_level(self.__discord_id)
             self.reset_point()
-            self.__db_access.add_user_point(self.__discord_id, point - (calculated_point_per_level))
+            self.__db_access.add_user_point(
+                self.__discord_id, point - (calculated_point_per_level))
             self.add_smartpoint(calculated_money_per_level)
             self.__check_add_if_wallpaper_at_this_level()
-    
+
     def __check_add_if_wallpaper_at_this_level(self) -> None:
         """This method is designed to check if the user can add a wallpaper at this level.
         """
@@ -385,4 +393,3 @@ class User:
                     self.add_posseded_wallpaper(wallpaper)
                 except:
                     pass
-                

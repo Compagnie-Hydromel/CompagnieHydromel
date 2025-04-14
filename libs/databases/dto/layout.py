@@ -1,15 +1,16 @@
 from libs.databases.dto.coords import Coords
 
+
 class Layout:
     """Layout DTO
-    """    
+    """
     __profile_picture: Coords
     __name: Coords
     __username: Coords
     __level: Coords
     __badge: Coords
     __level_bar: Coords
-    
+
     def __init__(self, profil_picture: Coords, name: Coords, username: Coords, level: Coords, badge: Coords, level_bar: Coords):
         """layout Constructor
 
@@ -27,10 +28,10 @@ class Layout:
         self.__level = level
         self.__badge = badge
         self.__level_bar = level_bar
-        
+
     def __str__(self) -> str:
         return f'Layout(profil_picture: {self.__profile_picture}, name: {self.__name}, username: {self.__username}, level: {self.__level}, badge: {self.__badge}, level_bar: {self.__level_bar})'
-    
+
     @property
     def profile_picture(self) -> Coords:
         """Get the coords of the profil picture
@@ -39,7 +40,7 @@ class Layout:
             Coords: the coords of the profil picture
         """
         return self.__profile_picture
-    
+
     @property
     def name(self) -> Coords:
         """Get the coords of the name
@@ -48,7 +49,7 @@ class Layout:
             Coords: the coords of the name
         """
         return self.__name
-    
+
     @property
     def username(self) -> Coords:
         """Get the coords of the username
@@ -57,7 +58,7 @@ class Layout:
             Coords: the coords of the username
         """
         return self.__username
-    
+
     @property
     def level(self) -> Coords:
         """Get the coords of the level
@@ -66,7 +67,7 @@ class Layout:
             Coords: the coords of the level
         """
         return self.__level
-    
+
     @property
     def badge(self) -> Coords:
         """Get the coords of the badge
@@ -75,7 +76,7 @@ class Layout:
             Coords: the coords of the badge
         """
         return self.__badge
-    
+
     @property
     def level_bar(self) -> Coords:
         """Get the coords of the level bar
@@ -84,7 +85,7 @@ class Layout:
             Coords: the coords of the level bar
         """
         return self.__level_bar
-        
+
     def dict(self) -> dict[str, any]:
         """Convert the dto to a dict
 

@@ -32,9 +32,11 @@ for filename in os.listdir('./cogs/'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
+
 @bot.event
 async def on_ready():
-    Log.info(bot_name.capitalize() + ' start with ' + str(bot.user) + ' : ' + str(bot.user.id))
+    Log.info(bot_name.capitalize() + ' start with ' +
+             str(bot.user) + ' : ' + str(bot.user.id))
 
 bot_token_id: str = bot_name.upper() + "_TOKEN"
 if os.getenv(bot_token_id) is not None:

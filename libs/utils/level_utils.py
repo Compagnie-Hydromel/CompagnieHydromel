@@ -4,6 +4,7 @@ from libs.config import Config
 from libs.databases.model.user.user import User
 from libs.utils.role_utils import RoleUtils
 
+
 class LevelUtils():
     @staticmethod
     async def add_point(member: discord.Member, amount: int = 1):

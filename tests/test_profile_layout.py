@@ -10,14 +10,14 @@ from tests.utils import Utils
 
 class TestProfileLayout(unittest.TestCase):
     __profile_layout: ProfileLayout
-    
+
     def setUp(self) -> None:
         DatabasesSelecter.databases_file_override = "test_database.db"
         self.__profile_layout = ProfileLayout.get_default()
 
     def tearDown(self) -> None:
         Utils.deleteFileIfExist("test_database.db")
-    
+
     def test_name(self):
         __old_name = self.__profile_layout.name
         __name = "default"
@@ -25,7 +25,7 @@ class TestProfileLayout(unittest.TestCase):
         self.__profile_layout = ProfileLayout.get_default()
         self.assertEqual(self.__profile_layout.name, __name)
         self.__profile_layout.name = __old_name
-        
+
     def test_layout(self):
         __old_layout = self.__profile_layout.layout
         __layout = Layout(

@@ -2,10 +2,11 @@ import unittest
 import os
 from libs.image_factory.profile_maker import ProfilMaker
 
+
 class TestProfileMaker(unittest.TestCase):
     def test_profile_create_file(self):
         self.assertFalse(os.path.isfile(".profile/test.png"))
-        
+
         profile_maker = ProfilMaker(
             ".profile/test.png",
             "Test",
@@ -15,15 +16,15 @@ class TestProfileMaker(unittest.TestCase):
             "test",
             "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",
         )
-        
+
         self.assertTrue(profile_maker.profil_path == ".profile/test.png")
         self.assertTrue(os.path.isfile(profile_maker.profil_path))
 
         os.remove(profile_maker.profil_path)
-        
+
     def test_profile_create_gif_file(self):
         self.assertFalse(os.path.isfile(".profile/test.gif"))
-        
+
         profile_maker = ProfilMaker(
             ".profile/test.gif",
             "Test",

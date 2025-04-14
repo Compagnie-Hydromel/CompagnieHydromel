@@ -19,6 +19,7 @@ from libs.log import Log
 from libs.paginator import Paginator
 from libs.utils.utils import Utils
 
+
 class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
@@ -30,8 +31,9 @@ class ProfileManager(discord.Cog):
     @discord.slash_command(description="Manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color", "list profile layout", "change profile layout"])
     @discord.option("options_specifies", description="Specifies wallpaper or name color and bar color", required=False)
-    async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option : str, options_specifies : str = ""):
-        Log.command(ctx.author.name + " is launching wallpaper commands with " + option + " " + str(options_specifies))
+    async def profile_manager(self, ctx: discord.commands.context.ApplicationContext, *, option: str, options_specifies: str = ""):
+        Log.command(ctx.author.name + " is launching wallpaper commands with " +
+                    option + " " + str(options_specifies))
         try:
             await ctx.defer()
             user = User(str(ctx.author.id))
@@ -40,7 +42,8 @@ class ProfileManager(discord.Cog):
 
             match option:
                 case "set wallpaper":
-                    user.change_current_wallpapers(Wallpaper(options_specifies))
+                    user.change_current_wallpapers(
+                        Wallpaper(options_specifies))
                     await ctx.respond(self.__response["wallpaper_changed"])
                 case "buy wallpaper":
                     user.buy_wallpaper(Wallpaper(options_specifies))
@@ -60,19 +63,20 @@ class ProfileManager(discord.Cog):
                 case "list profile layout":
                     await self.__respond_list(ctx, profile_layouts.get_all_profile_layouts, "Profile layout")
                 case "change profile layout":
-                    user.change_profile_layout(ProfileLayout(options_specifies))
+                    user.change_profile_layout(
+                        ProfileLayout(options_specifies))
                     await ctx.respond(self.__response["profile_layout_changed"])
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
-            
+
     async def __respond_list(self, ctx: discord.commands.context.ApplicationContext, list: list, page_name: str = "Wallpapers"):
         paginator = Paginator(self.__generate_pages(list), page_name, 0x75E6DA)
-        
+
         await ctx.respond(
-            view = paginator, 
-            embed = paginator.embed
+            view=paginator,
+            embed=paginator.embed
         )
 
     def __generate_pages(self, list_of_line: list[any]) -> list:
@@ -80,14 +84,14 @@ class ProfileManager(discord.Cog):
         line_per_page = 10
         counter = 0
         content = ""
-        
+
         for line in list_of_line:
             if isinstance(line, Wallpaper):
                 content += self.wallpaper_list_with_price(line)
             elif isinstance(line, ProfileLayout):
                 content += line.name + "\n"
             counter += 1
-            
+
             if counter > line_per_page:
                 pages.append(content)
                 content = ""
@@ -95,7 +99,7 @@ class ProfileManager(discord.Cog):
         if content != "":
             pages.append(content)
         return pages
-    
+
     def wallpaper_list_with_price(self, wallpaper: Wallpaper):
         unlock_with = ""
         if wallpaper.price != 0:
@@ -104,8 +108,9 @@ class ProfileManager(discord.Cog):
             unlock_with += "\nUnlock at level " + str(wallpaper.level)
         else:
             unlock_with += "\n" + "not buyable"
-            
+
         return "**" + str(wallpaper.name) + "**" + unlock_with + "\n"
-    
+
+
 def setup(bot: discord.bot.Bot):
     bot.add_cog(ProfileManager(bot))

@@ -1,5 +1,6 @@
 import yaml
 
+
 class Config():
     """This class is designed to manage the config.
     """
@@ -14,11 +15,11 @@ class Config():
             "enable": False,
             "banner_image": "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",
             "coords": [
-                {"w":390,"h":215, "id": 0},
-                {"w":110,"h":279, "id": 0},
-                {"w":607,"h":293, "id": 0},
-                {"w":450,"h":457, "id": 0},
-                {"w":795,"h":145, "id": 0}
+                {"w": 390, "h": 215, "id": 0},
+                {"w": 110, "h": 279, "id": 0},
+                {"w": 607, "h": 293, "id": 0},
+                {"w": 450, "h": 457, "id": 0},
+                {"w": 795, "h": 145, "id": 0}
             ],
             "guild_id": 0
         },
@@ -42,7 +43,7 @@ class Config():
                     "https://shkermit.ch/~ethann/compHydromel/biere/Biere10.jpg"
                 ],
                 "price": 5
-            }, 
+            },
             "soft": {
                 "list": [
                     "https://shkermit.ch/~ethann/compHydromel/soft/Verre0.jpg",
@@ -53,13 +54,13 @@ class Config():
                     "https://shkermit.ch/~ethann/compHydromel/soft/Verre5.jpg"
                 ],
                 "price": 3
-            }, 
+            },
             "hydromel": {
                 "list": [
                     "https://shkermit.ch/~ethann/compHydromel/hydromel/Hydromel1.jpg"
                 ],
                 "price": 9
-            }, 
+            },
             "water": {
                 "list": [
                     "https://shkermit.ch/~ethann/compHydromel/water/water.jpg"
@@ -175,12 +176,12 @@ class Config():
     }
     __config_file = "config.yml"
     __no_check_fields = ["discord_id_to_song", "nsfw_content"]
-    
+
     def __init__(self) -> None:
         """This method is designed to initialize the Config class.
         """
         self.reload()
-    
+
     def __write(self, data: dict[str: any]) -> None:
         """This method is designed to write the config.
 
@@ -189,7 +190,7 @@ class Config():
         """
         with open(self.__config_file, "w") as f:
             yaml.dump(data, f, encoding='utf-8', allow_unicode=True)
-            
+
     def __is_config_exist(self) -> bool:
         """This method is designed to check if the config exist.
 
@@ -201,24 +202,25 @@ class Config():
                 return True
         except FileNotFoundError:
             return False
-        
+
     def __check_no_missing_field(self):
         """To check if there is no missing field in the config.
-        """        
+        """
         self.__need_to_rewrite = False
         if self.config is None:
             self.config = self.__default_config
             self.__need_to_rewrite = True
-        else: 
+        else:
             for field in self.__default_config:
                 if field in self.config:
-                    self.config[field] = self.__check_subfield_exist(self.config[field], self.__default_config[field])
+                    self.config[field] = self.__check_subfield_exist(
+                        self.config[field], self.__default_config[field])
                 else:
                     self.config[field] = self.__default_config[field]
                     self.__need_to_rewrite = True
         if self.__need_to_rewrite:
             self.__write(self.config)
-            
+
     def __check_subfield_exist(self, subfield, default_subfield) -> any:
         """Useful but only use with __check_no_missing_field to check if subfield exist.
 
@@ -238,13 +240,15 @@ class Config():
                     subfield[field] = default_subfield[field]
                     self.__need_to_rewrite = True
                 else:
-                    subfield[field] = self.__check_subfield_exist(subfield[field], default_subfield[field])
+                    subfield[field] = self.__check_subfield_exist(
+                        subfield[field], default_subfield[field])
         elif isinstance(default_subfield, list):
             for subfield_number in range(len(subfield)):
-                subfield[subfield_number] = self.__check_subfield_exist(subfield[subfield_number], default_subfield[0])
-    
+                subfield[subfield_number] = self.__check_subfield_exist(
+                    subfield[subfield_number], default_subfield[0])
+
         return subfield
-    
+
     def __read(self) -> dict[str: any]:
         """This method is designed to read the config.
 
@@ -253,16 +257,16 @@ class Config():
         """
         if not self.__is_config_exist():
             self.__write(self.__default_config)
-            
+
         with open(self.__config_file, "r") as f:
             return yaml.load(f, Loader=yaml.FullLoader)
-    
+
     def reload(self) -> None:
         """This method is designed to reload the config.
         """
         self.config = self.__read()
         self.__check_no_missing_field()
-    
+
     @property
     def value(self) -> dict:
         """This method is designed to get the config.

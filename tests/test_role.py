@@ -25,7 +25,7 @@ class TestRole(unittest.TestCase):
     def test_get_role_not_exists(self):
         with self.assertRaises(RoleNotExistException):
             Role("TestRoleThatDoesNotExist")
-    
+
     def test_get_level(self):
         self.assertEqual(1, self.__role.level)
 
