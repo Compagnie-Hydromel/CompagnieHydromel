@@ -22,7 +22,7 @@ class ProfilMaker():
     }
 
     def __init__(self,
-                 profil_path: str,
+                 profile_id: str,
                  user_name: str,
                  user_profil_picture: str,
                  level: int,
@@ -32,12 +32,13 @@ class ProfilMaker():
                  coords: dict = __coords,
                  badges: list[Badge] = [],
                  name_color: str = "#0000FF",
-                 bar_color: str = "#ADFF2F"
+                 bar_color: str = "#ADFF2F",
+                 gif: bool = False
                  ):
         """This method is designed to initialize the ProfilMaker class and make the profile.
 
         Args:
-            profil_path (str): Path to save the profile.
+            profile_id (str): The id of the profile.
             user_name (str): Username show in the profile.
             user_profil_picture (str): Users profile picture url (https://discord.com/path/to/profil.png).
             level (int): Level show in the profile.
@@ -61,6 +62,9 @@ class ProfilMaker():
         Raises:
             UnableToDownloadImageException: If one of the image can't be downloaded.
         """
+        Utils.createDirectoryIfNotExist(".profile")
+        self.__profilPath = ".profile/" + \
+            profile_id + (".gif" if gif else ".png")
 
         # region [bar and name color]
         _name_color = ImageColor.getcolor(str(name_color), "RGBA")
@@ -171,10 +175,8 @@ class ProfilMaker():
                 image_to_appends.append(img)
 
         # region [save]
-        imgs[0].save(profil_path, append_images=image_to_appends,
+        imgs[0].save(self.__profilPath, append_images=image_to_appends,
                      save_all=True, duration=0, loop=0)
-
-        self.__profilPath = profil_path
         # endregion
 
     @property

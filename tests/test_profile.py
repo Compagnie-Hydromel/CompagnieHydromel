@@ -6,21 +6,19 @@ from libs.utils.utils import Utils
 
 class TestProfileMaker(unittest.TestCase):
     def setUp(self):
-        Utils.createDirectoryIfNotExist(".profile")
-
         return super().setUp()
 
     def test_profile_create_file(self):
         self.assertFalse(os.path.isfile(".profile/test.png"))
 
         profile_maker = ProfilMaker(
-            ".profile/test.png",
+            "test",
             "Test",
             "https://ia903204.us.archive.org/4/items/discordprofilepictures/discordblue.png",
             5,
             100,
             "test",
-            "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",
+            "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png"
         )
 
         self.assertTrue(profile_maker.profil_path == ".profile/test.png")
@@ -32,13 +30,14 @@ class TestProfileMaker(unittest.TestCase):
         self.assertFalse(os.path.isfile(".profile/test.gif"))
 
         profile_maker = ProfilMaker(
-            ".profile/test.gif",
+            "test",
             "Test",
             "https://ia903204.us.archive.org/4/items/discordprofilepictures/discordblue.png",
             5,
             100,
             "test",
             "https://shkermit.ch/~ethann/compHydromel/wallpapers/rickroll.gif",
+            gif=True,
         )
 
         self.assertTrue(profile_maker.profil_path == ".profile/test.gif")

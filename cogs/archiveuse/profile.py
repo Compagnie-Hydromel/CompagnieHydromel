@@ -22,16 +22,9 @@ class Profile(discord.Cog):
 
             user = User(str(ctx.author.id))
 
-            Utils.createDirectoryIfNotExist(".profile")
-
-            output_end = ".png"
-
-            if Utils.is_url_animated_gif(user.current_wallpaper.url):
-                output_end = ".gif"
-
             Log.info("create profile for " + str(ctx.author))
             pro = ProfilMaker(
-                ".profile/" + str(ctx.author.id) + output_end,
+                str(ctx.author.id),
                 ctx.author.name,
                 ctx.author.display_avatar.url,
                 user.level,
@@ -41,7 +34,8 @@ class Profile(discord.Cog):
                 bar_color=user.bar_color,
                 name_color=user.name_color,
                 badges=user.badges_list,
-                coords=user.profiles_layout.layout.dict()
+                coords=user.profiles_layout.layout.dict(),
+                gif=Utils.is_url_animated_gif(user.current_wallpaper.url)
             )
             Log.info(ctx.author.name + " profile saved at " + pro.profil_path)
 

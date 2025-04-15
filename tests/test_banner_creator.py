@@ -7,8 +7,7 @@ from libs.utils.utils import Utils
 
 class TestBannerCreator(unittest.TestCase):
     def test_banner_bar_creator(self):
-        Utils.createDirectoryIfNotExist(".profile")
-        self.assertFalse(os.path.isfile(".profile/test_banner.png"))
+        self.assertFalse(os.path.isfile("test_banner.png"))
 
         bar_channel = [
             {"w": 390, "h": 215, "id": 0},
@@ -31,13 +30,13 @@ class TestBannerCreator(unittest.TestCase):
         }
 
         bar = BannerBarCreator(
-            ".profile/test_banner.png",
+            "test_banner.png",
             "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",
             bar_channel[0],
             bar_people
         )
 
-        self.assertTrue(bar.file_path == ".profile/test_banner.png")
+        self.assertTrue(bar.file_path == "test_banner.png")
         self.assertTrue(os.path.isfile(bar.file_path))
 
         os.remove(bar.file_path)
