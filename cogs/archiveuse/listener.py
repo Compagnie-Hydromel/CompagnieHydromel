@@ -3,8 +3,6 @@ import traceback
 import discord
 from discord.ext import tasks
 
-from libs.config import Config
-from libs.databases.model.user.user import User
 from libs.log import Log
 from libs.utils.level_utils import LevelUtils
 

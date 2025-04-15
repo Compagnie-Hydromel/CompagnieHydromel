@@ -3,6 +3,8 @@ from libs.databases.databases_selecter import DatabasesSelecter
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement
 from libs.databases.dto.layout import Layout
 from libs.exception.profile_layout.profile_layout_not_exist import ProfileLayoutNotExist
+from libs.exception.profile_layout.profile_layout_already_exist import ProfileLayoutAlreadyExist
+from libs.exception.profile_layout.cannot_remove_default_profile_layout import CannotRemoveDefaultProfileLayout
 
 
 class ProfileLayout:
@@ -25,6 +27,50 @@ class ProfileLayout:
 
         if not self.__db_access.is_profile_layout_exist(self.__profile_layout_name):
             raise ProfileLayoutNotExist
+
+    @staticmethod
+    def all() -> list["ProfileLayout"]:
+        """This method is designed to get all profile layouts.
+
+        Returns:
+            list[ProfileLayouts]: A list of profile layout.
+        """
+        return ProfileLayout.__create_list_of_profile_layout_by_list_profile_layout_name(DatabasesSelecter().databases.get_all_profile_layouts_name())
+
+    @staticmethod
+    def add(layout_name: str, layout: Layout) -> None:
+        """This method is designed to add a profile layout.
+        """
+        try:
+            ProfileLayout(layout_name)
+            raise ProfileLayoutAlreadyExist
+        except ProfileLayoutNotExist:
+            DatabasesSelecter().databases.add_profile_layout(layout_name, layout)
+
+    @staticmethod
+    def remove(profile_layout: "ProfileLayout"):
+        """This method is designed to remove a profile layout.
+        """
+        if profile_layout.get_default().name == profile_layout.name:
+            raise CannotRemoveDefaultProfileLayout
+        DatabasesSelecter().databases.remove_profile_layout(profile_layout.name)
+
+    @staticmethod
+    def __create_list_of_profile_layout_by_list_profile_layout_name(list_name: list[str]) -> list["ProfileLayout"]:
+        """This method is designed to create a list of ProfileLayout object by a list of profile layout name.
+
+        Args:
+            list_name (list[str]): A list of profile layout name
+
+        Returns:
+            list[ProfileLayout]: A list of ProfileLayout object.
+        """
+        list_of_profile_layout = []
+
+        for profile_layout_name in list_name:
+            list_of_profile_layout.append(ProfileLayout(profile_layout_name))
+
+        return list_of_profile_layout
 
     @staticmethod
     def get_default():

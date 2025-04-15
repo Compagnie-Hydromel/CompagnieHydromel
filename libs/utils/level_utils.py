@@ -1,7 +1,7 @@
 import discord
 
 from libs.config import Config
-from libs.databases.model.user.user import User
+from libs.databases.model.user import User
 from libs.utils.role_utils import RoleUtils
 
 

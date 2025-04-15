@@ -13,7 +13,9 @@ case $1 in
         python3 -m unittest tests/test_*.py
         ;;
 esac
-exit $?
+if [ -n "$1" ]; then
+    exit $?
+fi
 
 python3 bot.py barman &
 barman_pid=$!

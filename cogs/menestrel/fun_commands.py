@@ -5,7 +5,6 @@ import random
 import praw
 from blagues_api import BlaguesAPI
 from dotenv import load_dotenv
-from libs.config import Config
 from libs.exception.handler import Handler
 
 from libs.log import Log

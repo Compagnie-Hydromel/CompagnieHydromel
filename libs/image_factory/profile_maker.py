@@ -5,7 +5,7 @@ from libs.image_factory.utils import Utils as ImageFactoryUtils
 from libs.utils.utils import Utils
 import requests
 from io import BytesIO
-from libs.databases.model.badge.badge import Badge
+from libs.databases.model.badge import Badge
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 

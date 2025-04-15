@@ -1,20 +1,11 @@
 import traceback
 import discord
 from libs.config import Config
-from libs.databases.model.profile_layout.profile_layout import ProfileLayout
-from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
+from libs.databases.model.profile_layout import ProfileLayout
 
-from libs.databases.model.user.user import User
-from libs.databases.model.wallpaper.wallpaper import Wallpaper
-from libs.databases.model.wallpaper.wallpapers import Wallpapers
-from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
+from libs.databases.model.user import User
+from libs.databases.model.wallpaper import Wallpaper
 from libs.exception.handler import Handler
-from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
-from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
-from libs.exception.wallpaper.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
-from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
-from libs.exception.wallpaper.wallpaper_not_exist_exception import WallpaperNotExistException
-from libs.exception.wallpaper.wallpaper_not_posseded_exception import WallpaperNotPossededException
 from libs.log import Log
 from libs.paginator import Paginator
 from libs.utils.utils import Utils
@@ -37,8 +28,6 @@ class ProfileManager(discord.Cog):
         try:
             await ctx.defer()
             user = User(str(ctx.author.id))
-            wallpapers = Wallpapers()
-            profile_layouts = ProfileLayouts()
 
             match option:
                 case "set wallpaper":
@@ -51,7 +40,7 @@ class ProfileManager(discord.Cog):
                 case "list of posseded wallpaper":
                     await self.__respond_list(ctx, user.list_of_posseded_wallpapers, "Posseded wallpapers")
                 case "all wallpaper":
-                    await self.__respond_list(ctx, wallpapers.all)
+                    await self.__respond_list(ctx, Wallpaper.all())
                 case "wallpaper preview":
                     await ctx.respond(file=discord.File(Utils.download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
                 case "name color":
@@ -61,7 +50,7 @@ class ProfileManager(discord.Cog):
                     user.change_bar_color(options_specifies)
                     await ctx.respond(self.__response["namecolor_changed"])
                 case "list profile layout":
-                    await self.__respond_list(ctx, profile_layouts.get_all_profile_layouts, "Profile layout")
+                    await self.__respond_list(ctx, ProfileLayout.all(), "Profile layout")
                 case "change profile layout":
                     user.change_profile_layout(
                         ProfileLayout(options_specifies))

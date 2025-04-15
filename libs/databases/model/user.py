@@ -1,9 +1,8 @@
 from libs.databases.databases_selecter import DatabasesSelecter
-from libs.databases.model.badge.badges import Badges
+from libs.databases.model.badge import Badge
 from libs.databases.repository.database_access_implement import DatabaseAccessImplement, ProfileColoredPart
-from libs.databases.model.profile_layout.profile_layout import ProfileLayout
-from libs.databases.model.wallpaper.wallpaper import Wallpaper
-from libs.databases.model.wallpaper.wallpapers import Wallpapers
+from libs.databases.model.profile_layout import ProfileLayout
+from libs.databases.model.wallpaper import Wallpaper
 from libs.exception.smartpoint.not_enougt_smartpoint_exception import NotEnougtSmartpointException
 from libs.exception.wallpaper.wallpaper_already_posseded_exception import WallpaperAlreadyPossededException
 from libs.exception.wallpaper.wallpaper_cannot_be_buyed_exception import WallpaperCannotBeBuyedException
@@ -26,6 +25,51 @@ class User:
         self.__discord_id = discord_id
         self.__db_access = DatabasesSelecter().databases
         self.__db_access.add_user_if_not_exist(discord_id)
+
+    @staticmethod
+    def get_top_users() -> list["User"]:
+        """This method is designed to get the top users.
+
+        Returns:
+            list[User]: A list of User object.
+        """
+        return User.__create_list_of_users_by_list_user_name(DatabasesSelecter().databases.get_top_users())
+
+    @staticmethod
+    def get_most_smart_users() -> list["User"]:
+        """This method is designed to get the most smart users.
+
+        Returns:
+            list[User]: A list of User object.
+        """
+        return User.__create_list_of_users_by_list_user_name(DatabasesSelecter().databases.get_most_smart_users())
+
+    @staticmethod
+    def get_root_users() -> list["User"]:
+        """This method is designed to get the root users.
+
+        Returns:
+            list[User]: The list of root users.
+        """
+        return User.__create_list_of_users_by_list_user_name(DatabasesSelecter().databases.get_root_users())
+
+    @staticmethod
+    def get_5_monthly_most_active_users() -> list["User"]:
+        """This method is designed to get the 5 monthly most active users.
+
+        Returns:
+            list[User]: A list of User object.
+        """
+        return User.__create_list_of_users_by_list_user_name(DatabasesSelecter().databases.get_5_monthly_most_active_users())
+
+    @staticmethod
+    def all() -> list["User"]:
+        """This method is designed to get all the users.
+
+        Returns:
+            list[User]: A list of User object.
+        """
+        return User.__create_list_of_users_by_list_user_name(DatabasesSelecter().databases.get_all_users())
 
     @property
     def discord_id(self) -> str:
@@ -206,7 +250,7 @@ class User:
         Returns:
             list[Wallpaper]: The list of posseded wallpapers of the user.
         """
-        return Wallpapers().create_list_wallpaper_by_list_name(self.__db_access.get_list_posseded_wallpapers(self.__discord_id))
+        return Wallpaper.create_list_wallpaper_by_list_name(self.__db_access.get_list_posseded_wallpapers(self.__discord_id))
 
     @property
     def profiles_layout(self) -> ProfileLayout:
@@ -286,7 +330,7 @@ class User:
         Returns:
             list[str]: The user badges list (example: ['badge_name', 'badge_name']).
         """
-        return Badges().create_list_badges_by_list_name(self.__db_access.get_users_badge_list(self.__discord_id))
+        return Badge.create_list_badges_by_list_name(self.__db_access.get_users_badge_list(self.__discord_id))
 
     @property
     def smartpoint(self) -> int:
@@ -387,9 +431,26 @@ class User:
     def __check_add_if_wallpaper_at_this_level(self) -> None:
         """This method is designed to check if the user can add a wallpaper at this level.
         """
-        for wallpaper in Wallpapers().all:
+        for wallpaper in Wallpaper.all():
             if wallpaper.level == self.level:
                 try:
                     self.add_posseded_wallpaper(wallpaper)
                 except:
                     pass
+
+    @staticmethod
+    def __create_list_of_users_by_list_user_name(list_name: list[str]) -> list["User"]:
+        """This method is designed to create a list of User object by a list of user name.
+
+        Args:
+            list_name (list[str]): A list of user name.
+
+        Returns:
+            list[User]: A list of User object.
+        """
+        list_of_users = []
+
+        for user in list_name:
+            list_of_users.append(User(user))
+
+        return list_of_users

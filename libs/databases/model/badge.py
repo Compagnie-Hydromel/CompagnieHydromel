@@ -24,6 +24,23 @@ class Badge:
         if not self.__db_access.is_badge_exist(self.__badge_name):
             raise BadgeNotExistException
 
+    @staticmethod
+    def create_list_badges_by_list_name(list_name: list[str]) -> list["Badge"]:
+        """This method is designed to create a list of badges by a list of name.
+
+        Args:
+            list_name (list[str]): A list of badge name.
+
+        Returns:
+            list[Badge]: A list of Badge object.
+        """
+        list_of_badges = []
+
+        for badge_name in list_name:
+            list_of_badges.append(Badge(badge_name))
+
+        return list_of_badges
+
     @property
     def name(self) -> str:
         """This method is designed to get the name of the badge.

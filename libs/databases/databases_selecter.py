@@ -6,13 +6,22 @@ from libs.databases.repository.sqlite.sqlite_access import SqliteAccess
 class DatabasesSelecter:
     """This class is designed to select the database.
     """
+    __instance = None
     __config: Config
     __databases_type: str
     databases_file_override: str = ""
 
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super(DatabasesSelecter, cls).__new__(
+                cls, *args, **kwargs)
+        return cls.__instance
+
     def __init__(self):
-        self.__config = Config()
-        self.__databases_type = self.__config.value["database"]["type"]
+        if not hasattr(self, "_initialized"):
+            self.__config = Config()
+            self.__databases_type = self.__config.value["database"]["type"]
+            self._initialized = True
 
     @property
     def databases_type(self) -> str:

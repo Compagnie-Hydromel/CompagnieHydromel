@@ -5,8 +5,7 @@ import datetime
 import asyncio
 
 from libs.config import Config
-from libs.databases.model.user.user import User
-from libs.databases.model.user.users import Users
+from libs.databases.model.user import User
 from libs.utils.utils import Utils
 
 
@@ -16,7 +15,6 @@ class ScheduledTask(discord.Cog):
 
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__users = Users()
         self.__config = Config()
 
     @discord.Cog.listener()
@@ -34,7 +32,7 @@ class ScheduledTask(discord.Cog):
         if datetime.date.today().day != 1:
             return
 
-        most_active_users: list[User] = self.__users.get_5_monthly_most_active_users
+        most_active_users: list[User] = User.get_5_monthly_most_active_users()
         most_active_reward: list[int] = [70, 50, 30, 5, 3]
 
         for user, i in zip(most_active_users, range(len(most_active_users))):
@@ -56,7 +54,7 @@ class ScheduledTask(discord.Cog):
 
             await information_channel.send(embed=embed)
 
-        for user in self.__users.all:
+        for user in User.all():
             user.reset_monthly_point()
 
 

@@ -1,8 +1,7 @@
 import traceback
 import discord
-from libs.config import Config
 
-from libs.databases.model.user.users import Users
+from libs.databases.model.user import User
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.utils.utils import Utils
@@ -30,7 +29,7 @@ class Top(discord.Cog):
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
     async def __most_active(self, ctx: discord.commands.context.ApplicationContext):
-        list_of_best_users = Users().get_top_users
+        list_of_best_users = User.get_top_users()
         message = ""
         for user in list_of_best_users:
             username = self.__get_user_name_or_id_by_discord_id(
@@ -41,7 +40,7 @@ class Top(discord.Cog):
         await ctx.respond(embed=discord.Embed(title="Top player", description=message, color=0x75E6DA))
 
     async def __smartpoint(self, ctx: discord.commands.context.ApplicationContext):
-        list_of_best_users = Users().get_most_smart_users
+        list_of_best_users = User.get_most_smart_users()
         message = ""
         for user in list_of_best_users:
             username = self.__get_user_name_or_id_by_discord_id(
@@ -52,7 +51,7 @@ class Top(discord.Cog):
         await ctx.respond(embed=discord.Embed(title="Top smartpoint player", description=message, color=0x75E6DA))
 
     async def __monthly_active(self, ctx: discord.commands.context.ApplicationContext):
-        list_of_best_users = Users().get_5_monthly_most_active_users
+        list_of_best_users = User.get_5_monthly_most_active_users()
         message = ""
         for user in list_of_best_users:
             username = self.__get_user_name_or_id_by_discord_id(

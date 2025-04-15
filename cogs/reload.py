@@ -2,7 +2,7 @@ import discord
 from libs.config import Config
 from libs.log import Log
 
-from libs.databases.model.user.user import User
+from libs.databases.model.user import User
 
 
 class Reload(discord.Cog):

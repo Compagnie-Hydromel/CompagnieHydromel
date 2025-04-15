@@ -1,8 +1,9 @@
 import unittest
 
 from libs.databases.databases_selecter import DatabasesSelecter
-from libs.databases.model.wallpaper.wallpaper import Wallpaper
+from libs.databases.model.wallpaper import Wallpaper
 from tests.utils import Utils
+from libs.exception.wallpaper.wallpaper_already_exist_exception import WallpaperAlreadyExistException
 
 
 class TestWallpaper(unittest.TestCase):
@@ -50,3 +51,27 @@ class TestWallpaper(unittest.TestCase):
     def test_wallpaper_url_not_an_image(self):
         with self.assertRaises(Exception):
             self.__wallpaper.url = "https://google.com"
+
+    def test_all(self):
+        self.assertTrue(len(Wallpaper.all()) > 0)
+
+    def test_add_remove(self):
+        Wallpaper.create(
+            "test", "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png", 0, 0)
+        for wallapper in Wallpaper.all():
+            if wallapper.name == "test":
+                Wallpaper.remove(wallapper)
+                self.assertTrue(True)
+                return
+        self.assertTrue(False)
+
+    def test_exception_add_already_exist(self):
+        Wallpaper.create(
+            "test", "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png", 0, 0)
+        try:
+            Wallpaper.create(
+                "test", "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png", 0, 0)
+            self.assertTrue(False)
+        except WallpaperAlreadyExistException:
+            self.assertTrue(True)
+            Wallpaper.remove(Wallpaper("test"))

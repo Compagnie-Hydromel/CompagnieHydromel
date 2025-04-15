@@ -1,5 +1,5 @@
 import discord
-from libs.databases.model.user.user import User
+from libs.databases.model.user import User
 from libs.exception.handler import Handler
 from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 

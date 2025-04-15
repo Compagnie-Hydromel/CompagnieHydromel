@@ -1,10 +1,8 @@
 import discord
 
 from libs.config import Config
-from libs.databases.model.roles.role import Role
-from libs.databases.model.roles.roles import Roles
-from libs.databases.model.user.user import User
-from libs.databases.model.user.users import Users
+from libs.databases.model.role import Role
+from libs.databases.model.user import User
 from libs.exception.role.role_not_exist_exception import RoleNotExistException
 from libs.log import Log
 from libs.utils.role_utils import RoleUtils
@@ -37,7 +35,7 @@ class ReactionRole(discord.Cog):
         except RoleNotExistException:
             return
 
-        Roles().remove(databaseRole.discord_id)
+        Role.remove(databaseRole.discord_id)
         await RoleUtils.update_all_user_role(role.guild)
 
     async def add_role_with_reaction(self, reaction: discord.RawReactionActionEvent, message_id: int, emoji: str, role_id: int, action: str) -> None:

@@ -4,14 +4,10 @@ import requests
 from libs.config import Config
 from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
-from libs.databases.model.profile_layout.profile_layout import ProfileLayout
-from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
-from libs.databases.model.roles.role import Role
-from libs.databases.model.roles.roles import Roles
-from libs.databases.model.user.user import User
-from libs.databases.model.user.users import Users
-from libs.databases.model.wallpaper.wallpaper import Wallpaper
-from libs.databases.model.wallpaper.wallpapers import Wallpapers
+from libs.databases.model.profile_layout import ProfileLayout
+from libs.databases.model.role import Role
+from libs.databases.model.user import User
+from libs.databases.model.wallpaper import Wallpaper
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.paginator import Paginator
@@ -96,7 +92,7 @@ class RootCommands(discord.Cog):
 
             match option:
                 case "list":
-                    users = Users().get_root_users
+                    users = User.get_root_users()
                     paginator = Paginator(self.__generate_pages(
                         users), "Root users", 0x75E6DA)
 
@@ -179,8 +175,6 @@ class RootCommands(discord.Cog):
             if not await self.__check_if_root(ctx):
                 return
 
-            wallpapers = Wallpapers()
-
             match option:
                 case "show":
                     wallpaper = Wallpaper(wallpaper_name)
@@ -189,10 +183,11 @@ class RootCommands(discord.Cog):
                                       "\n**price** " + str(wallpaper.price) + " smartpoint" +
                                       "\n**level to obtain** " + str(wallpaper.level))
                 case "add":
-                    wallpapers.add(wallpaper_name, url, price or 0, level or 0)
+                    Wallpaper.create(wallpaper_name, url,
+                                     price or 0, level or 0)
                     await ctx.respond(self.__response["wallpaper_added"])
                 case "remove":
-                    wallpapers.remove(Wallpaper(wallpaper_name))
+                    Wallpaper.remove(Wallpaper(wallpaper_name))
                     await ctx.respond(self.__response["wallpaper_removed"])
                 case "update":
                     wallpaper = Wallpaper(wallpaper_name)
@@ -246,15 +241,13 @@ class RootCommands(discord.Cog):
             if not await self.__check_if_root(ctx):
                 return
 
-            profile_layouts = ProfileLayouts()
-
             match option:
                 case "show":
                     profile_layout = ProfileLayout(profile_layout_name)
                     await ctx.respond("**Name** " + profile_layout.name +
                                       "\n**Layout** " + str(profile_layout.layout.dict()))
                 case "remove":
-                    profile_layouts.remove(ProfileLayout(profile_layout_name))
+                    ProfileLayout.remove(ProfileLayout(profile_layout_name))
                     await ctx.respond(self.__response["profile_layout_removed"])
                 case "add":
                     layout = Layout(
@@ -272,7 +265,7 @@ class RootCommands(discord.Cog):
                                level_bar_y or 0)
                     )
 
-                    profile_layouts.add(profile_layout_name, layout)
+                    ProfileLayout.add(profile_layout_name, layout)
                     await ctx.respond(self.__response["profile_layout_added"])
                 case "rename":
                     if new_name == None:
@@ -317,8 +310,6 @@ class RootCommands(discord.Cog):
             if not await self.__check_if_root(ctx):
                 return
 
-            roles = Roles()
-
             role_id = str(role.id)
 
             if role.is_default():
@@ -332,11 +323,11 @@ class RootCommands(discord.Cog):
                 case "show":
                     await ctx.respond("**Name** " + role.name + "\n**Level** " + str(Role(role_id).level))
                 case "add":
-                    roles.add(role_id, level or 0)
+                    Role.add(role_id, level or 0)
                     await ctx.respond(self.__response["role_added"])
                     await RoleUtils.update_all_user_role(ctx.guild)
                 case "remove":
-                    roles.remove(role_id)
+                    Role.remove(role_id)
                     await ctx.respond(self.__response["role_removed"])
                     await RoleUtils.update_all_user_role(ctx.guild)
                 case "update":
@@ -404,7 +395,7 @@ class RootCommands(discord.Cog):
         return pages
 
     def __all_roles(self) -> str:
-        roles = Roles().all
+        roles = Role.all()
         if len(roles) == 0:
             return "No roles found"
         content = ""

@@ -1,15 +1,14 @@
 import discord
 
-from libs.databases.model.roles.roles import Roles
-from libs.databases.model.user.user import User
-from libs.databases.model.user.users import Users
+from libs.databases.model.user import User
 from libs.exception.role.role_not_exist_exception import RoleNotExistException
+from libs.databases.model.role import Role
 
 
 class RoleUtils():
     @staticmethod
     async def remove_all_roles(member: discord.Member):
-        for one_role in Roles().all:
+        for one_role in Role.all():
             role: discord.Role = discord.utils.get(
                 member.guild.roles, id=int(one_role.discord_id))
             if role in member.roles:
@@ -17,12 +16,11 @@ class RoleUtils():
 
     @staticmethod
     async def add_role(member: discord.Member, user: User):
-        roles = Roles()
         if user.has_accepted_rules:
             for role_level in reversed(range(1, user.level + 1)):
                 try:
                     role: discord.Role = discord.utils.get(
-                        member.guild.roles, id=int(roles.by_level(role_level).discord_id))
+                        member.guild.roles, id=int(Role.by_level(role_level).discord_id))
                     if role not in member.roles:
                         await member.add_roles(role)
                     break
@@ -36,7 +34,7 @@ class RoleUtils():
 
     @staticmethod
     async def update_all_user_role(guild: discord.guild) -> None:
-        for user in Users().all:
+        for user in User.all():
             try:
                 await RoleUtils.update_role(discord.utils.get(guild.members, id=int(user.discord_id)), user)
             except:

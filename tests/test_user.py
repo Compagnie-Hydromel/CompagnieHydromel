@@ -1,11 +1,9 @@
 import unittest
 from libs.databases.databases_selecter import DatabasesSelecter
-from libs.databases.model.profile_layout.profile_layout import ProfileLayout
-from libs.databases.model.profile_layout.profile_layouts import ProfileLayouts
+from libs.databases.model.profile_layout import ProfileLayout
 
-from libs.databases.model.user.user import User
-from libs.databases.model.wallpaper.wallpaper import Wallpaper
-from libs.databases.model.wallpaper.wallpapers import Wallpapers
+from libs.databases.model.user import User
+from libs.databases.model.wallpaper import Wallpaper
 from tests.utils import Utils
 
 
@@ -18,6 +16,16 @@ class TestUser(unittest.TestCase):
 
     def tearDown(self) -> None:
         Utils.deleteFileIfExist("test_database.db")
+
+    def test_get_root_users(self):
+        self.assertTrue(len(User.get_root_users()) >= 0)
+
+    def test_get_top_users(self):
+        self.assertTrue(len(User.get_top_users()) >=
+                        0 and len(User.get_top_users()) <= 10)
+
+    def test_get_5_monthly_most_active_users(self):
+        self.assertFalse(len(User.get_5_monthly_most_active_users()) > 5)
 
     def test_get_discord_id(self):
         self.assertEqual(self.__user.discord_id, "TestUser")
@@ -94,7 +102,6 @@ class TestUser(unittest.TestCase):
         self.assertTrue("default" in list_of_wallpaper_name)
 
     def test_add_posseded_wallpaper(self):
-        wallpapers = Wallpapers()
         Utils.add_test_wallpaper("test12345")
         wallpaper = Wallpaper("test12345")
 
@@ -106,7 +113,7 @@ class TestUser(unittest.TestCase):
         Utils.wallpaper_in_list_of_wallpaper(
             "default", list_of_posseeded_wallpaper)
 
-        wallpapers.remove(wallpaper)
+        Wallpaper.remove(wallpaper)
 
     def test_increase_number_of_buy(self):
         self.__user.increase_number_of_buy()
@@ -117,7 +124,6 @@ class TestUser(unittest.TestCase):
         self.assertEqual(self.__user.number_of_buy, 0)
 
     def test_buy_wallpaper(self):
-        wallpapers = Wallpapers()
         Utils.add_test_wallpaper("test12345")
         wallpaper = Wallpaper("test12345")
 
@@ -133,7 +139,7 @@ class TestUser(unittest.TestCase):
         self.__user.add_smartpoint(10)
         self.assertEqual(self.__user.smartpoint, 20)
 
-        wallpapers.remove(wallpaper)
+        Wallpaper.remove(wallpaper)
 
     def test_get_user_profile_layout(self):
         self.assertEqual(str(self.__user.profiles_layout),
@@ -150,7 +156,7 @@ class TestUser(unittest.TestCase):
                          str(ProfileLayout(profile_layout_name)))
 
         self.__user.change_profile_layout(ProfileLayout.get_default())
-        ProfileLayouts().remove(profile_layout)
+        ProfileLayout.remove(profile_layout)
 
     def test_has_user_accepted_rules(self):
         self.assertEqual(self.__user.has_accepted_rules, False)
