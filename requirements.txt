@@ -1,10 +1,10 @@
 blagues_api==1.0.2
 py-cord[voice]==2.6.1
 audioop-lts; python_version>='3.13' 
-Pillow==11.2.1
+Pillow==11.3.0
 python-dotenv==1.0.0
 PyYAML==6.0.1
-Requests== 2.32.3
+Requests==2.32.4
 praw==7.7.1
 wavelink @ git+https://github.com/Compagnie-Hydromel/Wavelink-no-discordpy.git@v3.4.1
 scheduler==0.8.7
