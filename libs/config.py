@@ -4,11 +4,25 @@ import yaml
 class Config():
     """This class is designed to manage the config.
     """
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Config, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
     __default_config = {
         "database": {
             "type": "sqlite",
             "sqlite": {
-                "file": "database.db"
+                "file": "database.db",
+                "collation": "utf8mb4_general_ci"
+            },
+            "mysql": {
+                "host": "localhost",
+                "port": 3306,
+                "database": "",
+                "collation": "utf8mb4_general_ci"
             }
         },
         "banner": {
@@ -22,68 +36,6 @@ class Config():
                 {"w": 795, "h": 145, "id": 0}
             ],
             "guild_id": 0
-        },
-        "nsfw_commands": {
-            "enable": False,
-            "nsfw_content": {
-                "porn": ""
-            }
-        },
-        "bar_commands": {
-            "beer": {
-                "list": [
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere1.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere2.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere4.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere5.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere6.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere7.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere8.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere9.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere10.jpg"
-                ],
-                "price": 5
-            },
-            "soft": {
-                "list": [
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre0.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre1.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre2.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre3.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre4.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre5.jpg"
-                ],
-                "price": 3
-            },
-            "hydromel": {
-                "list": [
-                    "https://shkermit.ch/~ethann/compHydromel/hydromel/Hydromel1.jpg"
-                ],
-                "price": 9
-            },
-            "water": {
-                "list": [
-                    "https://shkermit.ch/~ethann/compHydromel/water/water.jpg"
-                ],
-                "price": 0
-            },
-        },
-        "reactions": {
-            "enable": False,
-            "list": [
-                {
-                    "emoji": "🎨",
-                    "role_id": 0,
-                    "message_id": 0,
-                    "action": "emoji_to_role"
-                },
-                {
-                    "emoji": "✅",
-                    "role_id": 0,
-                    "message_id": 0,
-                    "action": "accept_rules"
-                }
-            ]
         },
         "music": {
             "enable": False,
@@ -175,7 +127,7 @@ class Config():
         }
     }
     __config_file = "config.yml"
-    __no_check_fields = ["discord_id_to_song", "nsfw_content"]
+    __no_check_fields = ["discord_id_to_song"]
 
     def __init__(self) -> None:
         """This method is designed to initialize the Config class.

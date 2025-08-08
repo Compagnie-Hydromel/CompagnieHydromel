@@ -3,6 +3,7 @@ import discord
 from dotenv import load_dotenv
 from libs.log import Log
 import sys
+from libs.databases.bootstrap import init
 
 bot_name: str
 
@@ -12,9 +13,24 @@ if len(sys.argv) < 2:
     Log.error("Use python3 bot.py <bot_name>")
     exit()
 
+init()
+
 match sys.argv[1]:
     case 'barman' | 'menestrel' | 'archiveuse':
         bot_name = sys.argv[1]
+    case 'migrate':
+        from MIWOS.db import migrate
+
+        migrate()
+        Log.info("Migrations completed")
+        exit()
+
+    case 'rollback':
+        from MIWOS.db import rollback
+
+        rollback(depth=int(sys.argv[2]) if len(sys.argv) > 2 else 1)
+        Log.info("Rollback completed")
+        exit()
     case _:
         Log.error("Bot name not found")
         exit()

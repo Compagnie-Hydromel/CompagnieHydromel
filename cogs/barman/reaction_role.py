@@ -1,8 +1,8 @@
 import discord
 
 from libs.config import Config
-from libs.databases.model.role import Role
-from libs.databases.model.user import User
+from libs.databases.models.role import Role
+from libs.databases.models.guild_user import GuildUser
 from libs.exception.role.role_not_exist_exception import RoleNotExistException
 from libs.log import Log
 from libs.utils.role_utils import RoleUtils
@@ -31,11 +31,11 @@ class ReactionRole(discord.Cog):
     async def on_guild_role_delete(self, role: discord.Role) -> None:
         databaseRole = None
         try:
-            databaseRole = Role(role.id)
+            databaseRole = Role.from_discord_id(role.id)
         except RoleNotExistException:
             return
 
-        Role.remove(databaseRole.discord_id)
+        databaseRole.delete()
         await RoleUtils.update_all_user_role(role.guild)
 
     async def add_role_with_reaction(self, reaction: discord.RawReactionActionEvent, message_id: int, emoji: str, role_id: int, action: str) -> None:
@@ -50,8 +50,9 @@ class ReactionRole(discord.Cog):
         if (reaction.message_id == message_id and reaction.emoji.name == emoji):
             match(action):
                 case "accept_rules":
-                    user: User = User(str(reaction.user_id))
-                    user.toggle_accepted_rules(True)
+                    user = GuildUser.from_discord_id_and_guild_id(
+                        str(reaction.user_id), str(reaction.guild_id))
+                    user.has_accepted_rules = not user.has_accepted_rules
                     await RoleUtils.add_role(reaction.member, user)
 
                 case "emoji_to_role" | _:
@@ -77,8 +78,9 @@ class ReactionRole(discord.Cog):
                 guild.members, id=reaction.user_id)
             match action:
                 case "accept_rules":
-                    user: User = User(str(reaction.user_id))
-                    user.toggle_accepted_rules(False)
+                    user: GuildUser = GuildUser.from_discord_id_and_guild_id(
+                        str(reaction.user_id), str(reaction.guild_id))
+                    user.has_accepted_rules = not user.has_accepted_rules
                     await RoleUtils.remove_all_roles(member)
                 case "emoji_to_role" | _:
                     try:

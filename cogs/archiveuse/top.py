@@ -1,7 +1,7 @@
 import traceback
 import discord
 
-from libs.databases.model.user import User
+from libs.databases.models.user import User
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.utils.utils import Utils

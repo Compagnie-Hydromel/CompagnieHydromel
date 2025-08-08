@@ -9,3 +9,4 @@ praw==7.7.1
 wavelink @ git+https://github.com/Compagnie-Hydromel/Wavelink-no-discordpy.git@v3.4.1
 scheduler==0.8.7
 autopep8==2.3.2
+miwos @ git+https://github.com/Compagnie-Hydromel/MIWOS.git@main

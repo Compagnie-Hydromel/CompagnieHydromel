@@ -12,6 +12,16 @@ case $1 in
     "test")
         python3 -m unittest tests/test_*.py
         ;;
+    "migrate")
+        python3 bot.py migrate
+        ;;
+    "rollback")
+        depth=1
+        if [ -n "$2" ]; then
+            depth="$2"
+        fi
+        python3 bot.py rollback $depth
+        ;;
 esac
 if [ -n "$1" ]; then
     exit $?

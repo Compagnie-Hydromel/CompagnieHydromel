@@ -4,10 +4,12 @@ import requests
 from libs.config import Config
 from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
-from libs.databases.model.profile_layout import ProfileLayout
-from libs.databases.model.role import Role
-from libs.databases.model.user import User
-from libs.databases.model.wallpaper import Wallpaper
+from libs.databases.models.guild import Guild
+from libs.databases.models.guild_user import GuildUser
+from libs.databases.models.profile_layout import ProfileLayout
+from libs.databases.models.role import Role
+from libs.databases.models.user import User
+from libs.databases.models.wallpaper import Wallpaper
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.paginator import Paginator
@@ -80,37 +82,6 @@ class RootCommands(discord.Cog):
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Manage root users as root")
-    @discord.option("option", description="list/add/remove", choices=["list", "add", "remove"])
-    @discord.option("user", discord.User, require=False)
-    async def root(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User = None):
-        Log.command(ctx.author.name +
-                    " is launching root commands with " + option)
-        try:
-            if not await self.__check_if_root(ctx):
-                return
-
-            match option:
-                case "list":
-                    users = User.get_root_users()
-                    paginator = Paginator(self.__generate_pages(
-                        users), "Root users", 0x75E6DA)
-
-                    await ctx.respond(
-                        view=paginator,
-                        embed=paginator.embed
-                    )
-                case "add":
-                    User(str(user.id)).toggle_root(root=True)
-                    await ctx.respond(self.__response["user_added_to_root"])
-                case "remove":
-                    User(str(user.id)).toggle_root(root=False)
-                    await ctx.respond(self.__response["user_removed_to_root"])
-                case _:
-                    await ctx.respond(self.__response_exception["option_not_found"])
-        except Exception as e:
-            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
-
     @discord.slash_command(description="Send a message to a user as root")
     @discord.option("user", discord.User, require=True)
     @discord.option("message", require=True)
@@ -141,7 +112,8 @@ class RootCommands(discord.Cog):
             if not await self.__check_if_root(ctx):
                 return
 
-            user_in_db = User(str(user.id))
+            user_in_db = GuildUser.from_discord_id_and_guild_id(
+                str(user.id), str(ctx.guild.id))
 
             match option:
                 case "show":
@@ -151,11 +123,13 @@ class RootCommands(discord.Cog):
                         await ctx.respond(self.__response_exception["enter_amount"])
                         return
                     if option == "add":
-                        user_in_db.add_smartpoint(amount)
+                        user_in_db.smartpoint += amount
                         await ctx.respond(self.__response["smartpoint_added"])
                     else:
-                        user_in_db.remove_smartpoint(amount)
+                        user_in_db.smartpoint -= amount
                         await ctx.respond(self.__response["smartpoint_removed"])
+
+                    user_in_db.saveOrFail()
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
         except Exception as e:
@@ -177,20 +151,20 @@ class RootCommands(discord.Cog):
 
             match option:
                 case "show":
-                    wallpaper = Wallpaper(wallpaper_name)
+                    wallpaper = Wallpaper.whereFirst(name=wallpaper_name)
                     await ctx.respond("**Name** " + wallpaper.name +
                                       "\n**url** " + wallpaper.url +
                                       "\n**price** " + str(wallpaper.price) + " smartpoint" +
                                       "\n**level to obtain** " + str(wallpaper.level))
                 case "add":
-                    Wallpaper.create(wallpaper_name, url,
-                                     price or 0, level or 0)
+                    Wallpaper.create(name=wallpaper_name, url=url,
+                                     price=price or 0, level=level or 0, guild=Guild.from_discord_id(ctx.guild.id))
                     await ctx.respond(self.__response["wallpaper_added"])
                 case "remove":
-                    Wallpaper.remove(Wallpaper(wallpaper_name))
+                    Wallpaper.whereFirst(name=wallpaper_name).delete()
                     await ctx.respond(self.__response["wallpaper_removed"])
                 case "update":
-                    wallpaper = Wallpaper(wallpaper_name)
+                    wallpaper = Wallpaper.whereFirst(name=wallpaper_name)
 
                     if url != "":
                         wallpaper.url = url
@@ -201,16 +175,12 @@ class RootCommands(discord.Cog):
                     if level != None:
                         wallpaper.level = level
 
+                    if new_name != None:
+                        wallpaper.name = new_name
+
+                    wallpaper.saveOrFail()
+
                     await ctx.respond(self.__response["wallpaper_updated"])
-                case "rename":
-                    if new_name == None:
-                        await ctx.respond(self.__response_exception["enter_new_name"])
-                        return
-
-                    wallpaper = Wallpaper(wallpaper_name)
-                    wallpaper.name = new_name
-
-                    await ctx.respond(self.__response["wallpaper_renamed"])
                 case _:
                     await ctx.respond(self.__response_exception["option_not_found"])
         except requests.exceptions.MissingSchema:
@@ -243,11 +213,13 @@ class RootCommands(discord.Cog):
 
             match option:
                 case "show":
-                    profile_layout = ProfileLayout(profile_layout_name)
+                    profile_layout = ProfileLayout.whereFirst(
+                        name=profile_layout_name)
                     await ctx.respond("**Name** " + profile_layout.name +
                                       "\n**Layout** " + str(profile_layout.layout.dict()))
                 case "remove":
-                    ProfileLayout.remove(ProfileLayout(profile_layout_name))
+                    ProfileLayout.whereFirst(
+                        name=profile_layout_name).delete()
                     await ctx.respond(self.__response["profile_layout_removed"])
                 case "add":
                     layout = Layout(
@@ -265,7 +237,7 @@ class RootCommands(discord.Cog):
                                level_bar_y or 0)
                     )
 
-                    ProfileLayout.add(profile_layout_name, layout)
+                    ProfileLayout.createFromLayout(profile_layout_name, layout)
                     await ctx.respond(self.__response["profile_layout_added"])
                 case "rename":
                     if new_name == None:
@@ -314,24 +286,26 @@ class RootCommands(discord.Cog):
 
             if role.is_default():
                 if option == "show":
-                    await ctx.respond(self.__all_roles())
+                    await ctx.respond(self.__all_roles(ctx.guild))
                 else:
                     await ctx.respond(self.__response_exception["cannot_manage_default_role"])
                 return
 
             match option:
                 case "show":
-                    await ctx.respond("**Name** " + role.name + "\n**Level** " + str(Role(role_id).level))
+                    await ctx.respond("**Name** " + role.name + "\n**Level** " + str(Role.from_discord_id(role_id).level))
                 case "add":
-                    Role.add(role_id, level or 0)
+                    Role.createOrFail(discord_id=role_id, level=level or 0)
                     await ctx.respond(self.__response["role_added"])
                     await RoleUtils.update_all_user_role(ctx.guild)
                 case "remove":
-                    Role.remove(role_id)
+                    Role.from_discord_id(role_id).delete()
                     await ctx.respond(self.__response["role_removed"])
                     await RoleUtils.update_all_user_role(ctx.guild)
                 case "update":
-                    Role(role_id).level = level or 0
+                    role: Role = Role.from_discord_id(role_id)
+                    role.level = level or 0
+                    role.saveOrFail()
                     await ctx.respond(self.__response["role_updated"])
                     await RoleUtils.update_all_user_role(ctx.guild)
                 case _:
@@ -368,7 +342,7 @@ class RootCommands(discord.Cog):
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
     async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
-        if not User(str(ctx.author.id)).is_root:
+        if not User.from_discord_id(str(ctx.author.id)).is_superadmin:
             await ctx.respond(self.__response_exception["not_root"])
             return False
         return True
@@ -394,8 +368,8 @@ class RootCommands(discord.Cog):
             pages.append(content)
         return pages
 
-    def __all_roles(self) -> str:
-        roles = Role.all()
+    def __all_roles(self, guild) -> str:
+        roles = Guild.from_discord_id(guild.id).roles
         if len(roles) == 0:
             return "No roles found"
         content = ""

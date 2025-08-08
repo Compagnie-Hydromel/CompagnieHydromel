@@ -1,22 +1,23 @@
 import discord
 
-from libs.databases.model.user import User
+from libs.databases.models.guild_user import GuildUser
 from libs.exception.role.role_not_exist_exception import RoleNotExistException
-from libs.databases.model.role import Role
+from libs.databases.models.role import Role
+from libs.databases.models.guild import Guild
 
 
 class RoleUtils():
     @staticmethod
     async def remove_all_roles(member: discord.Member):
-        for one_role in Role.all():
+        for one_role in Guild.from_discord_id(member.guild.id).roles:
             role: discord.Role = discord.utils.get(
                 member.guild.roles, id=int(one_role.discord_id))
             if role in member.roles:
                 await member.remove_roles(role)
 
     @staticmethod
-    async def add_role(member: discord.Member, user: User):
-        if user.has_accepted_rules:
+    async def add_role(member: discord.Member, user: GuildUser):
+        if GuildUser.has_accepted_rules:
             for role_level in reversed(range(1, user.level + 1)):
                 try:
                     role: discord.Role = discord.utils.get(
@@ -28,14 +29,14 @@ class RoleUtils():
                     continue
 
     @staticmethod
-    async def update_role(member: discord.Member, user: User):
+    async def update_role(member: discord.Member, user: GuildUser):
         await RoleUtils.remove_all_roles(member)
         await RoleUtils.add_role(member, user)
 
     @staticmethod
     async def update_all_user_role(guild: discord.guild) -> None:
-        for user in User.all():
+        for guild_user in Guild.from_discord_id(guild.id).guild_users:
             try:
-                await RoleUtils.update_role(discord.utils.get(guild.members, id=int(user.discord_id)), user)
+                await RoleUtils.update_role(discord.utils.get(guild.members, id=int(guild_user.user.discord_id)), guild_user)
             except:
                 continue
