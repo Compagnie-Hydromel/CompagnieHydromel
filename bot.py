@@ -13,7 +13,7 @@ if len(sys.argv) < 2:
     exit()
 
 match sys.argv[1]:
-    case 'barman' | 'menestrel' | 'archiveuse':
+    case 'barman' | 'menestrel' | 'archiveuse' | 'gambler':
         bot_name = sys.argv[1]
     case _:
         Log.error("Bot name not found")
