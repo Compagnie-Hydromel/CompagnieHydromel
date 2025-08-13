@@ -1,7 +1,9 @@
 import discord
-from libs.databases.model.user import User
+from libs.config import Config
+from libs.databases.models.guild_user import GuildUser
+from libs.databases.models.profile_layout import ProfileLayout
+from libs.databases.models.wallpaper import Wallpaper
 from libs.exception.handler import Handler
-from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
 
 from libs.log import Log
 from libs.image_factory.profile_maker import ProfilMaker
@@ -13,29 +15,37 @@ class Profile(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.__error_handler = Handler()
+        self.__config = Config()
 
     @discord.slash_command(description="Get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):
         Log.command(ctx.author.name + " is launching profile commands")
         try:
             await ctx.defer()
+            if not ctx.guild:
+                return await ctx.respond("Command can only be used in a server.")
 
-            user = User(str(ctx.author.id))
+            user = GuildUser.from_user_discord_id_and_guild_discord_id(
+                ctx.author.id, ctx.guild.id)
 
             Log.info("create profile for " + str(ctx.author))
+            wallpaper = user.wallpaper or Wallpaper.default()
+            bar_color = "#" + user.bar_color
+            name_color = "#" + user.name_color
             pro = ProfilMaker(
-                str(ctx.author.id),
+                ctx.author.id,
                 ctx.author.name,
                 ctx.author.display_avatar.url,
                 user.level,
                 user.point,
                 ctx.author.display_name,
-                user.current_wallpaper.url,
-                bar_color=user.bar_color,
-                name_color=user.name_color,
-                badges=user.badges_list,
-                coords=user.profiles_layout.layout.dict(),
-                gif=Utils.is_url_animated_gif(user.current_wallpaper.url)
+                wallpaper.url,
+                bar_color=bar_color,
+                name_color=name_color,
+                badges=user.user.badges,
+                coords=(user.profileLayout or ProfileLayout.default()
+                        ).layout.dict(),
+                gif=Utils.is_url_animated_gif(wallpaper.url)
             )
             Log.info(ctx.author.name + " profile saved at " + pro.profil_path)
 

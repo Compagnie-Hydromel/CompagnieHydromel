@@ -1,5 +1,5 @@
 from PIL import Image
-from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
+from libs.exception.image.image_not_downloadable import ImageNotDownloadable
 from libs.image_factory.utils import Utils as ImageFactoryUtils
 from libs.utils.utils import Utils
 
@@ -38,14 +38,14 @@ class BannerBarCreator:
             people (dict[int, list[dict[str, str]]]): The people to add to the banner bar.
 
         Raises:
-            UnableToDownloadImageException: If the banner_image can't be downloaded.
+            ImageNotDownloadable: If the banner_image can't be downloaded.
         """
         img = None
         try:
             img = Image.open(Utils.download_image(
                 banner_image)).convert('RGBA')
         except:
-            raise WallpaperIsNotDownloadableException
+            raise ImageNotDownloadable()
 
         # image
         for channel in people:
@@ -55,7 +55,7 @@ class BannerBarCreator:
                     pic = Image.open(Utils.download_image(
                         member["profil"])).convert('RGBA').resize((64, 64))
                 except:
-                    raise WallpaperIsNotDownloadableException
+                    raise ImageNotDownloadable()
 
                 h, w = pic.size
 

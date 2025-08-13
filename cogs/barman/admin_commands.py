@@ -4,58 +4,71 @@ import requests
 from libs.config import Config
 from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
-from libs.databases.model.profile_layout import ProfileLayout
-from libs.databases.model.role import Role
-from libs.databases.model.user import User
-from libs.databases.model.wallpaper import Wallpaper
+from libs.databases.models.guild import Guild
+from libs.databases.models.guild_user import GuildUser
+from libs.databases.models.profile_layout import ProfileLayout
+from libs.databases.models.role import Role
+from libs.databases.models.user import User
+from libs.databases.models.wallpaper import Wallpaper
 from libs.exception.handler import Handler
 from libs.log import Log
-from libs.paginator import Paginator
 from libs.utils.utils import Utils
 from libs.utils.role_utils import RoleUtils
 
 
-class RootCommands(discord.Cog):
+class AdminCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.__config = Config()
-        self.__response = self.__config.value["response"]
-        self.__response_exception = self.__config.value["exception_response"]
         self.__error_handler = Handler()
 
-    @discord.slash_command(description="Broadcast a message to a any channel as root")
+    @discord.slash_command(description="Broadcast a message to a any channel as admin")
     @discord.option("channel", discord.abc.GuildChannel, require=True)
     @discord.option("message", require=True)
     async def broadcast(self, ctx: discord.commands.context.ApplicationContext, channel: discord.abc.GuildChannel, message: str):
         Log.command(ctx.author.name + " is launching broadcast commands")
         try:
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_admin(ctx):
                 return
             if not isinstance(channel, discord.abc.Messageable):
-                await ctx.respond(self.__response_exception["channel_not_messageable"])
+                await ctx.respond("Channel is not messageable.")
+                return
+            if channel.guild != ctx.guild:
+                await ctx.respond(
+                    "You cannot send a message in this channel, it is not in the same server."
+                )
                 return
 
             await channel.send(message.replace("\\n", "\n"))
-            await ctx.respond(self.__response["message_sent"])
+            await ctx.respond("Message sent to " + channel.mention)
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Send informations in information channel as root")
+    @discord.slash_command(description="Send informations in information channel as admin")
     @discord.option("message", require=True)
     @discord.option("title", require=False)
     @discord.option("color", require=False)
     async def info(self, ctx: discord.commands.context.ApplicationContext, message: str, title: str = "Information", color: str = "#ffffff"):
         Log.command(ctx.author.name + " is launching info commands")
         try:
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_admin(ctx):
                 return
+            guild = Guild.from_discord_id(ctx.guild.id)
+
             information_channel = self.__bot.get_channel(
-                self.__config.value["information_channel_id"])
+                int(guild.information_channel_id))
+
             if information_channel == None:
-                await ctx.respond(self.__response_exception["information_channel_not_found"])
+                await ctx.respond("Information channel not found.")
                 return
+            if information_channel.guild != ctx.guild:
+                await ctx.respond(
+                    "You cannot send information in this channel, it is not the information channel of this server."
+                )
+                return
+
             if not isinstance(information_channel, discord.abc.Messageable):
-                await ctx.respond(self.__response_exception["information_channel_not_messageable"])
+                await ctx.respond("Information channel is not messageable.")
                 return
 
             # WARNING: eval = evil
@@ -64,73 +77,68 @@ class RootCommands(discord.Cog):
                 "\\n", "\n"), color=eval("0x" + Utils.check_color(color)))
 
             await information_channel.send(embed=embed)
-            await ctx.respond(self.__response["message_sent"])
+            await ctx.respond("Message sent to information channel.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Clear message in a channel as root")
+    @discord.slash_command(description="Set channel value as admin")
+    @discord.option("key", require=True, choices=["information_channel", "monthlytop_channel"])
+    @discord.option("value", require=True, type=discord.abc.GuildChannel)
+    async def set_config(self, ctx: discord.commands.context.ApplicationContext, key: str, value: str):
+        Log.command(ctx.author.name + " is launching set config commands")
+        try:
+            if not await self.__check_if_admin(ctx):
+                return
+
+            guild = Guild.from_discord_id(ctx.guild.id)
+
+            match key:
+                case "information_channel":
+                    guild.information_channel_id = value.id
+                case "monthlytop_channel":
+                    guild.monthlytop_channel_id = value.id
+                case _:
+                    await ctx.respond("Invalid key, please use information_channel or monthlytop_channel.")
+                    return
+
+            guild.saveOrFail()
+
+            await ctx.respond("Information channel set to " + value.mention)
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
+
+    @discord.slash_command(description="Clear message in a channel as admin")
     async def clear(self, ctx: discord.commands.context.ApplicationContext):
         Log.command(ctx.author.name + " is launching clear commands")
         try:
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_admin(ctx):
                 return
-            await ctx.respond(self.__response["clearing_channel"])
+            await ctx.respond("Clearing channel...")
             await ctx.channel.purge()
-            await ctx.channel.send(self.__response["channel_cleared"])
+            await ctx.channel.send("Channel cleared by " + ctx.author.mention)
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Manage root users as root")
-    @discord.option("option", description="list/add/remove", choices=["list", "add", "remove"])
-    @discord.option("user", discord.User, require=False)
-    async def root(self, ctx: discord.commands.context.ApplicationContext, option: str, user: discord.User = None):
-        Log.command(ctx.author.name +
-                    " is launching root commands with " + option)
-        try:
-            if not await self.__check_if_root(ctx):
-                return
-
-            match option:
-                case "list":
-                    users = User.get_root_users()
-                    paginator = Paginator(self.__generate_pages(
-                        users), "Root users", 0x75E6DA)
-
-                    await ctx.respond(
-                        view=paginator,
-                        embed=paginator.embed
-                    )
-                case "add":
-                    User(str(user.id)).toggle_root(root=True)
-                    await ctx.respond(self.__response["user_added_to_root"])
-                case "remove":
-                    User(str(user.id)).toggle_root(root=False)
-                    await ctx.respond(self.__response["user_removed_to_root"])
-                case _:
-                    await ctx.respond(self.__response_exception["option_not_found"])
-        except Exception as e:
-            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
-
-    @discord.slash_command(description="Send a message to a user as root")
+    @discord.slash_command(description="Send a message to a user as superadmin")
     @discord.option("user", discord.User, require=True)
     @discord.option("message", require=True)
     async def message_user(self, ctx: discord.commands.context.ApplicationContext, user: discord.User, message: str):
         Log.command(ctx.author.name + " is launching send commands")
         try:
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_superadmin(ctx):
                 return
             if not isinstance(user, discord.abc.Messageable):
-                await ctx.respond(self.__response_exception["user_not_messageable"])
+                await ctx.respond("User is not messageable.")
                 return
 
             await user.send(message.replace("\\n", "\n"))
-            await ctx.respond(self.__response["message_sent"])
+            await ctx.respond("Message sent to " + user.mention)
         except discord.Forbidden:
-            await ctx.respond(self.__response_exception["cannot_send_message_to_this_user"])
+            await ctx.respond("Cannot send message to this user, they may have blocked the bot or disabled DMs.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Manage smartpoint as root")
+    @discord.slash_command(description="Manage smartpoint as admin")
     @discord.option("option", description="add/remove/show", choices=["add", "remove", "show"])
     @discord.option("user", discord.User, require=True)
     @discord.option("amount", int, require=False)
@@ -138,30 +146,33 @@ class RootCommands(discord.Cog):
         Log.command(ctx.author.name +
                     " is launching manage smartpoint commands with " + option)
         try:
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_admin(ctx):
                 return
 
-            user_in_db = User(str(user.id))
+            user_in_db = GuildUser.from_user_discord_id_and_guild_discord_id(
+                str(user.id), str(ctx.guild.id))
 
             match option:
                 case "show":
                     await ctx.respond(user.display_name + " smartpoint: " + str(user_in_db.smartpoint))
                 case "add" | "remove":
                     if amount < 1:
-                        await ctx.respond(self.__response_exception["enter_amount"])
+                        await ctx.respond("You must specify an amount greater than 0.")
                         return
                     if option == "add":
-                        user_in_db.add_smartpoint(amount)
-                        await ctx.respond(self.__response["smartpoint_added"])
+                        user_in_db.smartpoint += amount
+                        await ctx.respond("" + str(amount) + " smartpoint added to " + user.display_name)
                     else:
-                        user_in_db.remove_smartpoint(amount)
-                        await ctx.respond(self.__response["smartpoint_removed"])
+                        user_in_db.smartpoint -= amount
+                        await ctx.respond("" + str(amount) + " smartpoint removed from " + user.display_name)
+
+                    user_in_db.saveOrFail()
                 case _:
-                    await ctx.respond(self.__response_exception["option_not_found"])
+                    await ctx.respond("Option not found, please use add/remove/show.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Manage wallpaper as root")
+    @discord.slash_command(description="Manage wallpaper as admin")
     @discord.option("option", description="add/remove/show/update/rename", choices=["add", "remove", "show", "update", "rename"])
     @discord.option("wallpaper_name", require=True)
     @discord.option("url", require=False)
@@ -172,25 +183,41 @@ class RootCommands(discord.Cog):
         Log.command(ctx.author.name +
                     " is launching manage wallpaper commands with " + option)
         try:
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_admin(ctx):
                 return
 
             match option:
                 case "show":
-                    wallpaper = Wallpaper(wallpaper_name)
+                    wallpaper = Wallpaper.whereFirst(
+                        name=wallpaper_name, guild_id=ctx.guild.id)
+                    if wallpaper is None:
+                        await ctx.respond("Wallpaper " + wallpaper_name + " not found")
+                        return
                     await ctx.respond("**Name** " + wallpaper.name +
                                       "\n**url** " + wallpaper.url +
                                       "\n**price** " + str(wallpaper.price) + " smartpoint" +
                                       "\n**level to obtain** " + str(wallpaper.level))
                 case "add":
-                    Wallpaper.create(wallpaper_name, url,
-                                     price or 0, level or 0)
-                    await ctx.respond(self.__response["wallpaper_added"])
+                    Wallpaper.create(name=wallpaper_name, url=url,
+                                     price=price or 0, level=level or 0, guild=Guild.from_discord_id(ctx.guild.id))
+                    await ctx.respond("Wallpaper " + wallpaper_name + " added")
                 case "remove":
-                    Wallpaper.remove(Wallpaper(wallpaper_name))
-                    await ctx.respond(self.__response["wallpaper_removed"])
+                    wallpaper = Wallpaper.whereFirst(
+                        name=wallpaper_name, guild_id=ctx.guild.id)
+                    if wallpaper is None:
+                        await ctx.respond("Wallpaper " + wallpaper_name + " not found")
+                        return
+
+                    wallpaper.delete()
+
+                    await ctx.respond("Wallpaper " + wallpaper_name + " removed")
                 case "update":
-                    wallpaper = Wallpaper(wallpaper_name)
+                    wallpaper = Wallpaper.whereFirst(
+                        name=wallpaper_name, guild_id=ctx.guild.id)
+
+                    if wallpaper is None:
+                        await ctx.respond("Wallpaper " + wallpaper_name + " not found")
+                        return
 
                     if url != "":
                         wallpaper.url = url
@@ -201,24 +228,20 @@ class RootCommands(discord.Cog):
                     if level != None:
                         wallpaper.level = level
 
-                    await ctx.respond(self.__response["wallpaper_updated"])
-                case "rename":
-                    if new_name == None:
-                        await ctx.respond(self.__response_exception["enter_new_name"])
-                        return
+                    if new_name != None:
+                        wallpaper.name = new_name
 
-                    wallpaper = Wallpaper(wallpaper_name)
-                    wallpaper.name = new_name
+                    wallpaper.saveOrFail()
 
-                    await ctx.respond(self.__response["wallpaper_renamed"])
+                    await ctx.respond("Wallpaper " + wallpaper_name + " updated")
                 case _:
-                    await ctx.respond(self.__response_exception["option_not_found"])
+                    await ctx.respond("Option not found, please use add/remove/show/update/rename.")
         except requests.exceptions.MissingSchema:
-            await ctx.respond(self.__response_exception["url_not_good_formated"])
+            await ctx.respond("Invalid URL provided. Please ensure it starts with http:// or https://.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Manage profile layout as root")
+    @discord.slash_command(description="Manage profile layout as superadmin")
     @discord.option("option", description="add/remove/update/rename/show", choices=["add", "remove", "update", "rename", "show"])
     @discord.option("profile_layout_name", str, require=True)
     @discord.option("profile_picture_x", int, require=False)
@@ -238,17 +261,26 @@ class RootCommands(discord.Cog):
         Log.command(ctx.author.name +
                     " is launching manage profile layout commands")
         try:
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_superadmin(ctx):
                 return
 
             match option:
                 case "show":
-                    profile_layout = ProfileLayout(profile_layout_name)
+                    profile_layout = ProfileLayout.whereFirst(
+                        name=profile_layout_name)
+                    if profile_layout is None:
+                        await ctx.respond("Profile layout " + profile_layout_name + " not found")
+                        return
                     await ctx.respond("**Name** " + profile_layout.name +
                                       "\n**Layout** " + str(profile_layout.layout.dict()))
                 case "remove":
-                    ProfileLayout.remove(ProfileLayout(profile_layout_name))
-                    await ctx.respond(self.__response["profile_layout_removed"])
+                    profilelayout = ProfileLayout.whereFirst(
+                        name=profile_layout_name)
+                    if profilelayout is None:
+                        await ctx.respond("Profile layout " + profile_layout_name + " not found")
+                        return
+                    profilelayout.delete()
+                    await ctx.respond("Profile layout " + profile_layout_name + " removed")
                 case "add":
                     layout = Layout(
                         Coords(profile_picture_x or 0,
@@ -265,17 +297,16 @@ class RootCommands(discord.Cog):
                                level_bar_y or 0)
                     )
 
-                    ProfileLayout.add(profile_layout_name, layout)
-                    await ctx.respond(self.__response["profile_layout_added"])
-                case "rename":
-                    if new_name == None:
-                        await ctx.respond(self.__response_exception["enter_new_name"])
-                        return
-                    profile_layout = ProfileLayout(profile_layout_name)
-                    profile_layout.name = new_name
-                    await ctx.respond(self.__response["profile_layout_renamed"])
+                    ProfileLayout.createFromLayout(profile_layout_name, layout)
+                    await ctx.respond("Profile layout " + profile_layout_name + " added")
                 case "update":
-                    profile_layout = ProfileLayout(profile_layout_name)
+                    profile_layout = ProfileLayout.from_name(
+                        profile_layout_name)
+
+                    if profile_layout is None:
+                        await ctx.respond("Profile layout " + profile_layout_name + " not found")
+                        return
+
                     current_profile_layout = profile_layout.layout
                     layout = Layout(
                         Coords(profile_picture_x or current_profile_layout.profile_picture.x,
@@ -291,51 +322,63 @@ class RootCommands(discord.Cog):
                         Coords(level_bar_x or current_profile_layout.level_bar.x,
                                level_bar_y or current_profile_layout.level_bar.y)
                     )
+                    if new_name is not None:
+                        profile_layout.name = new_name
                     profile_layout.layout = layout
-                    await ctx.respond(self.__response["profile_layout_updated"])
+                    profile_layout.saveOrFail()
+                    await ctx.respond("Profile layout " + profile_layout_name + " updated")
                 case _:
-                    await ctx.respond(self.__response_exception["option_not_found"])
+                    await ctx.respond("Option not found, please use add/remove/show/update/rename.")
 
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
     @discord.slash_command(description="Manage role")
-    @discord.option("option", description="add/remove/show", choices=["add", "remove", "show", "update"])
-    @discord.option("role", discord.role.Role, require=True)
+    @discord.option("option", description="add/remove/show", choices=["list", "add", "remove", "show", "update"])
+    @discord.option("role", discord.role.Role, require=False)
     @discord.option("level", int, require=False)
     async def manage_role(self, ctx: discord.commands.context.ApplicationContext, option: str, role: discord.role.Role, level: int = None):
         Log.command(ctx.author.name +
                     " is launching manage role commands with " + option)
         try:
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_admin(ctx):
                 return
 
-            role_id = str(role.id)
+            guild = Guild.from_discord_id(ctx.guild.id)
 
-            if role.is_default():
-                if option == "show":
-                    await ctx.respond(self.__all_roles())
-                else:
-                    await ctx.respond(self.__response_exception["cannot_manage_default_role"])
+            if not role and option != "list":
+                await ctx.respond("You must specify a role.")
                 return
 
             match option:
+                case "list":
+                    await ctx.respond(self.__all_roles(ctx.guild))
                 case "show":
-                    await ctx.respond("**Name** " + role.name + "\n**Level** " + str(Role(role_id).level))
+                    await ctx.respond("**Name** " + role.name + "\n**Level** " + str(Role.from_discord_id(role.id).level))
                 case "add":
-                    Role.add(role_id, level or 0)
-                    await ctx.respond(self.__response["role_added"])
+                    Role.createOrFail(discord_id=role.id,
+                                      level=level or 1, guild=guild)
+                    await ctx.respond("Role added with level " + str(level or 1))
                     await RoleUtils.update_all_user_role(ctx.guild)
                 case "remove":
-                    Role.remove(role_id)
-                    await ctx.respond(self.__response["role_removed"])
+                    role = Role.from_discord_id(role.id)
+                    if role is None:
+                        await ctx.respond(f"Role not found")
+                        return
+                    role.delete()
+                    await ctx.respond(f"Role removed")
                     await RoleUtils.update_all_user_role(ctx.guild)
                 case "update":
-                    Role(role_id).level = level or 0
-                    await ctx.respond(self.__response["role_updated"])
+                    role: Role = Role.from_discord_id(role.id)
+                    if role is None:
+                        await ctx.respond(f"Role not found")
+                        return
+                    role.level = level or 1
+                    role.saveOrFail()
+                    await ctx.respond(f"Role updated with level " + str(role.level))
                     await RoleUtils.update_all_user_role(ctx.guild)
                 case _:
-                    await ctx.respond(self.__response_exception["option_not_found"])
+                    await ctx.respond("Option not found, please use add/remove/show/update.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
@@ -346,15 +389,15 @@ class RootCommands(discord.Cog):
         Log.command(ctx.author.name + " is launching move all users commands")
         try:
             await ctx.defer()
-            if not await self.__check_if_root(ctx):
+            if not await self.__check_if_admin(ctx):
                 return
 
             if from_channel == to_channel:
-                await ctx.respond(self.__response_exception["same_channel"])
+                await ctx.respond("You cannot move users to the same channel.")
                 return
 
             if len(from_channel.members) == 0:
-                await ctx.respond(self.__response_exception["no_user_in_channel"])
+                await ctx.respond("No users in " + from_channel.name + ", nothing to move.")
                 return
 
             for member in from_channel.members:
@@ -363,39 +406,31 @@ class RootCommands(discord.Cog):
             Log.info("Moving all users from " +
                      from_channel.name + " to " + to_channel.name)
 
-            await ctx.respond(self.__response["all_users_moved"])
+            await ctx.respond("Moved all users from " + from_channel.name + " to " + to_channel.name)
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    async def __check_if_root(self, ctx: discord.commands.context.ApplicationContext) -> bool:
-        if not User(str(ctx.author.id)).is_root:
-            await ctx.respond(self.__response_exception["not_root"])
+    async def __check_if_superadmin(self, ctx: discord.commands.context.ApplicationContext) -> bool:
+        if not User.from_discord_id(str(ctx.author.id)).is_superadmin:
+            await ctx.respond("You don't have permission to use this command.")
             return False
         return True
 
-    def __generate_pages(self, users: list[User]) -> list[str]:
-        pages = []
-        user_per_page = 10
-        counter = 0
-        content = ""
+    async def __check_if_admin(self, ctx: discord.commands.context.ApplicationContext) -> bool:
+        if not ctx.guild:
+            await ctx.respond("Command can only be used in a server.")
+            return False
 
-        for user in users:
-            discord_user = self.__bot.get_user(int(user.discord_id))
-            if discord_user == None:
-                content += "**" + user.discord_id + "**\n"
-            else:
-                content += "**" + discord_user.display_name + "**\n"
-            counter += 1
-            if counter > user_per_page:
-                pages.append(content)
-                content = ""
-                counter = 0
-        if content != "":
-            pages.append(content)
-        return pages
+        guilduser = GuildUser.from_user_discord_id_and_guild_discord_id(
+            str(ctx.author.id), str(ctx.guild.id))
 
-    def __all_roles(self) -> str:
-        roles = Role.all()
+        if not guilduser.is_admin:
+            await ctx.respond("You don't have permission to use this command.")
+            return False
+        return True
+
+    def __all_roles(self, guild) -> str:
+        roles = Guild.from_discord_id(guild.id).roles.orderBy("level")
         if len(roles) == 0:
             return "No roles found"
         content = ""
@@ -406,4 +441,4 @@ class RootCommands(discord.Cog):
 
 
 def setup(bot: discord.bot.Bot):
-    bot.add_cog(RootCommands(bot))
+    bot.add_cog(AdminCommands(bot))

@@ -1,10 +1,10 @@
 import traceback
 import discord
-from libs.config import Config
-from libs.databases.model.profile_layout import ProfileLayout
+from libs.databases.models.guild import Guild
+from libs.databases.models.guild_user import GuildUser
+from libs.databases.models.profile_layout import ProfileLayout
 
-from libs.databases.model.user import User
-from libs.databases.model.wallpaper import Wallpaper
+from libs.databases.models.wallpaper import Wallpaper
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.paginator import Paginator
@@ -14,9 +14,6 @@ from libs.utils.utils import Utils
 class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config()
-        self.__response = self.__config.value["response"]
-        self.__response_exception = self.__config.value["exception_response"]
         self.__error_handler = Handler()
 
     @discord.slash_command(description="Manage your profile")
@@ -27,36 +24,50 @@ class ProfileManager(discord.Cog):
                     option + " " + str(options_specifies))
         try:
             await ctx.defer()
-            user = User(str(ctx.author.id))
+
+            if not ctx.guild:
+                return await ctx.respond("Command can only be used in a server.")
+
+            user = GuildUser.from_user_discord_id_and_guild_discord_id(
+                ctx.author.id, ctx.guild.id)
+            guild = Guild.from_discord_id(ctx.guild.id)
 
             match option:
                 case "set wallpaper":
-                    user.change_current_wallpapers(
-                        Wallpaper(options_specifies))
-                    await ctx.respond(self.__response["wallpaper_changed"])
+                    wallpaper = Wallpaper.from_name(options_specifies)
+                    if wallpaper is None:
+                        wallpaper = Wallpaper.default()
+                        options_specifies = "default wallpaper"
+                    user.wallpaper = wallpaper
+                    await ctx.respond("Wallpaper set to " + options_specifies)
                 case "buy wallpaper":
-                    user.buy_wallpaper(Wallpaper(options_specifies))
-                    await ctx.respond(self.__response["wallpaper_buyed"])
+                    wallpaper = Wallpaper.from_name(options_specifies)
+                    user.smartpoint -= wallpaper.price
+                    user.saveOrFail()
+                    user.wallpapers.append(wallpaper)
+                    await ctx.respond("Wallpaper " + wallpaper.name + " bought")
                 case "list of posseded wallpaper":
-                    await self.__respond_list(ctx, user.list_of_posseded_wallpapers, "Posseded wallpapers")
+                    await self.__respond_list(ctx, user.wallpapers, "Posseded wallpapers")
                 case "all wallpaper":
-                    await self.__respond_list(ctx, Wallpaper.all())
+                    await self.__respond_list(ctx, guild.wallpapers, "All wallpapers")
                 case "wallpaper preview":
-                    await ctx.respond(file=discord.File(Utils.download_image(Wallpaper(options_specifies).url), "wallpaper.png"))
+                    await ctx.respond(file=discord.File(Utils.download_image(Wallpaper.from_name(options_specifies).url), "wallpaper.png"))
                 case "name color":
-                    user.change_name_color(options_specifies)
-                    await ctx.respond(self.__response["namecolor_changed"])
+                    user.name_color = options_specifies
+                    user.saveOrFail()
+                    await ctx.respond("Name color changed to " + options_specifies)
                 case "bar color":
-                    user.change_bar_color(options_specifies)
-                    await ctx.respond(self.__response["namecolor_changed"])
+                    user.bar_color = options_specifies
+                    user.saveOrFail()
+                    await ctx.respond("Bar color changed to " + options_specifies)
                 case "list profile layout":
                     await self.__respond_list(ctx, ProfileLayout.all(), "Profile layout")
                 case "change profile layout":
-                    user.change_profile_layout(
-                        ProfileLayout(options_specifies))
-                    await ctx.respond(self.__response["profile_layout_changed"])
+                    user.profileLayout = ProfileLayout.from_name(
+                        options_specifies)
+                    await ctx.respond("Profile layout changed to " + options_specifies)
                 case _:
-                    await ctx.respond(self.__response_exception["option_not_found"])
+                    await ctx.respond("Invalid option. Please choose a valid profile management option.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
