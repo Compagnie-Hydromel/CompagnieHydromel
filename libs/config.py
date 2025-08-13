@@ -4,11 +4,25 @@ import yaml
 class Config():
     """This class is designed to manage the config.
     """
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Config, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
     __default_config = {
         "database": {
             "type": "sqlite",
             "sqlite": {
-                "file": "database.db"
+                "file": "database.db",
+                "collation": "utf8mb4_general_ci"
+            },
+            "mysql": {
+                "host": "localhost",
+                "port": 3306,
+                "database": "",
+                "collation": "utf8mb4_general_ci"
             }
         },
         "banner": {
@@ -23,50 +37,10 @@ class Config():
             ],
             "guild_id": 0
         },
-        "nsfw_commands": {
+        "music": {
             "enable": False,
-            "nsfw_content": {
-                "porn": ""
-            }
-        },
-        "bar_commands": {
-            "beer": {
-                "list": [
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere1.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere2.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere4.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere5.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere6.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere7.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere8.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere9.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/biere/Biere10.jpg"
-                ],
-                "price": 5
-            },
-            "soft": {
-                "list": [
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre0.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre1.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre2.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre3.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre4.jpg",
-                    "https://shkermit.ch/~ethann/compHydromel/soft/Verre5.jpg"
-                ],
-                "price": 3
-            },
-            "hydromel": {
-                "list": [
-                    "https://shkermit.ch/~ethann/compHydromel/hydromel/Hydromel1.jpg"
-                ],
-                "price": 9
-            },
-            "water": {
-                "list": [
-                    "https://shkermit.ch/~ethann/compHydromel/water/water.jpg"
-                ],
-                "price": 0
-            },
+            "lavalink_ip": "127.0.0.1",
+            "lavalink_port": 2333
         },
         "reactions": {
             "enable": False,
@@ -84,98 +58,10 @@ class Config():
                     "action": "accept_rules"
                 }
             ]
-        },
-        "music": {
-            "enable": False,
-            "lavalink_ip": "127.0.0.1",
-            "lavalink_port": 2333,
-            "music_on_join": {
-                "enable": False,
-                "default_song": "",
-                "discord_id_to_song": {
-                    "0": ""
-                }
-            }
-        },
-        "monthlytop_channel_id": 0,
-        "information_channel_id": 0,
-        "response": {
-            "wallpaper_changed": "Wallpaper changed!",
-            "wallpaper_buyed": "Wallpaper buyed!",
-            "namecolor_changed": "Name color changed!",
-            "barcolor_changed": "Bar color changed!",
-            "message_sent": "Message sent!",
-            "clearing_channel": "Clearing messages...",
-            "channel_cleared": "Message cleared!",
-            "user_added_to_root": "User added to root!",
-            "user_removed_to_root": "User removed from root!",
-            "smartpoint_added": "smartpoint added!",
-            "smartpoint_removed": "smartpoint removed!",
-            "wallpaper_added": "Wallpaper added!",
-            "wallpaper_removed": "Wallpaper Removed!",
-            "music_stopping": "Stopping.",
-            "pausing_music": "Pausing music: `{music}`",
-            "resuming_music": "Resuming music: `{music}`",
-            "back_to_previous_music": "Back to the previous music.",
-            "skipping_music": "Skipping.",
-            "server_boosted": "Thanks {user} for boosting the server!",
-            "profile_layout_changed": "Profile layout changed!",
-            "profile_layout_added": "Profile layout added!",
-            "profile_layout_removed": "Profile layout removed!",
-            "profile_layout_updated": "Profile layout updated!",
-            "profile_layout_renamed": "Profile layout renamed!",
-            "wallpaper_updated": "Wallpaper updated!",
-            "wallpaper_renamed": "Wallpaper renamed!",
-            "role_added": "Role added!",
-            "role_removed": "Role removed!",
-            "role_updated": "Role updated!",
-            "level_up": "You just level up ! your now level {level} !",
-            "all_users_moved": "All users moved!"
-        },
-        "exception_response": {
-            "default": "An error occured",
-            "option_not_found": "Option not found!",
-            "wallpaper_not_exist": "Wallpaper not exist!",
-            "wallpaper_not_posseded": "Wallpaper not posseded!",
-            "color_not_correct": "The color is not correct! please use hexadecimal color (ex: #ffffff) or use color name (green, blue, red, yellow, orange, pink, black, white, ect...)",
-            "not_enougt_smartpoint": "Your not so smart! You don't have enought smartpoint!",
-            "wallpaper_already_posseded": "Be smart! Wallpaper already posseded!",
-            "wallpaper_cannot_be_buyed": "Be smart! Wallpaper cannot be buyed!",
-            "unable_to_download_image": "Unable to download image!",
-            "folder_not_found": "Folder not found!",
-            "not_nsfw_channel": "This command can only be used in a NSFW channel",
-            "channel_not_messageable": "This channel is not messageable!",
-            "user_not_messageable": "This user is not messageable!",
-            "information_channel_not_found": "Information channel not found! please add it in config.yml",
-            "information_channel_not_messageable": "The information channel is not messageable! please change it in config.yml",
-            "cannot_send_message_to_this_user": "Cannot send message to this user!",
-            "not_root": "You are not root!",
-            "enter_amount": "Please enter an amount!",
-            "url_not_an_image": "Please make sure url is an image!",
-            "url_not_good_formated": "Please enter an valid url!",
-            "wallpaper_already_exist": "Wallpaper already exist!",
-            "already_playing": "Already playing. Adding to queue.",
-            "not_connected_to_voice_channel": "You need to be connected to a voice channel to play music.",
-            "no_results_found": "No results found.",
-            "not_playing_music": "The bot is not playing music.",
-            "nothing_left_in_previous_queue": "Nothing left in previous song queue.",
-            "nothing_left_in_queue": "Nothing left in queue.",
-            "profile_layout_not_exist": "Profile layout not exist!",
-            "profile_layout_already_exist": "Profile layout already exist!",
-            "enter_new_name": "Please enter a new name!",
-            "cannot_remove_default_profile_layout": "Cannot remove default profile layout!",
-            "cannot_remove_default_wallpaper": "Cannot remove default wallpaper!",
-            "level_should_be_greater_than_one": "Level should be set and greater than one!",
-            "role_already_exist": "Role already exist!",
-            "role_not_exist": "Role not exist!",
-            "cannot_manage_default_role": "Cannot manage default role! @(everyone)",
-            "role_level_already_exist": "Role level already exist!",
-            "same_channel": "Cannot move to the same channel!",
-            "no_user_in_channel": "No user in the channel!",
         }
     }
     __config_file = "config.yml"
-    __no_check_fields = ["discord_id_to_song", "nsfw_content"]
+    __no_check_fields = ["discord_id_to_song"]
 
     def __init__(self) -> None:
         """This method is designed to initialize the Config class.
