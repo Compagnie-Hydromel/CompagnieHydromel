@@ -1,8 +1,11 @@
+import code
 import os
 import discord
 from dotenv import load_dotenv
 from libs.log import Log
 import sys
+from libs.databases.bootstrap import init
+import importlib
 
 bot_name: str
 
@@ -12,9 +15,33 @@ if len(sys.argv) < 2:
     Log.error("Use python3 bot.py <bot_name>")
     exit()
 
+init()
+
 match sys.argv[1]:
     case 'barman' | 'menestrel' | 'archiveuse':
         bot_name = sys.argv[1]
+    case 'interactive':
+        Log.info("Starting interactive mode")
+        for filename in os.listdir('./libs/databases/models/'):
+            if filename.endswith('.py') and filename != '__init__.py':
+                module_name = f'libs.databases.models.{filename[:-3]}'
+                globals()[filename[:-3]] = importlib.import_module(module_name)
+                globals().update({name: getattr(globals()[filename[:-3]], name) for name in dir(
+                    globals()[filename[:-3]]) if not name.startswith('_')})
+        code.interact(local=globals())
+        exit()
+    case 'migrate':
+        from MIWOS.db import migrate
+
+        migrate()
+        Log.info("Migrations completed")
+        exit()
+    case 'rollback':
+        from MIWOS.db import rollback
+
+        rollback(depth=int(sys.argv[2]) if len(sys.argv) > 2 else 1)
+        Log.info("Rollback completed")
+        exit()
     case _:
         Log.error("Bot name not found")
         exit()

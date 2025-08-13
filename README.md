@@ -38,13 +38,6 @@ BARMAN_TOKEN = "COMPLETE_IT"
 MENESTREL_TOKEN = "COMPLETE_IT"
 ARCHIVEUSE_TOKEN = "COMPLETE_IT"
 
-# https://www.blagues-api.fr/
-BLAGUES_API_KEY = "COMPLETE_IT"
-
-# https://github.com/praw-dev/praw
-REDDIT_CLIENT_ID = "COMPLETE_IT"
-REDDIT_CLIENT_SECRET = "COMPLETE_IT"
-
 # Use it only if you wanna use menestrel as a music player in voice channel
 # Need activate music in configuration
 # https://dsharpplus.github.io/DSharpPlus/articles/audio/lavalink/setup.html
@@ -87,6 +80,13 @@ source env/bin/activate
 now you can install the dependency with
 ```bash
 python3 -m pip install -r requirements.txt
+```
+
+```bash
+./bot.sh migrate
+
+# rollback migration if needed
+./bot.sh rollback
 ```
 
 `WARNING`: check that python3 is the good version of python you want to use. Don't hesitate to specifies the version with python3.* commands
