@@ -9,6 +9,7 @@ from libs.databases.models.guild_user import GuildUser
 from libs.databases.models.profile_layout import ProfileLayout
 from libs.databases.models.role import Role
 from libs.databases.models.user import User
+from libs.databases.models.voice_channels import VoiceChannel
 from libs.databases.models.wallpaper import Wallpaper
 from libs.exception.handler import Handler
 from libs.log import Log
@@ -407,6 +408,80 @@ class AdminCommands(discord.Cog):
                      from_channel.name + " to " + to_channel.name)
 
             await ctx.respond("Moved all users from " + from_channel.name + " to " + to_channel.name)
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
+
+    @discord.slash_command(description="Manage banner voice channels as admin")
+    @discord.option("option", description="add/remove/show", choices=["add", "remove", "show", "update", "set banner url"])
+    @discord.option("voice_channel", discord.VoiceChannel, require=False)
+    @discord.option("x", int, require=False)
+    @discord.option("y", int, require=False)
+    @discord.option("banner_url", str, require=False)
+    async def manage_banner_voice_channels(self, ctx: discord.commands.context.ApplicationContext, option: str, voice_channel: discord.VoiceChannel = None, x: int = 0, y: int = 0, banner_url: str = None):
+        Log.command(
+            ctx.author.name + " is launching manage banner voice channels commands with " + option)
+        try:
+            if not await self.__check_if_admin(ctx):
+                return
+
+            guild = Guild.from_discord_id(ctx.guild.id)
+
+            match option:
+                case "set banner url":
+                    if not banner_url:
+                        await ctx.respond("You must specify a banner URL.")
+                        return
+                    if Utils.is_url_image(banner_url) is False:
+                        await ctx.respond("Invalid banner URL, it must be an image.")
+                        return
+                    guild.banner_image = banner_url
+                    guild.saveOrFail()
+                    await ctx.respond(f"Banner URL set to {banner_url}")
+                case "show":
+                    if not guild.voicechannels:
+                        await ctx.respond("No banner voice channels configured.")
+                        return
+                    channels = [
+                        f"<#{voicchannel.discord_id}>" for voicchannel in guild.voicechannels]
+                    await ctx.respond("Banner voice channels: " + ", ".join(channels))
+                case "add":
+                    if not voice_channel:
+                        await ctx.respond("You must specify a voice channel to add.")
+                        return
+                    if not x or not y:
+                        await ctx.respond("You must specify x and y coordinates.")
+                        return
+                    if voice_channel.id in [vc.discord_id for vc in guild.voicechannels]:
+                        await ctx.respond("This voice channel is already a banner voice channel.")
+                        return
+                    VoiceChannel.create(
+                        discord_id=voice_channel.id, guild=guild, x=x, y=y)
+                    await ctx.respond(f"Added {voice_channel.mention} as a banner voice channel.")
+                case "remove":
+                    if not voice_channel:
+                        await ctx.respond("You must specify a voice channel to remove.")
+                        return
+                    if voice_channel.id not in [vc.discord_id for vc in guild.voicechannels]:
+                        await ctx.respond("This voice channel is not a banner voice channel.")
+                        return
+                    guild.voicechannels.where(
+                        discord_id=voice_channel.id).delete()
+                case "update":
+                    if not voice_channel:
+                        await ctx.respond("You must specify a voice channel to update.")
+                        return
+                    if voice_channel.id not in [vc.discord_id for vc in guild.voicechannels]:
+                        await ctx.respond("This voice channel is not a banner voice channel.")
+                        return
+                    voice_channel_model = VoiceChannel.from_discord_id(
+                        voice_channel.id)
+                    if x is not None:
+                        voice_channel_model.x = x
+                    if y is not None:
+                        voice_channel_model.y = y
+                    voice_channel_model.saveOrFail()
+                case _:
+                    await ctx.respond("Option not found, please use add/remove/show.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 

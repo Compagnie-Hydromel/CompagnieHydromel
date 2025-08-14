@@ -25,18 +25,6 @@ class Config():
                 "collation": "utf8mb4_general_ci"
             }
         },
-        "banner": {
-            "enable": False,
-            "banner_image": "https://shkermit.ch/~ethann/compHydromel/wallpapers/taverne.png",
-            "coords": [
-                {"w": 390, "h": 215, "id": 0},
-                {"w": 110, "h": 279, "id": 0},
-                {"w": 607, "h": 293, "id": 0},
-                {"w": 450, "h": 457, "id": 0},
-                {"w": 795, "h": 145, "id": 0}
-            ],
-            "guild_id": 0
-        },
         "music": {
             "enable": False,
             "lavalink_ip": "127.0.0.1",

@@ -4,7 +4,7 @@ from MIWOS.libs.sql.association import HasMany
 
 class Guild(Model):
     _has_many = [HasMany("roles"), HasMany(
-        "wallpapers"), HasMany("guildusers")]
+        "wallpapers"), HasMany("guildusers"), HasMany("voicechannels")]
     _default_attributes = {
         "information_channel_id": "0",
         "monthlytop_channel_id": "0"

@@ -15,10 +15,10 @@ class BannerBarCreator:
         """This method is designed to initialize the BannerBarCreator class and make the banner bar.
 
         coords = [
-            {"w":390,"h":215, "id": 1131446231160328212},
-            {"w":110,"h":279, "id": 1131446228916387900},
-            {"w":607,"h":293, "id": 1131446229738467410},
-            {"w":450,"h":457, "id": 1131446231160328212}
+            {"x":390,"y":215, "id": 1131446231160328212},
+            {"x":110,"y":279, "id": 1131446228916387900},
+            {"x":607,"y":293, "id": 1131446229738467410},
+            {"x":450,"y":457, "id": 1131446231160328212}
         ]
 
         people = {
@@ -69,7 +69,7 @@ class BannerBarCreator:
                     continue
 
                 img.paste(
-                    pic, (channel_found['w']+add, channel_found['h']), pic)
+                    pic, (channel_found['x']+add, channel_found['y']), pic)
                 Log.info("BannerBarCreator: Added " +
                          member["username"] + " to the banner bar.")
                 add += int(64/(len(people[channel])/3))

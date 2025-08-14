@@ -8,6 +8,14 @@ class CreateBaseDatabase(Migration):
             x.string("discord_id", unique=True)
             x.string("information_channel_id")
             x.string("monthlytop_channel_id")
+            x.string("banner_image")
+
+        with self.create_tables("voicechannels") as x:
+            x.primary_key("id", auto_increment=True)
+            x.string("discord_id", unique=True)
+            x.integer("x", null=False, default=0)
+            x.integer("y", null=False, default=0)
+            x.references("guild", null=False, on_delete="CASCADE")
 
         with self.create_tables("badges") as x:
             x.primary_key("id", auto_increment=True)
@@ -93,5 +101,6 @@ class CreateBaseDatabase(Migration):
             "roles",
             "badges",
             "users",
+            "voicechannels",
             "guilds"
         )
