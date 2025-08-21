@@ -141,7 +141,7 @@ class Music(discord.Cog):
 
 
 def setup(bot):
-    if os.getenv("LAVALINK_PASSWORD") == None:
+    if os.getenv("LAVALINK_PASSWORD") is None or os.getenv("LAVALINK_PASSWORD") == "":
         Log.warning("No lavalink password found.")
     else:
         bot.add_cog(Music(bot))
