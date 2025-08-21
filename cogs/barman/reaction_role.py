@@ -1,6 +1,6 @@
 import discord
 
-from libs.config import Config
+from libs.databases.models.guild import Guild
 from libs.databases.models.role import Role
 from libs.databases.models.guild_user import GuildUser
 from libs.log import Log
@@ -10,21 +10,32 @@ from libs.utils.role_utils import RoleUtils
 class ReactionRole(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config()
 
     @discord.Cog.listener()
     async def on_raw_reaction_add(self, added_reaction: discord.RawReactionActionEvent) -> None:
-        if self.__config.value["reactions"]["enable"]:
-            for reaction in self.__config.value["reactions"]["list"]:
-                # membre
-                await self.add_role_with_reaction(added_reaction, reaction["message_id"], reaction["emoji"], reaction["role_id"], reaction["action"])
+        guild = Guild.from_discord_id(added_reaction.guild_id)
+        if guild is None:
+            Log.warning(f"Guild {added_reaction.guild_id} not found")
+            return
+
+        await self.add_role_with_reaction(
+            added_reaction, int(guild.accepted_rules_message_id), guild.accepted_rules_emoji, 0, "accept_rules")
+
+        for role in guild.roles.whereNull("level"):
+            await self.add_role_with_reaction(
+                added_reaction, int(role.message_discord_id), role.emoji, int(role.discord_id), "emoji_to_role")
 
     @discord.Cog.listener()
     async def on_raw_reaction_remove(self, added_reaction: discord.RawReactionActionEvent) -> None:
-        if self.__config.value["reactions"]["enable"]:
-            for reaction in self.__config.value["reactions"]["list"]:
-                # membre
-                await self.remove_role_with_reaction(added_reaction, reaction["message_id"], reaction["emoji"], reaction["role_id"], reaction["action"])
+        guild = Guild.from_discord_id(added_reaction.guild_id)
+        if guild is None:
+            Log.warning(f"Guild {added_reaction.guild_id} not found")
+            return
+        await self.remove_role_with_reaction(
+            added_reaction, int(guild.accepted_rules_message_id), guild.accepted_rules_emoji, 0, "accept_rules")
+        for role in guild.roles.whereNull("level"):
+            await self.remove_role_with_reaction(
+                added_reaction, int(role.message_discord_id), role.emoji, int(role.discord_id), "emoji_to_role")
 
     @discord.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role) -> None:

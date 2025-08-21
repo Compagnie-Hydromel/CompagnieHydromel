@@ -9,6 +9,8 @@ class CreateBaseDatabase(Migration):
             x.string("information_channel_id")
             x.string("monthlytop_channel_id")
             x.string("banner_image")
+            x.string("accepted_rules_message_id")
+            x.string("accepted_rules_emoji")
 
         with self.create_tables("voicechannels") as x:
             x.primary_key("id", auto_increment=True)
@@ -25,7 +27,9 @@ class CreateBaseDatabase(Migration):
         with self.create_tables("roles") as x:
             x.primary_key("id", auto_increment=True)
             x.string("discord_id", unique=True)
-            x.integer("level", null=False)
+            x.integer("level")
+            x.string("emoji")
+            x.string("message_discord_id")
             x.references("guild", null=False, on_delete="CASCADE")
             x.unique("guild_id", "level")
 

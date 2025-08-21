@@ -7,7 +7,7 @@ from libs.databases.models.guild import Guild
 class Role(Model):
     _belongs_to = [BelongsTo("guild")]
     _validators = {
-        "level": lambda value: value >= 1,
+        "level": lambda value: value is None or value >= 1,
     }
 
     @classmethod

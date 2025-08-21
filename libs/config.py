@@ -30,23 +30,6 @@ class Config():
             "lavalink_ip": "127.0.0.1",
             "lavalink_port": 2333
         },
-        "reactions": {
-            "enable": False,
-            "list": [
-                {
-                    "emoji": "🎨",
-                    "role_id": 0,
-                    "message_id": 0,
-                    "action": "emoji_to_role"
-                },
-                {
-                    "emoji": "✅",
-                    "role_id": 0,
-                    "message_id": 0,
-                    "action": "accept_rules"
-                }
-            ]
-        }
     }
     __config_file = "config.yml"
     __no_check_fields = ["discord_id_to_song"]
