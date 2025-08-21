@@ -125,7 +125,7 @@ class ProfilMaker():
 
             # region [name]
             d.multiline_text((coords["name"]['x'], coords["name"]['y']), display_name, font=ImageFont.truetype(
-                "data/font/ancientMedium.ttf", 45), fill=_name_color)
+                "data/font/LiberationSans-Regular.ttf", 45), fill=_name_color)
 
             d.multiline_text((coords["username"]['x'], coords["username"]['y']), user_name, font=ImageFont.truetype(
                 "data/font/LiberationSans-Regular.ttf", 20), fill=_name_color)
