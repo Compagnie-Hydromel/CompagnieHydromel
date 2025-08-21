@@ -51,6 +51,24 @@ match sys.argv[1]:
         rollback(depth=int(sys.argv[2]) if len(sys.argv) > 2 else 1)
         Log.info("Rollback completed")
         exit()
+    case 'format':
+        from libs.format import PythonFormatter
+
+        formatter = PythonFormatter()
+        exit_code = 0
+        for file in formatter.format():
+            exit_code = 1
+            Log.warning(f"Formatted: {file}")
+        exit(exit_code)
+    case 'check-format':
+        from libs.format import PythonFormatter
+
+        formatter = PythonFormatter()
+        exit_code = 0
+        for file in formatter.check():
+            exit_code = 1
+            Log.warning(f"Needs formatting: {file}")
+        exit(exit_code)
     case _:
         Log.error("Subcommand not found")
         exit()
