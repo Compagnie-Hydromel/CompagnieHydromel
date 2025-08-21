@@ -12,25 +12,21 @@ bot_name: str
 load_dotenv()
 
 if len(sys.argv) < 2:
-    Log.error("Use python3 bot.py <bot_name>")
-    exit()
+    Log.info("Starting all bots")
+    barman_pid = os.spawnlp(
+        os.P_NOWAIT, "python3", "python3", "bot.py", "barman")
+    menestrel_pid = os.spawnlp(
+        os.P_NOWAIT, "python3", "python3", "bot.py", "menestrel")
+    archiveuse_pid = os.spawnlp(
+        os.P_NOWAIT, "python3", "python3", "bot.py", "archiveuse")
+
+    os.waitpid(barman_pid, 0)
+    os.waitpid(menestrel_pid, 0)
+    os.waitpid(archiveuse_pid, 0)
 
 init()
 
 match sys.argv[1]:
-    case 'all':
-        Log.info("Starting all bots")
-        barman_pid = os.spawnlp(
-            os.P_NOWAIT, "python3", "python3", "bot.py", "barman")
-        menestrel_pid = os.spawnlp(
-            os.P_NOWAIT, "python3", "python3", "bot.py", "menestrel")
-        archiveuse_pid = os.spawnlp(
-            os.P_NOWAIT, "python3", "python3", "bot.py", "archiveuse")
-
-        os.waitpid(barman_pid, 0)
-        os.waitpid(menestrel_pid, 0)
-        os.waitpid(archiveuse_pid, 0)
-        exit()
     case 'barman' | 'menestrel' | 'archiveuse':
         bot_name = sys.argv[1]
     case 'interactive':
@@ -56,7 +52,7 @@ match sys.argv[1]:
         Log.info("Rollback completed")
         exit()
     case _:
-        Log.error("Bot name not found")
+        Log.error("Subcommand not found")
         exit()
 
 intents: discord.Intents = discord.Intents.all()
