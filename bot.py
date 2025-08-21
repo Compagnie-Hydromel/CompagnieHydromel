@@ -18,6 +18,19 @@ if len(sys.argv) < 2:
 init()
 
 match sys.argv[1]:
+    case 'all':
+        Log.info("Starting all bots")
+        barman_pid = os.spawnlp(
+            os.P_NOWAIT, "python3", "python3", "bot.py", "barman")
+        menestrel_pid = os.spawnlp(
+            os.P_NOWAIT, "python3", "python3", "bot.py", "menestrel")
+        archiveuse_pid = os.spawnlp(
+            os.P_NOWAIT, "python3", "python3", "bot.py", "archiveuse")
+
+        os.waitpid(barman_pid, 0)
+        os.waitpid(menestrel_pid, 0)
+        os.waitpid(archiveuse_pid, 0)
+        exit()
     case 'barman' | 'menestrel' | 'archiveuse':
         bot_name = sys.argv[1]
     case 'interactive':
