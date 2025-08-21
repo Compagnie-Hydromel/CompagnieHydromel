@@ -23,6 +23,7 @@ if len(sys.argv) < 2:
     os.waitpid(barman_pid, 0)
     os.waitpid(menestrel_pid, 0)
     os.waitpid(archiveuse_pid, 0)
+    exit()
 
 init()
 
@@ -69,6 +70,10 @@ match sys.argv[1]:
             exit_code = 1
             Log.warning(f"Needs formatting: {file}")
         exit(exit_code)
+    case 'test':
+        testä_pid = os.spawnlp(os.P_WAIT, "python3", "python3", "-m", "unittest", "discover", "-s", "tests")
+
+        exit(os.WEXITSTATUS(testä_pid))
     case _:
         Log.error("Subcommand not found")
         exit()
