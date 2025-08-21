@@ -4,7 +4,6 @@ from scheduler.asyncio import Scheduler
 import datetime
 import asyncio
 
-from libs.config import Config
 from libs.databases.models.guild import Guild
 from libs.databases.models.guild_user import GuildUser
 from libs.utils.utils import Utils
@@ -16,7 +15,6 @@ class ScheduledTask(discord.Cog):
 
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config()
 
     @discord.Cog.listener()
     async def on_ready(self):

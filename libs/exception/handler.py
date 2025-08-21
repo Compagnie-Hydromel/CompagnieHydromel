@@ -1,5 +1,4 @@
 import traceback
-from libs.config import Config
 from libs.exception.bot_exception import BotException
 from libs.log import Log
 from MIWOS.libs.exceptions.validation_exception import ValidationException

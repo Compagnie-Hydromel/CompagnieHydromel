@@ -1,6 +1,5 @@
 import traceback
 import discord
-from libs.config import Config
 
 from libs.databases.models.guild_user import GuildUser
 from libs.exception.handler import Handler

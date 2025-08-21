@@ -1,6 +1,5 @@
 import discord
 
-from libs.config import Config
 from libs.databases.models.guild_user import GuildUser
 from libs.utils.role_utils import RoleUtils
 

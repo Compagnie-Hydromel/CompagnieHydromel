@@ -1,5 +1,4 @@
 import discord
-from libs.config import Config
 from libs.log import Log
 
 from libs.databases.models.user import User

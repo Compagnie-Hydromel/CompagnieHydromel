@@ -1,7 +1,6 @@
 import traceback
 import discord
 import requests
-from libs.config import Config
 from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
 from libs.databases.models.guild import Guild
@@ -21,7 +20,6 @@ import re
 class AdminCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config()
         self.__error_handler = Handler()
 
     @discord.slash_command(description="Broadcast a message to a any channel as admin")

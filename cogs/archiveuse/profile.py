@@ -1,5 +1,4 @@
 import discord
-from libs.config import Config
 from libs.databases.models.guild_user import GuildUser
 from libs.databases.models.profile_layout import ProfileLayout
 from libs.databases.models.wallpaper import Wallpaper
@@ -15,7 +14,6 @@ class Profile(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.__error_handler = Handler()
-        self.__config = Config()
 
     @discord.slash_command(description="Get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):

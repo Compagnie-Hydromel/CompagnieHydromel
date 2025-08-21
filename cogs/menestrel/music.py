@@ -3,7 +3,6 @@ import discord
 import os
 import wavelink
 
-from libs.config import Config
 from libs.exception.handler import Handler
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
 from libs.music.guild_music_manager import GuildMusicManager
@@ -15,15 +14,13 @@ from libs.music.music_player_displayer import MusicPlayerDisplayer
 class Music(discord.Cog):
     def __init__(self, bot) -> None:
         self.__bot = bot
-        self.__config = Config()
-        self.__music_config = self.__config.value["music"]
         self.__error_handler = Handler()
 
     @discord.Cog.listener()
     async def on_ready(self):
         self.__node = wavelink.Node(
-            uri="http://" + self.__music_config["lavalink_ip"] +
-                ":" + str(self.__music_config["lavalink_port"]),
+            uri="http://" + os.getenv("LAVALINK_IP") or "127.0.0.1" +
+                ":" + str(os.getenv("LAVALINK_PORT") or "2333"),
             password=os.getenv("LAVALINK_PASSWORD"),
             client=self.__bot
         )
@@ -144,8 +141,7 @@ class Music(discord.Cog):
 
 
 def setup(bot):
-    if Config().value["music"]["enable"]:
-        if os.getenv("LAVALINK_PASSWORD") == None:
-            Log.warning("No lavalink password found.")
-        else:
-            bot.add_cog(Music(bot))
+    if os.getenv("LAVALINK_PASSWORD") == None:
+        Log.warning("No lavalink password found.")
+    else:
+        bot.add_cog(Music(bot))

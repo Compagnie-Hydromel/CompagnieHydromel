@@ -2,7 +2,6 @@ import traceback
 import discord
 from libs.databases.models.guild import Guild
 from libs.image_factory.banner_bar_creator import BannerBarCreator
-from libs.config import Config
 from libs.log import Log
 from typing import Union
 
@@ -10,7 +9,6 @@ from typing import Union
 class BannerUpdater(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config()
 
     def __get_bar_image(self, db_guild: Guild) -> str:
         coords = []
