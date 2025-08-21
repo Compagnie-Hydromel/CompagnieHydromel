@@ -13,38 +13,32 @@
 │   |   └── play.py
 │   └── barman              # Barman cog
 │       └── bar_commands.py
-├── data                    # All things that's not code
-│   ├── databases
-│   ├── font
+├── assets                   # All things that's not code
+│   ├── fonts
 │   └── img
-├── docs                    # Folder with the documentation
-├── libs                    # Personnal librairies
+├── libs                    # Librairies
+│   ├── image_factory       # Image factory to create profile picture
+│   ├── databases           # Database management
+│   ├── music               # Music management
+│   ├── utils               # Utils functions
+│   └── exceptions          # Custom application exceptions
 ├── tests                   # Folder containing automated tests
 ├── bot.py                  # Bot base file, used to start the bot
 ├── requirements.txt        # File containing all required dependencies.
-├── databases.db            # Databases containing user, wallpaper, badge, ect... (if using sqlite)
 ├── LICENSE
 └── README.md
 ```
 
 ## Prerequisites
 
+- [Python 3.13.2 or higher](https://www.python.org/downloads/release/python-3132/)
+- [Python-pip](https://pip.pypa.io/en/stable/installation/)
+- [python-venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
+
 Before starting the Bot, you'll need to modify/create some files, create the 3 Bot on Discord Developer Portal and make a basic discord test server to make it work and to use it.
 
 First, let's start with the files needed to be modified:
-- In the root folder of the discord bot, create a file named **.env** with the informations below (remember to replace where it says **COMPLETE_IT** with the real informations)
-```env
-BARMAN_TOKEN = "COMPLETE_IT"
-MENESTREL_TOKEN = "COMPLETE_IT"
-ARCHIVEUSE_TOKEN = "COMPLETE_IT"
-
-# Use it only if you wanna use menestrel as a music player in voice channel
-# Need activate music in configuration
-# https://dsharpplus.github.io/DSharpPlus/articles/audio/lavalink/setup.html
-LAVALINK_PASSWORD = "COMPLETE_IT"
-```
-
-After this, let's create a basic Discord Server:
+- In the root folder of the discord bot, copy **.env.example** to **.env** and fill in the information (Databases, Discord Bot Tokens, Lavalink Password, etc.).
 - Open Discord App or use [Discord Web](https://discord.com/app)
 - Click on the **+** icon then click on **Create My Own** and after **For me and my friends**. Now give it a name and after click on **Create**.
 
@@ -54,25 +48,13 @@ Let's now create the 3 Bot on Discord Developer Portal and invite it on the Disc
 
 ## Installation
 
-If you want to make the bot work, you'll need some things.
-
-- For Linux users
 ```bash
-sudo apt install python3.13
-```
-
-- For Windows or mac users
-  - [Download Python 3.13.2](https://www.python.org/downloads/release/python-3132/)
-
-Now, not all things are installed but these ones are for both OS. Open a **CMD/Terminal** and copy/paste these commands below. This command will automatically install the required dependencies for this project.
-To manage dependency you need to use [python-venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
-```bash
-# install virtual env
-python3 -m pip install virtualenv 
 # create env folder
 python3 -m venv env 
 # enable the environement with
 source env/bin/activate
+
+
 # WARNING: use this for windows
 .\env\Scripts\Activate.ps1
 # Too check if it work execute 'pip list' and it will be almost empty if you were already owning some python package or not
@@ -83,27 +65,19 @@ python3 -m pip install -r requirements.txt
 ```
 
 ```bash
-./bot.sh migrate
+python3 bot.py migrate
 
 # rollback migration if needed
-./bot.sh rollback
+python3 bot.py rollback
 ```
 
 `WARNING`: check that python3 is the good version of python you want to use. Don't hesitate to specifies the version with python3.* commands
 
 ## Usage
 ```bash
-# To start the bot
-./bot.sh
+# To start all the bot
+python3 bot.py
 
-# If doesn't work in like a screen session
-bash bot.sh
-# or 
-zsh bot.sh
-```
-
-You can also use the command below to start the bot on by one
-```bash
 # To start the barman
 python3 bot.py barman
 
@@ -118,26 +92,6 @@ python3 bot.py archiveuse
 use the discord default slash commands permission system
 https://discord.com/blog/slash-commands-permissions-discord-apps-bots
 
-## Configuration
-You can configure the bot with the **config.yml** file in the root folder of the bot. You can change the prefix, the language, the music, the reddit and the database. The file is generate automatically if it doesn't exist.
-
-exemple of config.yml
-```yaml
-...
-reactions:
-  enable: true
-  list:
-  - action: accept_rules
-    emoji: ✅
-    message_id: 1139191289737388113
-    role_id: 0
-...
-```
-
-### Music
-
-To use the music feature refer to this documentation [here](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Lavalink-server-integration)
-
 ## Usefull links
 - https://docs.pycord.dev/en/stable/
 - https://discordpy.readthedocs.io/en/stable/
@@ -148,10 +102,11 @@ To use the music feature refer to this documentation [here](https://github.com/C
 Please open an issue first to discuss what you would like to change.
 Format code with pep8 
 ```bash
-./bot.sh format
+python3 bot.py format
 # or
-./bot.sh check-format
+python3 bot.py check-format
 ```
+you can use vscode extension like [Python autopep8](https://marketplace.visualstudio.com/items?itemName=ms-python.autopep8) to format your code automatically.
 
 ## License
 [MIT](LICENSE)
