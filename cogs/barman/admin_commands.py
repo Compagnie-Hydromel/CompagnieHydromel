@@ -570,7 +570,8 @@ class AdminCommands(discord.Cog):
         for role in roles:
             if role.level is None:
                 content += f"**<@&{role.discord_id}>** {role.emoji} {role.message_discord_id}\n"
-            content += f"**<@&{role.discord_id}>** {str(role.level)}\n"
+            else:
+                content += f"**<@&{role.discord_id}>** {str(role.level)}\n"
         return content
 
 
