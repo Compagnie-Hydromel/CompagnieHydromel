@@ -71,9 +71,10 @@ match sys.argv[1]:
             Log.warning(f"Needs formatting: {file}")
         exit(exit_code)
     case 'test':
-        testä_pid = os.spawnlp(os.P_WAIT, "python3", "python3", "-m", "unittest", "discover", "-s", "tests")
+        test_pid = os.spawnlp(
+            os.P_WAIT, "python3", "python3", "-m", "unittest", "discover", "-s", "tests")
 
-        exit(os.WEXITSTATUS(testä_pid))
+        exit(os.WEXITSTATUS(test_pid))
     case _:
         Log.error("Subcommand not found")
         exit()
