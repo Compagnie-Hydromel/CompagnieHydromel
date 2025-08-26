@@ -94,83 +94,64 @@ class ProfilMaker():
 
         image_to_appends = []
 
-        for x, img in enumerate(imgs):
+        profile_picture = None
+        try:
+            response_profile_picture = requests.get(user_profil_picture)
+            profile_picture = Image.open(
+                BytesIO(response_profile_picture.content)).convert('RGBA').resize((128, 128))
+            profile_picture = ImageFactoryUtils.pillow_crop_max_square(
+                profile_picture)
+            profile_picture = ImageFactoryUtils.pillow_mask_circle_transparent(
+                profile_picture, 1)
+        except Exception as e:
+            Log.error(str(e))
+            raise ImageNotDownloadable
 
-            img = img.convert('RGBA').resize((500, 281))
-
-            # region [image]
-
-            pic = None
+        badges_images = []
+        for badge in badges:
             try:
-                response_profile_picture = requests.get(user_profil_picture)
-                pic = Image.open(BytesIO(response_profile_picture.content)).convert(
-                    'RGBA').resize((128, 128))
+                response_badge = requests.get(badge.url)
+                temp_img = Image.open(
+                    BytesIO(response_badge.content)).convert('RGBA')
+                temp_img.thumbnail((32, 32), Image.LANCZOS)
+                badges_images.append(temp_img)
             except Exception as e:
                 Log.error(str(e))
                 raise ImageNotDownloadable
 
-            h, w = pic.size
+        font_large = ImageFont.truetype(
+            "assets/fonts/LiberationSans-Regular.ttf", 45)
+        font_medium = ImageFont.truetype(
+            "assets/fonts/LiberationSans-Regular.ttf", 20)
+        font_small = ImageFont.truetype(
+            "assets/fonts/LiberationSans-Regular.ttf", 30)
 
-            pic = ImageFactoryUtils.pillow_crop_max_square(
-                pic).resize((w, h), Image.Resampling.LANCZOS)
-            pic = ImageFactoryUtils.pillow_mask_circle_transparent(pic, 1)
+        calculated_point_per_level = min(200 * level, 200 * 15)
+        progress = (point * 100 / calculated_point_per_level) / 100
+        level_bar = ImageFactoryUtils.pillow_new_bar(
+            1, 1, 500, 25, progress, fg=_bar_color)
 
-            img.paste(pic, (coords["profil_picture"]['x'],
-                            coords["profil_picture"]['y']), pic)
-            # endregion
+        for x, img in enumerate(imgs):
+            img = img.convert('RGBA').resize((500, 281))
+            img.paste(profile_picture, (coords["profil_picture"]['x'],
+                      coords["profil_picture"]['y']), profile_picture)
 
-            # region [text]
             d = ImageDraw.Draw(img)
-            # endregion
-
-            # region [name]
-            d.multiline_text((coords["name"]['x'], coords["name"]['y']), display_name, font=ImageFont.truetype(
-                "assets/fonts/LiberationSans-Regular.ttf", 45), fill=_name_color)
-
-            d.multiline_text((coords["username"]['x'], coords["username"]['y']), user_name, font=ImageFont.truetype(
-                "assets/fonts/LiberationSans-Regular.ttf", 20), fill=_name_color)
-            # endregion
-
-            # region [level]
+            d.multiline_text((coords["name"]['x'], coords["name"]['y']),
+                             display_name, font=font_large, fill=_name_color)
+            d.multiline_text((coords["username"]['x'], coords["username"]
+                             ['y']), user_name, font=font_medium, fill=_name_color)
             d.multiline_text((coords["level"]['x'], coords["level"]['y']), str(
-                level), font=ImageFont.truetype("assets/fonts/LiberationSans-Regular.ttf", 30), fill=_bar_color)
-            # endregion
+                level), font=font_small, fill=_bar_color)
 
-            # region [badge]
-
-            badgeNumber = 0
-            for badge in badges:
-                tempImg = None
-                try:
-                    response_background_url = requests.get(badge.url)
-                    tempImg = Image.open(
-                        BytesIO(response_background_url.content)).convert('RGBA')
-                except Exception as e:
-                    Log.error(str(e))
-                    raise ImageNotDownloadable
-                tempImg.thumbnail((32, 32), Image.LANCZOS)
+            for i, badge_img in enumerate(badges_images):
                 img.paste(
-                    tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
-                badgeNumber += 1
+                    badge_img, (coords['badge']['x'] + (34 * i), coords['badge']['y']), badge_img)
 
-            # endregion
-
-            # region [level bar]
-            calculated_point_per_level = 200 * level
-            if level > 15:
-                calculated_point_per_level = 200 * 15
-
-            progress = (point * 100 / (calculated_point_per_level))/100
-
-            bar = ImageFactoryUtils.pillow_new_bar(
-                1, 1, 500, 25, progress, fg=_bar_color)
-
-            img.paste(bar, (coords['level_bar']['x'],
-                      coords['level_bar']['y']), bar)
-            # endregion
+                img.paste(
+                    level_bar, (coords['level_bar']['x'], coords['level_bar']['y']), level_bar)
 
             imgs[x] = img
-
             if x != 0:
                 image_to_appends.append(img)
 
