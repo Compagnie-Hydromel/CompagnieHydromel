@@ -41,7 +41,7 @@ class Top(discord.Cog):
 
             message += f"**{username}** is level {user.level}\n\n"
 
-        await ctx.respond(embed=discord.Embed(title="Top player", description=message, color=0x75E6DA))
+        await ctx.respond(embed=discord.Embed(title="Top 10 of most active player", description=message, color=0x75E6DA))
 
     async def __smartpoint(self, ctx: discord.commands.context.ApplicationContext):
         guild = Guild.from_discord_id(ctx.guild.id)
@@ -53,7 +53,7 @@ class Top(discord.Cog):
 
             message += f"**{username}** has {user.smartpoint} smartpoint\n\n"
 
-        await ctx.respond(embed=discord.Embed(title="Top smartpoint player", description=message, color=0x75E6DA))
+        await ctx.respond(embed=discord.Embed(title="Top 10 of player with the most smartpoint", description=message, color=0x75E6DA))
 
     async def __monthly_active(self, ctx: discord.commands.context.ApplicationContext):
         guild = Guild.from_discord_id(ctx.guild.id)
@@ -65,7 +65,7 @@ class Top(discord.Cog):
 
             message += f"**{username}** has {user.monthly_point} monthly point\n\n"
 
-        await ctx.respond(embed=discord.Embed(title="Top 5 monthly active player", description=message, color=0x75E6DA))
+        await ctx.respond(embed=discord.Embed(title="Top 10 most active player of the month", description=message, color=0x75E6DA))
 
     def __get_user_name_or_id_by_discord_id(self, discord_id: str) -> str:
         return Utils.get_user_name_or_id_by_discord_id(discord_id, self.__bot)
