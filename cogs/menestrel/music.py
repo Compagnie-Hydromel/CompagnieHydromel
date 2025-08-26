@@ -19,8 +19,7 @@ class Music(discord.Cog):
     @discord.Cog.listener()
     async def on_ready(self):
         self.__node = wavelink.Node(
-            uri="http://" + os.getenv("LAVALINK_IP") or "127.0.0.1" +
-                ":" + str(os.getenv("LAVALINK_PORT") or "2333"),
+            uri=os.getenv("LAVALINK_URI"),
             password=os.getenv("LAVALINK_PASSWORD"),
             client=self.__bot
         )
