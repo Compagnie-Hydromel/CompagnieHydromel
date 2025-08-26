@@ -74,7 +74,6 @@ class CreateBaseDatabase(Migration):
             x.references("wallpaper", on_delete="SET NULL")
             x.string("bar_color", null=False, default="ADFF2F")
             x.string("name_color", null=False, default="0000FF")
-            x.integer("number_of_buy", null=False, default=0)
             x.references("profilelayout", on_delete="SET NULL")
             x.boolean("has_accepted_rules", null=False, default=False)
             x.boolean("is_admin", null=False, default=False)

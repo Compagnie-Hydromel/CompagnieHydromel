@@ -21,7 +21,6 @@ class GuildUser(Model):
         "smartpoint": 20,
         "bar_color": "#ADFF2F",
         "name_color": "#0000FF",
-        "number_of_buy": 0,
         "has_accepted_rules": False,
         "is_admin": False
     }
