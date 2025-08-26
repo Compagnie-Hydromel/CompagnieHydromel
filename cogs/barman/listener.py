@@ -1,7 +1,7 @@
 import traceback
 import discord
-from libs.config import Config
 
+from libs.databases.models.guild import Guild
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.utils.level_utils import LevelUtils
@@ -10,8 +10,6 @@ from libs.utils.level_utils import LevelUtils
 class Listener(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config()
-        self.__response_config = self.__config.value["response"]
         self.__error_handler = Handler()
 
     @discord.Cog.listener()
@@ -22,11 +20,13 @@ class Listener(discord.Cog):
         if message.author == self.__bot.user:
             return
 
+        guild = Guild.from_discord_id(message.guild.id)
+
         try:
             if message.type == discord.MessageType.premium_guild_subscription:
-                information_channel_id = self.__config.value["information_channel_id"]
+                information_channel_id = int(guild.information_channel_id)
                 if information_channel_id != 0:
-                    await self.__bot.get_channel(information_channel_id).send(self.__response_config["server_boosted"].replace("{user}", message.author.mention))
+                    await self.__bot.get_channel(information_channel_id).send("" + str(message.author) + " has boosted the server! Thank you for your support! 🎉")
         except Exception as e:
             self.__error_handler.response_handler(e, traceback.format_exc())
 

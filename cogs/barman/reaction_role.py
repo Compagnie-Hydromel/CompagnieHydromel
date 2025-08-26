@@ -1,9 +1,8 @@
 import discord
 
-from libs.config import Config
-from libs.databases.model.role import Role
-from libs.databases.model.user import User
-from libs.exception.role.role_not_exist_exception import RoleNotExistException
+from libs.databases.models.guild import Guild
+from libs.databases.models.role import Role
+from libs.databases.models.guild_user import GuildUser
 from libs.log import Log
 from libs.utils.role_utils import RoleUtils
 
@@ -11,31 +10,40 @@ from libs.utils.role_utils import RoleUtils
 class ReactionRole(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config()
 
     @discord.Cog.listener()
     async def on_raw_reaction_add(self, added_reaction: discord.RawReactionActionEvent) -> None:
-        if self.__config.value["reactions"]["enable"]:
-            for reaction in self.__config.value["reactions"]["list"]:
-                # membre
-                await self.add_role_with_reaction(added_reaction, reaction["message_id"], reaction["emoji"], reaction["role_id"], reaction["action"])
+        guild = Guild.from_discord_id(added_reaction.guild_id)
+        if guild is None:
+            Log.warning(f"Guild {added_reaction.guild_id} not found")
+            return
+
+        await self.add_role_with_reaction(
+            added_reaction, int(guild.accepted_rules_message_id), guild.accepted_rules_emoji, 0, "accept_rules")
+
+        for role in guild.roles.whereNull("level"):
+            await self.add_role_with_reaction(
+                added_reaction, int(role.message_discord_id), role.emoji, int(role.discord_id), "emoji_to_role")
 
     @discord.Cog.listener()
     async def on_raw_reaction_remove(self, added_reaction: discord.RawReactionActionEvent) -> None:
-        if self.__config.value["reactions"]["enable"]:
-            for reaction in self.__config.value["reactions"]["list"]:
-                # membre
-                await self.remove_role_with_reaction(added_reaction, reaction["message_id"], reaction["emoji"], reaction["role_id"], reaction["action"])
+        guild = Guild.from_discord_id(added_reaction.guild_id)
+        if guild is None:
+            Log.warning(f"Guild {added_reaction.guild_id} not found")
+            return
+        await self.remove_role_with_reaction(
+            added_reaction, int(guild.accepted_rules_message_id), guild.accepted_rules_emoji, 0, "accept_rules")
+        for role in guild.roles.whereNull("level"):
+            await self.remove_role_with_reaction(
+                added_reaction, int(role.message_discord_id), role.emoji, int(role.discord_id), "emoji_to_role")
 
     @discord.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role) -> None:
-        databaseRole = None
-        try:
-            databaseRole = Role(role.id)
-        except RoleNotExistException:
+        databaseRole = Role.from_discord_id(role.id)
+        if not databaseRole:
             return
 
-        Role.remove(databaseRole.discord_id)
+        databaseRole.delete()
         await RoleUtils.update_all_user_role(role.guild)
 
     async def add_role_with_reaction(self, reaction: discord.RawReactionActionEvent, message_id: int, emoji: str, role_id: int, action: str) -> None:
@@ -50,8 +58,10 @@ class ReactionRole(discord.Cog):
         if (reaction.message_id == message_id and reaction.emoji.name == emoji):
             match(action):
                 case "accept_rules":
-                    user: User = User(str(reaction.user_id))
-                    user.toggle_accepted_rules(True)
+                    user = GuildUser.from_user_discord_id_and_guild_discord_id(
+                        reaction.user_id, reaction.guild_id)
+                    user.has_accepted_rules = True
+                    user.save()
                     await RoleUtils.add_role(reaction.member, user)
 
                 case "emoji_to_role" | _:
@@ -77,8 +87,10 @@ class ReactionRole(discord.Cog):
                 guild.members, id=reaction.user_id)
             match action:
                 case "accept_rules":
-                    user: User = User(str(reaction.user_id))
-                    user.toggle_accepted_rules(False)
+                    user: GuildUser = GuildUser.from_user_discord_id_and_guild_discord_id(
+                        reaction.user_id, reaction.guild_id)
+                    user.has_accepted_rules = False
+                    user.save()
                     await RoleUtils.remove_all_roles(member)
                 case "emoji_to_role" | _:
                     try:

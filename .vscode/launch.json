@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "All debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "bot.py",
+            "args": [],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Archiveuse debug",
             "type": "debugpy",
             "request": "launch",

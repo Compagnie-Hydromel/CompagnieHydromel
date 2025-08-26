@@ -143,7 +143,7 @@ class Utils():
     @staticmethod
     def get_user_by_discord_id(discord_id: str, bot: discord.Bot) -> discord.User | None:
         user_id = 0
-        try:  # to avoid error if discord_id is not an convertible in int
+        try:  # to avoid exception if discord_id is not an convertible in int
             user_id = int(discord_id)
         except:
             pass

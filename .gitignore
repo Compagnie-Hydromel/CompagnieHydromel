@@ -1,10 +1,7 @@
 log.txt
 __pycache__
 .banner.png
-database.db
-test_database.db
 .env
 .profile
 env
-config.yml
 .pytest_cache

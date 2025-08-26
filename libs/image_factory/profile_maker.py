@@ -1,12 +1,12 @@
 #!/usr/local/bin/python3
 from PIL import Image, ImageDraw, ImageFont, ImageColor
+from libs.exception.image.image_not_downloadable import ImageNotDownloadable
 from libs.log import Log
 from libs.image_factory.utils import Utils as ImageFactoryUtils
 from libs.utils.utils import Utils
 import requests
 from io import BytesIO
-from libs.databases.model.badge import Badge
-from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
+from libs.databases.models.badge import Badge
 
 
 class ProfilMaker():
@@ -64,11 +64,11 @@ class ProfilMaker():
         """
         Utils.createDirectoryIfNotExist(".profile")
         self.__profilPath = ".profile/" + \
-            profile_id + (".gif" if gif else ".png")
+            str(profile_id) + (".gif" if gif else ".png")
 
         # region [bar and name color]
-        _name_color = ImageColor.getcolor(str(name_color), "RGBA")
-        _bar_color = ImageColor.getcolor(str(bar_color), "RGBA")
+        _name_color = ImageColor.getcolor(name_color, "RGBA")
+        _bar_color = ImageColor.getcolor(bar_color, "RGBA")
         # endregion
 
         # region [background]
@@ -77,7 +77,7 @@ class ProfilMaker():
         if isinstance(background_url, str):
             background_url = [background_url]
         elif not isinstance(background_url, list) or len(background_url) == 0:
-            raise WallpaperIsNotDownloadableException
+            raise ImageNotDownloadable
         try:
             if Utils.is_url_animated_gif(background_url[0]):
                 imgs = ImageFactoryUtils.gif_to_image_list(
@@ -88,7 +88,7 @@ class ProfilMaker():
                     imgs.append(Image.open(Utils.download_image(url)))
         except Exception as e:
             Log.error(str(e))
-            raise WallpaperIsNotDownloadableException
+            raise ImageNotDownloadable
 
         # endregion
 
@@ -107,7 +107,7 @@ class ProfilMaker():
                     'RGBA').resize((128, 128))
             except Exception as e:
                 Log.error(str(e))
-                raise WallpaperIsNotDownloadableException
+                raise ImageNotDownloadable
 
             h, w = pic.size
 
@@ -125,15 +125,15 @@ class ProfilMaker():
 
             # region [name]
             d.multiline_text((coords["name"]['x'], coords["name"]['y']), display_name, font=ImageFont.truetype(
-                "data/font/ancientMedium.ttf", 45), fill=_name_color)
+                "assets/fonts/LiberationSans-Regular.ttf", 45), fill=_name_color)
 
             d.multiline_text((coords["username"]['x'], coords["username"]['y']), user_name, font=ImageFont.truetype(
-                "data/font/LiberationSans-Regular.ttf", 20), fill=_name_color)
+                "assets/fonts/LiberationSans-Regular.ttf", 20), fill=_name_color)
             # endregion
 
             # region [level]
             d.multiline_text((coords["level"]['x'], coords["level"]['y']), str(
-                level), font=ImageFont.truetype("data/font/LiberationSans-Regular.ttf", 30), fill=_bar_color)
+                level), font=ImageFont.truetype("assets/fonts/LiberationSans-Regular.ttf", 30), fill=_bar_color)
             # endregion
 
             # region [badge]
@@ -147,7 +147,7 @@ class ProfilMaker():
                         BytesIO(response_background_url.content)).convert('RGBA')
                 except Exception as e:
                     Log.error(str(e))
-                    raise WallpaperIsNotDownloadableException
+                    raise ImageNotDownloadable
                 tempImg.thumbnail((32, 32), Image.LANCZOS)
                 img.paste(
                     tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)

@@ -23,7 +23,8 @@ class Listener(discord.Cog):
         if message.author == self.__bot.user:
             return
 
-        await LevelUtils.add_point(message.author)
+        if isinstance(message.author, discord.member.Member):
+            await LevelUtils.add_point(message.author)
 
     @discord.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
