@@ -468,7 +468,7 @@ class AdminCommands(discord.Cog):
                     if not x or not y:
                         await ctx.respond("You must specify x and y coordinates.")
                         return
-                    if voice_channel.id in [vc.discord_id for vc in guild.voicechannels]:
+                    if str(voice_channel.id) in [vc.discord_id for vc in guild.voicechannels]:
                         await ctx.respond("This voice channel is already a banner voice channel.")
                         return
                     VoiceChannel.create(
@@ -478,7 +478,7 @@ class AdminCommands(discord.Cog):
                     if not voice_channel:
                         await ctx.respond("You must specify a voice channel to remove.")
                         return
-                    if voice_channel.id not in [vc.discord_id for vc in guild.voicechannels]:
+                    if str(voice_channel.id) not in [vc.discord_id for vc in guild.voicechannels]:
                         await ctx.respond("This voice channel is not a banner voice channel.")
                         return
                     guild.voicechannels.where(
@@ -487,7 +487,7 @@ class AdminCommands(discord.Cog):
                     if not voice_channel:
                         await ctx.respond("You must specify a voice channel to update.")
                         return
-                    if voice_channel.id not in [vc.discord_id for vc in guild.voicechannels]:
+                    if str(voice_channel.id) not in [vc.discord_id for vc in guild.voicechannels]:
                         await ctx.respond("This voice channel is not a banner voice channel.")
                         return
                     voice_channel_model = VoiceChannel.from_discord_id(
