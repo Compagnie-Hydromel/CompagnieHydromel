@@ -24,10 +24,7 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: |
-          python -m venv env
-          source env/bin/activate
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run code formatter
         run: python3 bot.py check-format
