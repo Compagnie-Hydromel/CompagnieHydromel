@@ -57,7 +57,7 @@ class BannerUpdater(discord.Cog):
         return None
 
     @discord.Cog.listener()
-    async def on_voice_state_update(self, members: discord.member, before: discord.VoiceChannel, after: discord.VoiceChannel) -> None:
+    async def on_voice_state_update(self, _members: discord.member, _before: discord.VoiceChannel, _after: discord.VoiceChannel) -> None:
         try:
             guild_id = members.guild.id
             guild = Guild.from_discord_id(guild_id)
