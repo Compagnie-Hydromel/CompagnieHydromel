@@ -497,6 +497,7 @@ class AdminCommands(discord.Cog):
                     if y is not None:
                         voice_channel_model.y = y
                     voice_channel_model.saveOrFail()
+                    await ctx.respond(f"Updated {voice_channel.mention} banner voice channel.")
                 case _:
                     await ctx.respond("Option not found, please use add/remove/show.")
         except Exception as e:
