@@ -148,8 +148,8 @@ class ProfilMaker():
                 img.paste(
                     badge_img, (coords['badge']['x'] + (34 * i), coords['badge']['y']), badge_img)
 
-                img.paste(
-                    level_bar, (coords['level_bar']['x'], coords['level_bar']['y']), level_bar)
+            img.paste(
+                level_bar, (coords['level_bar']['x'], coords['level_bar']['y']), level_bar)
 
             imgs[x] = img
             if x != 0:
