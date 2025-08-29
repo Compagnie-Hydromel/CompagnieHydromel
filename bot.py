@@ -6,6 +6,7 @@ from libs.log import Log
 import sys
 from libs.databases.bootstrap import init
 import importlib
+import subprocess
 
 bot_name: str
 
@@ -13,16 +14,17 @@ load_dotenv()
 
 if len(sys.argv) < 2:
     Log.info("Starting all bots")
-    barman_pid = os.spawnlp(
-        os.P_NOWAIT, "python3", "python3", "bot.py", "barman")
-    menestrel_pid = os.spawnlp(
-        os.P_NOWAIT, "python3", "python3", "bot.py", "menestrel")
-    archiveuse_pid = os.spawnlp(
-        os.P_NOWAIT, "python3", "python3", "bot.py", "archiveuse")
 
-    os.waitpid(barman_pid, 0)
-    os.waitpid(menestrel_pid, 0)
-    os.waitpid(archiveuse_pid, 0)
+    barman_process = subprocess.Popen(
+        ["python3", "bot.py", "barman"])
+    menestrel_process = subprocess.Popen(
+        ["python3", "bot.py", "menestrel"])
+    archiveuse_process = subprocess.Popen(
+        ["python3", "bot.py", "archiveuse"])
+
+    barman_process.wait()
+    menestrel_process.wait()
+    archiveuse_process.wait()
     exit()
 
 init()
