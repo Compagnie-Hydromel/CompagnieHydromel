@@ -3,6 +3,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 from libs.exception.image.image_not_downloadable import ImageNotDownloadable
 from libs.log import Log
 from libs.image_factory.utils import Utils as ImageFactoryUtils
+from libs.storages.storage import Storage
 from libs.utils.utils import Utils
 import requests
 from io import BytesIO
@@ -32,8 +33,7 @@ class ProfilMaker():
                  coords: dict = __coords,
                  badges: list[Badge] = [],
                  name_color: str = "#0000FF",
-                 bar_color: str = "#ADFF2F",
-                 gif: bool = False
+                 bar_color: str = "#ADFF2F"
                  ):
         """This method is designed to initialize the ProfilMaker class and make the profile.
 
@@ -62,14 +62,7 @@ class ProfilMaker():
         Raises:
             UnableToDownloadImageException: If one of the image can't be downloaded.
         """
-        Utils.createDirectoryIfNotExist(".profile")
-        self.__profilPath = ".profile/" + \
-            str(profile_id) + (".gif" if gif else ".png")
-
-        # region [bar and name color]
-        _name_color = ImageColor.getcolor(name_color, "RGBA")
-        _bar_color = ImageColor.getcolor(bar_color, "RGBA")
-        # endregion
+        self.storage = Storage()
 
         # region [background]
         imgs: list[Image.Image] = []
@@ -78,27 +71,39 @@ class ProfilMaker():
             background_url = [background_url]
         elif not isinstance(background_url, list) or len(background_url) == 0:
             raise ImageNotDownloadable
-        try:
-            if Utils.is_url_animated_gif(background_url[0]):
-                imgs = ImageFactoryUtils.gif_to_image_list(
-                    Utils.download_image(background_url[0])
-                )
-            else:
-                for url in background_url:
-                    imgs.append(Image.open(Utils.download_image(url)))
-        except Exception as e:
-            Log.error(str(e))
-            raise ImageNotDownloadable
 
+        if len(background_url) == 1:
+            url_extension = self.storage.get_file_type(
+                background_url[0]).lower()
+
+            try:
+                if url_extension == "gif":
+                    imgs = ImageFactoryUtils.gif_to_image_list(
+                        self.storage.get(background_url[0], return_type=BytesIO))
+                else:
+                    for url in background_url:
+                        imgs.append(Image.open(
+                            self.storage.get(url, return_type=BytesIO)))
+            except Exception as e:
+                Log.error(str(e))
+                raise ImageNotDownloadable
+
+        # endregion
+
+        self.__profilPath = "caches://profile/" + \
+            str(profile_id) + (".gif" if len(imgs) > 1 else ".png")
+
+        # region [bar and name color]
+        _name_color = ImageColor.getcolor(name_color, "RGBA")
+        _bar_color = ImageColor.getcolor(bar_color, "RGBA")
         # endregion
 
         image_to_appends = []
 
         profile_picture = None
         try:
-            response_profile_picture = requests.get(user_profil_picture)
-            profile_picture = Image.open(
-                BytesIO(response_profile_picture.content)).convert('RGBA').resize((128, 128))
+            profile_picture = Image.open(self.storage.get(
+                user_profil_picture, return_type=BytesIO)).convert('RGBA').resize((128, 128))
             profile_picture = ImageFactoryUtils.pillow_crop_max_square(
                 profile_picture)
             profile_picture = ImageFactoryUtils.pillow_mask_circle_transparent(
@@ -110,9 +115,8 @@ class ProfilMaker():
         badges_images = []
         for badge in badges:
             try:
-                response_badge = requests.get(badge.url)
-                temp_img = Image.open(
-                    BytesIO(response_badge.content)).convert('RGBA')
+                temp_img = Image.open(self.storage.get(
+                    badge.url, return_type=BytesIO)).convert('RGBA')
                 temp_img.thumbnail((32, 32), Image.LANCZOS)
                 badges_images.append(temp_img)
             except Exception as e:
@@ -157,8 +161,10 @@ class ProfilMaker():
                 image_to_appends.append(img)
 
         # region [save]
-        imgs[0].save(self.__profilPath, append_images=image_to_appends,
+        output = BytesIO()
+        imgs[0].save(output, format="GIF" if image_to_appends else "PNG", append_images=image_to_appends,
                      save_all=True, duration=0, loop=0)
+        self.storage.put(output, self.__profilPath)
         # endregion
 
     @property
