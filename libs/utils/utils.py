@@ -1,8 +1,5 @@
-from io import BytesIO
 import os
-import random
 import discord
-import requests
 import re
 
 from libs.exception.color.color_not_correct_exception import ColorNotCorrectException

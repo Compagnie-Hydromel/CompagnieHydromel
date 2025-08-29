@@ -4,8 +4,6 @@ from libs.exception.image.image_not_downloadable import ImageNotDownloadable
 from libs.log import Log
 from libs.image_factory.utils import Utils as ImageFactoryUtils
 from libs.storages.storage import Storage
-from libs.utils.utils import Utils
-import requests
 from io import BytesIO
 from libs.databases.models.badge import Badge
 
