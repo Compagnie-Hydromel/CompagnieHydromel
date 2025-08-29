@@ -21,10 +21,13 @@ if len(sys.argv) < 2:
         ["python3", "bot.py", "menestrel"])
     archiveuse_process = subprocess.Popen(
         ["python3", "bot.py", "archiveuse"])
+    gambler_process = subprocess.Popen(
+        ["python3", "bot.py", "gambler"])
 
     barman_process.wait()
     menestrel_process.wait()
     archiveuse_process.wait()
+    gambler_process.wait()
     exit()
 
 init()
