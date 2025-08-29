@@ -119,11 +119,12 @@ class ProfilMaker():
                 Log.error(str(e))
                 raise ImageNotDownloadable
 
-        font_large = ImageFont.truetype(
-            "assets/fonts/LiberationSans-Regular.ttf", 45)
-        font_medium = ImageFont.truetype(
+        font_size = max(23, 40 - len(display_name) // 2)
+        font_name = ImageFont.truetype(
+            "assets/fonts/LiberationSans-Regular.ttf", font_size)
+        font_username = ImageFont.truetype(
             "assets/fonts/LiberationSans-Regular.ttf", 20)
-        font_small = ImageFont.truetype(
+        font_level = ImageFont.truetype(
             "assets/fonts/LiberationSans-Regular.ttf", 30)
 
         calculated_point_per_level = min(200 * level, 200 * 15)
@@ -138,11 +139,11 @@ class ProfilMaker():
 
             d = ImageDraw.Draw(img)
             d.multiline_text((coords["name"]['x'], coords["name"]['y']),
-                             display_name, font=font_large, fill=_name_color)
+                             display_name, font=font_name, fill=_name_color)
             d.multiline_text((coords["username"]['x'], coords["username"]
-                             ['y']), user_name, font=font_medium, fill=_name_color)
+                             ['y']), user_name, font=font_username, fill=_name_color)
             d.multiline_text((coords["level"]['x'], coords["level"]['y']), str(
-                level), font=font_small, fill=_bar_color)
+                level), font=font_level, fill=_bar_color)
 
             for i, badge_img in enumerate(badges_images):
                 img.paste(
