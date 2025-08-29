@@ -3,7 +3,6 @@ import discord
 import os
 import wavelink
 
-from libs.config import Config
 from libs.exception.handler import Handler
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
 from libs.music.guild_music_manager import GuildMusicManager
@@ -15,16 +14,12 @@ from libs.music.music_player_displayer import MusicPlayerDisplayer
 class Music(discord.Cog):
     def __init__(self, bot) -> None:
         self.__bot = bot
-        self.__config = Config()
-        self.__music_config = self.__config.value["music"]
-        self.__response = self.__config.value["response"]
         self.__error_handler = Handler()
 
     @discord.Cog.listener()
     async def on_ready(self):
         self.__node = wavelink.Node(
-            uri="http://" + self.__music_config["lavalink_ip"] +
-                ":" + str(self.__music_config["lavalink_port"]),
+            uri=os.getenv("LAVALINK_URI"),
             password=os.getenv("LAVALINK_PASSWORD"),
             client=self.__bot
         )
@@ -57,7 +52,7 @@ class Music(discord.Cog):
         Log.command(ctx.author.name + " is launching stop commands")
         try:
             await self.__guild_music_manager.get(ctx.guild.id).stop()
-            await ctx.respond(self.__response["music_stopping"])
+            await ctx.respond("Music stopped and bot left the voice channel.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
@@ -66,7 +61,7 @@ class Music(discord.Cog):
         Log.command(ctx.author.name + " is launching pause commands")
         try:
             await self.__guild_music_manager.get(ctx.guild.id).pause()
-            await ctx.respond(self.__response["pausing_music"].replace("{music}", str(self.__guild_music_manager.get(ctx.guild.id).now)))
+            await ctx.respond("Music paused.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
@@ -75,7 +70,7 @@ class Music(discord.Cog):
         Log.command(ctx.author.name + " is launching resume commands")
         try:
             await self.__guild_music_manager.get(ctx.guild.id).resume()
-            await ctx.respond(self.__response["resuming_music"].replace("{music}", str(self.__guild_music_manager.get(ctx.guild.id).now)))
+            await ctx.respond("Music resumed.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
@@ -86,7 +81,7 @@ class Music(discord.Cog):
             await ctx.defer()
 
             await self.__guild_music_manager.get(ctx.guild.id).back()
-            await ctx.respond(self.__response["back_to_previous_music"])
+            await ctx.respond("Going back to the previous music.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
@@ -97,7 +92,7 @@ class Music(discord.Cog):
             await ctx.defer()
 
             await self.__guild_music_manager.get(ctx.guild.id).skip()
-            await ctx.respond(self.__response["skipping_music"])
+            await ctx.respond("Music skipped.")
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
@@ -145,8 +140,7 @@ class Music(discord.Cog):
 
 
 def setup(bot):
-    if Config().value["music"]["enable"]:
-        if os.getenv("LAVALINK_PASSWORD") == None:
-            Log.warning("No lavalink password found.")
-        else:
-            bot.add_cog(Music(bot))
+    if os.getenv("LAVALINK_PASSWORD") is None or os.getenv("LAVALINK_PASSWORD") == "":
+        Log.warning("No lavalink password found.")
+    else:
+        bot.add_cog(Music(bot))

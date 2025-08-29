@@ -1,21 +1,28 @@
 import traceback
 import discord
+from libs.databases.models.guild import Guild
 from libs.image_factory.banner_bar_creator import BannerBarCreator
-from libs.config import Config
 from libs.log import Log
 from typing import Union
+
+from libs.storages.storage import Storage
 
 
 class BannerUpdater(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
-        self.__config = Config()
+        self.storage = Storage()
 
-    def __get_bar_image(self) -> str:
-        guild_id = self.__config.value["banner"]["guild_id"]
-        coords = self.__config.value["banner"]["coords"]
+    def __get_bar_image(self, db_guild: Guild) -> str:
+        coords = []
+        for voice_channel in db_guild.voicechannels:
+            coords.append({
+                "id": int(voice_channel.discord_id),
+                "x": voice_channel.x,
+                "y": voice_channel.y
+            })
         people = {}
-        guild = self.__bot.get_guild(guild_id)
+        guild = self.__bot.get_guild(int(db_guild.discord_id))
 
         """
         To generate people info like this:
@@ -43,7 +50,7 @@ class BannerUpdater(discord.Cog):
                 people[coord["id"]].append(
                     {"username": member.name, "profil": avatar_url})
 
-        return BannerBarCreator('.banner.png', self.__config.value["banner"]["banner_image"], coords, people).file_path
+        return BannerBarCreator('caches://banner.png', db_guild.banner_image, coords, people).file_path
 
     def __get_voice_channel(self, id: int, guild: discord.guild) -> Union[discord.VoiceChannel, None]:
         channels = guild.channels
@@ -53,14 +60,15 @@ class BannerUpdater(discord.Cog):
         return None
 
     @discord.Cog.listener()
-    async def on_voice_state_update(self, _members: discord.member, _before: discord.VoiceChannel, _after: discord.VoiceChannel) -> None:
+    async def on_voice_state_update(self, members: discord.member, _before: discord.VoiceChannel, _after: discord.VoiceChannel) -> None:
         try:
-            if self.__config.value["banner"]["enable"]:
-                image_url = self.__get_bar_image()
+            guild_id = members.guild.id
+            guild = Guild.from_discord_id(guild_id)
+            if guild.banner_image:
+                image_url = self.__get_bar_image(guild)
                 Log.info("Updating banner " + str(image_url))
-                with open(image_url, "rb", encoding="utf-8") as image:
-                    await self.__bot.get_guild(self.__config.value["banner"]["guild_id"]).edit(banner=image.read())
-                    Log.info("Banner updated " + str(image_url))
+                await self.__bot.get_guild(guild_id).edit(banner=self.storage.get(image_url, return_type=bytes))
+                Log.info("Banner updated " + str(image_url))
         except:
             Log.error(traceback.format_exc())
 

@@ -1,8 +1,7 @@
 import traceback
 import discord
-from libs.config import Config
 
-from libs.databases.model.user import User
+from libs.databases.models.guild_user import GuildUser
 from libs.exception.handler import Handler
 from libs.log import Log
 
@@ -15,7 +14,11 @@ class smartpoint(discord.Cog):
     async def __smartpoint(self, ctx: discord.commands.context.ApplicationContext):
         Log.command(ctx.author.name + " is launching smartpoint commands")
         try:
-            user = User(str(ctx.author.id))
+            if not ctx.guild:
+                return await ctx.respond("Command can only be used in a server.")
+
+            user = GuildUser.from_user_discord_id_and_guild_discord_id(
+                str(ctx.author.id), str(ctx.guild.id))
 
             await ctx.respond("smartpoint : " + str(user.smartpoint))
         except Exception as e:

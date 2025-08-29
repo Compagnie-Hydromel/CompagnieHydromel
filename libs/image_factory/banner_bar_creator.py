@@ -1,9 +1,8 @@
+from io import BytesIO
 from PIL import Image
-from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
+from libs.exception.image.image_not_downloadable import ImageNotDownloadable
 from libs.image_factory.utils import Utils as ImageFactoryUtils
-from libs.utils.utils import Utils
-
-from libs.log import Log
+from libs.storages.storage import Storage
 
 
 class BannerBarCreator:
@@ -11,14 +10,14 @@ class BannerBarCreator:
     """
     __file_path: str
 
-    def __init__(self, file_path: str, banner_image: str, coords: list[dict[str, int]], people: dict[int, list[dict[str, str]]]) -> None:
+    def __init__(self, file_path: str, banner_image_url: str, coords: list[dict[str, int]], people: dict[int, list[dict[str, str]]]) -> None:
         """This method is designed to initialize the BannerBarCreator class and make the banner bar.
 
         coords = [
-            {"w":390,"h":215, "id": 1131446231160328212},
-            {"w":110,"h":279, "id": 1131446228916387900},
-            {"w":607,"h":293, "id": 1131446229738467410},
-            {"w":450,"h":457, "id": 1131446231160328212}
+            {"x":390,"y":215, "id": 1131446231160328212},
+            {"x":110,"y":279, "id": 1131446228916387900},
+            {"x":607,"y":293, "id": 1131446229738467410},
+            {"x":450,"y":457, "id": 1131446231160328212}
         ]
 
         people = {
@@ -33,29 +32,32 @@ class BannerBarCreator:
 
         Args:
             file_path (str): The file path to save the banner bar.
-            banner_image (str): The banner image path.
+            banner_image_url (str): The banner image path.
             coords (list[dict[str, int]]): The coordinates of the people.
             people (dict[int, list[dict[str, str]]]): The people to add to the banner bar.
 
         Raises:
-            UnableToDownloadImageException: If the banner_image can't be downloaded.
+            ImageNotDownloadable: If the banner_image can't be downloaded.
         """
+        self.storage = Storage()
+        self.__file_path = file_path
+
         img = None
         try:
-            img = Image.open(Utils.download_image(
-                banner_image)).convert('RGBA')
+            img = Image.open(self.storage.get(
+                banner_image_url, return_type=BytesIO)).convert('RGBA')
         except:
-            raise WallpaperIsNotDownloadableException
+            raise ImageNotDownloadable()
 
         # image
         for channel in people:
             add = 0
             for member in people[channel]:
                 try:
-                    pic = Image.open(Utils.download_image(
-                        member["profil"])).convert('RGBA').resize((64, 64))
+                    pic = Image.open(self.storage.get(member["profil"], return_type=BytesIO)).convert(
+                        'RGBA').resize((64, 64))
                 except:
-                    raise WallpaperIsNotDownloadableException
+                    raise ImageNotDownloadable()
 
                 h, w = pic.size
 
@@ -69,14 +71,13 @@ class BannerBarCreator:
                     continue
 
                 img.paste(
-                    pic, (channel_found['w']+add, channel_found['h']), pic)
-                Log.info("BannerBarCreator: Added " +
-                         member["username"] + " to the banner bar.")
+                    pic, (channel_found['x']+add, channel_found['y']), pic)
                 add += int(64/(len(people[channel])/3))
         # image
 
-        img.save(file_path)
-        self.__file_path = file_path
+        output = BytesIO()
+        img.save(output, format='PNG')
+        self.storage.put(output, self.file_path)
 
     @property
     def file_path(self) -> str:

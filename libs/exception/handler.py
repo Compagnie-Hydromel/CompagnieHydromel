@@ -1,18 +1,12 @@
 import traceback
-from libs.config import Config
 from libs.exception.bot_exception import BotException
 from libs.log import Log
+from MIWOS.libs.exceptions.validation_exception import ValidationException
 
 
 class Handler:
     """Handler class for handling exception
     """
-
-    def __init__(self) -> None:
-        """Constructor of Handler class
-        """
-        self.__config = Config()
-        self.__response_exception = self.__config.value["exception_response"]
 
     def response_handler(self, exception: Exception, stacktrace: str) -> str:
         """Response handler for exception to convert exception to response message
@@ -25,62 +19,9 @@ class Handler:
             str: the response message
         """
         if isinstance(exception, BotException):
-            match(str(exception)):
-                # wallpaper exception
-                case "WallpaperNotExistException":
-                    return self.__response_exception["wallpaper_not_exist"]
-                case "WallpaperAlreadyExistException":
-                    return self.__response_exception["wallpaper_already_exist"]
-                case "WallpaperNotPossededException":
-                    return self.__response_exception["wallpaper_not_posseded"]
-                case "ColorNotCorrectException":
-                    return self.__response_exception["color_not_correct"]
-                case "NotEnougtSmartpointException":
-                    return self.__response_exception["not_enougt_smartpoint"]
-                case "WallpaperAlreadyPossededException":
-                    return self.__response_exception["wallpaper_already_posseded"]
-                case "WallpaperCannotBeBuyedException":
-                    return self.__response_exception["wallpaper_cannot_be_buyed"]
-                case "WallpaperIsNotDownloadableException":
-                    return self.__response_exception["unable_to_download_image"]
-                case "WallpaperIsNotDownloadableException":
-                    Log.error(stacktrace)
-                    return self.__response_exception["unable_to_download_image"]
-                case "LevelShouldBeGreaterThanOneException":
-                    return self.__response_exception["level_should_be_greater_than_one"]
-                case "RoleAlreadyExistException":
-                    return self.__response_exception["role_already_exist"]
-                case "RoleNotExistException":
-                    return self.__response_exception["role_not_exist"]
-                case "RoleLevelAlreadyExistException":
-                    return self.__response_exception["role_level_already_exist"]
-                # music exception
-                case "AlreadyPlayingException":
-                    return self.__response_exception["already_playing"]
-                case "NotConnectedToVoiceChannelException":
-                    return self.__response_exception["not_connected_to_voice_channel"]
-                case "NoResultsFoundException":
-                    return self.__response_exception["no_results_found"]
-                case "NoPlayingInstanceException":
-                    return self.__response_exception["not_playing_music"]
-                case "NothingLeftInBackQueueException":
-                    return self.__response_exception["nothing_left_in_previous_queue"]
-                case "NothingLeftInQueueException":
-                    return self.__response_exception["nothing_left_in_queue"]
-                case "NoMusicPlaying":
-                    return self.__response_exception["not_playing_music"]
-                case "ProfileLayoutNotExist":
-                    return self.__response_exception["profile_layout_not_exist"]
-                case "ProfileLayoutAlreadyExist":
-                    return self.__response_exception["profile_layout_already_exist"]
-                case "CannotRemoveDefaultProfileLayout":
-                    return self.__response_exception["cannot_remove_default_profile_layout"]
-                case "CannotRemoveDefaultWallpaper":
-                    return self.__response_exception["cannot_remove_default_wallpaper"]
-                case "WallpaperUrlNotAnImage":
-                    return self.__response_exception["url_not_an_image"]
-                case _:
-                    return self.__default(stacktrace)
+            return exception.message
+        elif isinstance(exception, ValidationException):
+            return str(exception)
         else:
             return self.__default(stacktrace)
 
@@ -94,4 +35,4 @@ class Handler:
             str: the default response message
         """
         Log.error(stacktrace)
-        return self.__response_exception["default"]
+        return "An error occurred, please try again later."

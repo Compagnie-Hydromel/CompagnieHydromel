@@ -1,12 +1,11 @@
 #!/usr/local/bin/python3
 from PIL import Image, ImageDraw, ImageFont, ImageColor
+from libs.exception.image.image_not_downloadable import ImageNotDownloadable
 from libs.log import Log
 from libs.image_factory.utils import Utils as ImageFactoryUtils
-from libs.utils.utils import Utils
-import requests
+from libs.storages.storage import Storage
 from io import BytesIO
-from libs.databases.model.badge import Badge
-from libs.exception.wallpaper.wallpaper_is_not_downloadable_exception import WallpaperIsNotDownloadableException
+from libs.databases.models.badge import Badge
 
 
 class ProfilMaker():
@@ -32,8 +31,7 @@ class ProfilMaker():
                  coords: dict = __coords,
                  badges: list[Badge] = [],
                  name_color: str = "#0000FF",
-                 bar_color: str = "#ADFF2F",
-                 gif: bool = False
+                 bar_color: str = "#ADFF2F"
                  ):
         """This method is designed to initialize the ProfilMaker class and make the profile.
 
@@ -62,14 +60,7 @@ class ProfilMaker():
         Raises:
             UnableToDownloadImageException: If one of the image can't be downloaded.
         """
-        Utils.createDirectoryIfNotExist(".profile")
-        self.__profilPath = ".profile/" + \
-            profile_id + (".gif" if gif else ".png")
-
-        # region [bar and name color]
-        _name_color = ImageColor.getcolor(str(name_color), "RGBA")
-        _bar_color = ImageColor.getcolor(str(bar_color), "RGBA")
-        # endregion
+        self.storage = Storage()
 
         # region [background]
         imgs: list[Image.Image] = []
@@ -77,106 +68,101 @@ class ProfilMaker():
         if isinstance(background_url, str):
             background_url = [background_url]
         elif not isinstance(background_url, list) or len(background_url) == 0:
-            raise WallpaperIsNotDownloadableException
-        try:
-            if Utils.is_url_animated_gif(background_url[0]):
-                imgs = ImageFactoryUtils.gif_to_image_list(
-                    Utils.download_image(background_url[0])
-                )
-            else:
-                for url in background_url:
-                    imgs.append(Image.open(Utils.download_image(url)))
-        except Exception as e:
-            Log.error(str(e))
-            raise WallpaperIsNotDownloadableException
+            raise ImageNotDownloadable
 
+        if len(background_url) == 1:
+            url_extension = self.storage.get_file_type(
+                background_url[0]).lower()
+
+            try:
+                if url_extension == "gif":
+                    imgs = ImageFactoryUtils.gif_to_image_list(
+                        self.storage.get(background_url[0], return_type=BytesIO))
+                else:
+                    for url in background_url:
+                        imgs.append(Image.open(
+                            self.storage.get(url, return_type=BytesIO)))
+            except Exception as e:
+                Log.error(str(e))
+                raise ImageNotDownloadable
+
+        # endregion
+
+        self.__profilPath = "caches://profile/" + \
+            str(profile_id) + (".gif" if len(imgs) > 1 else ".png")
+
+        # region [bar and name color]
+        _name_color = ImageColor.getcolor(name_color, "RGBA")
+        _bar_color = ImageColor.getcolor(bar_color, "RGBA")
         # endregion
 
         image_to_appends = []
 
-        for x, img in enumerate(imgs):
+        profile_picture = None
+        try:
+            profile_picture = Image.open(self.storage.get(
+                user_profil_picture, return_type=BytesIO)).convert('RGBA').resize((128, 128))
+            profile_picture = ImageFactoryUtils.pillow_crop_max_square(
+                profile_picture)
+            profile_picture = ImageFactoryUtils.pillow_mask_circle_transparent(
+                profile_picture, 1)
+        except Exception as e:
+            Log.error(str(e))
+            raise ImageNotDownloadable
 
-            img = img.convert('RGBA').resize((500, 281))
-
-            # region [image]
-
-            pic = None
+        badges_images = []
+        for badge in badges:
             try:
-                response_profile_picture = requests.get(user_profil_picture)
-                pic = Image.open(BytesIO(response_profile_picture.content)).convert(
-                    'RGBA').resize((128, 128))
+                temp_img = Image.open(self.storage.get(
+                    badge.url, return_type=BytesIO)).convert('RGBA')
+                temp_img.thumbnail((32, 32), Image.LANCZOS)
+                badges_images.append(temp_img)
             except Exception as e:
                 Log.error(str(e))
-                raise WallpaperIsNotDownloadableException
+                raise ImageNotDownloadable
 
-            h, w = pic.size
+        font_size = max(23, 40 - len(display_name) // 2)
+        font_name = ImageFont.truetype(
+            "assets/fonts/LiberationSans-Regular.ttf", font_size)
+        font_username = ImageFont.truetype(
+            "assets/fonts/LiberationSans-Regular.ttf", 20)
+        font_level = ImageFont.truetype(
+            "assets/fonts/LiberationSans-Regular.ttf", 30)
 
-            pic = ImageFactoryUtils.pillow_crop_max_square(
-                pic).resize((w, h), Image.Resampling.LANCZOS)
-            pic = ImageFactoryUtils.pillow_mask_circle_transparent(pic, 1)
+        calculated_point_per_level = min(200 * level, 200 * 15)
+        progress = (point * 100 / calculated_point_per_level) / 100
+        level_bar = ImageFactoryUtils.pillow_new_bar(
+            1, 1, 500, 25, progress, fg=_bar_color)
 
-            img.paste(pic, (coords["profil_picture"]['x'],
-                            coords["profil_picture"]['y']), pic)
-            # endregion
+        for x, img in enumerate(imgs):
+            img = img.convert('RGBA').resize((500, 281))
+            img.paste(profile_picture, (coords["profil_picture"]['x'],
+                      coords["profil_picture"]['y']), profile_picture)
 
-            # region [text]
             d = ImageDraw.Draw(img)
-            # endregion
-
-            # region [name]
-            d.multiline_text((coords["name"]['x'], coords["name"]['y']), display_name, font=ImageFont.truetype(
-                "data/font/ancientMedium.ttf", 45), fill=_name_color)
-
-            d.multiline_text((coords["username"]['x'], coords["username"]['y']), user_name, font=ImageFont.truetype(
-                "data/font/LiberationSans-Regular.ttf", 20), fill=_name_color)
-            # endregion
-
-            # region [level]
+            d.multiline_text((coords["name"]['x'], coords["name"]['y']),
+                             display_name, font=font_name, fill=_name_color)
+            d.multiline_text((coords["username"]['x'], coords["username"]
+                             ['y']), user_name, font=font_username, fill=_name_color)
             d.multiline_text((coords["level"]['x'], coords["level"]['y']), str(
-                level), font=ImageFont.truetype("data/font/LiberationSans-Regular.ttf", 30), fill=_bar_color)
-            # endregion
+                level), font=font_level, fill=_bar_color)
 
-            # region [badge]
-
-            badgeNumber = 0
-            for badge in badges:
-                tempImg = None
-                try:
-                    response_background_url = requests.get(badge.url)
-                    tempImg = Image.open(
-                        BytesIO(response_background_url.content)).convert('RGBA')
-                except Exception as e:
-                    Log.error(str(e))
-                    raise WallpaperIsNotDownloadableException
-                tempImg.thumbnail((32, 32), Image.LANCZOS)
+            for i, badge_img in enumerate(badges_images):
                 img.paste(
-                    tempImg, (coords['badge']['x']+(34*badgeNumber), coords['badge']['y']), tempImg)
-                badgeNumber += 1
+                    badge_img, (coords['badge']['x'] + (34 * i), coords['badge']['y']), badge_img)
 
-            # endregion
-
-            # region [level bar]
-            calculated_point_per_level = 200 * level
-            if level > 15:
-                calculated_point_per_level = 200 * 15
-
-            progress = (point * 100 / (calculated_point_per_level))/100
-
-            bar = ImageFactoryUtils.pillow_new_bar(
-                1, 1, 500, 25, progress, fg=_bar_color)
-
-            img.paste(bar, (coords['level_bar']['x'],
-                      coords['level_bar']['y']), bar)
-            # endregion
+            img.paste(
+                level_bar, (coords['level_bar']['x'], coords['level_bar']['y']), level_bar)
 
             imgs[x] = img
-
             if x != 0:
                 image_to_appends.append(img)
 
         # region [save]
-        imgs[0].save(self.__profilPath, append_images=image_to_appends,
+        output = BytesIO()
+        imgs[0].save(output, format="GIF" if image_to_appends else "PNG", append_images=image_to_appends,
                      save_all=True, duration=0, loop=0)
+        self.storage.put(output, self.__profilPath)
         # endregion
 
     @property
