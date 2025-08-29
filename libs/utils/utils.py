@@ -1,8 +1,5 @@
-from io import BufferedReader, BytesIO
 import os
-import random
 import discord
-import requests
 import re
 
 from libs.exception.color.color_not_correct_exception import ColorNotCorrectException
@@ -22,48 +19,6 @@ class Utils():
         if not os.path.exists(directory):
             Log.info("Creating directory " + directory)
             os.mkdir(directory)
-
-    @staticmethod
-    def download_image_with_list_random(list_of_url: list[str]) -> BytesIO:
-        """This method is designed to download an image with a list of url.
-
-        Args:
-            list_of_url (list[str]): The list of url.
-
-        Returns:
-            BytesIO: The image.
-        """
-        return Utils.download_image(random.choice(list_of_url))
-
-    @staticmethod
-    def random_file(path: str) -> str:
-        """This method is designed to get a random file.
-
-        Args:
-            path (str): The path to get a random file.
-
-        Returns:
-            str: The random file.
-        """
-        return path + "/" + random.choice(os.listdir(path))
-
-    @staticmethod
-    def download_image(url: str) -> BytesIO:
-        """This method is designed to download an image.
-
-        Args:
-            url (str): The url of the image.
-
-        Returns:
-            BytesIO: The image.
-        """
-        if not url.startswith("http://") and not url.startswith("https://"):
-            return BytesIO(open(url, "rb").read())
-
-        Log.info("Downloading image from " + url)
-        response_url = requests.get(url)
-        Log.info("Downloaded image from " + url)
-        return BytesIO(response_url.content)
 
     @staticmethod
     def check_color(color: str) -> str:
@@ -114,31 +69,6 @@ class Utils():
             return color_list[color]
         else:
             raise ColorNotCorrectException
-
-    @staticmethod
-    def is_url_image(image_url):
-        if not image_url.startswith("http://") and not image_url.startswith("https://"):
-            file = open(image_url, "rb")
-            if file.read(2) == b"\xff\xd8":
-                return True
-            return False
-        image_formats = ("image/png", "image/jpeg", "image/jpg")
-        r = requests.head(image_url)
-        if r.headers["content-type"] in image_formats:
-            return True
-        return False
-
-    @staticmethod
-    def is_url_animated_gif(image_url):
-        if not image_url.startswith("http://") and not image_url.startswith("https://"):
-            file = open(image_url, "rb")
-            if file.read(3) == b"GIF":
-                return True
-            return False
-        r = requests.head(image_url)
-        if r.headers["content-type"] == "image/gif":
-            return True
-        return False
 
     @staticmethod
     def get_user_by_discord_id(discord_id: str, bot: discord.Bot) -> discord.User | None:

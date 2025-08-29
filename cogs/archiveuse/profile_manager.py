@@ -1,3 +1,4 @@
+from io import BytesIO
 import traceback
 import discord
 from libs.databases.models.guild import Guild
@@ -8,13 +9,14 @@ from libs.databases.models.wallpaper import Wallpaper
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.paginator import Paginator
-from libs.utils.utils import Utils
+from libs.storages.storage import Storage
 
 
 class ProfileManager(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.__error_handler = Handler()
+        self.storage = Storage()
 
     @discord.slash_command(description="Manage your profile")
     @discord.option("option", description="list/change", choices=["set wallpaper", "buy wallpaper", "list of posseded wallpaper", "all wallpaper", "wallpaper preview", "name color", "bar color", "list profile layout", "change profile layout"])
@@ -51,7 +53,11 @@ class ProfileManager(discord.Cog):
                 case "all wallpaper":
                     await self.__respond_list(ctx, guild.wallpapers, "All wallpapers")
                 case "wallpaper preview":
-                    await ctx.respond(file=discord.File(Utils.download_image(Wallpaper.from_name(options_specifies).url), "wallpaper.png"))
+                    wallpaper = Wallpaper.from_name(options_specifies)
+                    if wallpaper is None:
+                        return await ctx.respond("Wallpaper not found")
+                    filename = self.storage.get_file_type(wallpaper.url)
+                    await ctx.respond(file=discord.File(self.storage.get(wallpaper.url, return_type=BytesIO), filename="preview." + filename))
                 case "name color":
                     user.name_color = options_specifies
                     user.saveOrFail()

@@ -1,7 +1,5 @@
 log.txt
 __pycache__
-.banner.png
 .env
-.profile
 env
 .pytest_cache

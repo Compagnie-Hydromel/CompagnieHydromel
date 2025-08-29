@@ -15,12 +15,14 @@ from libs.log import Log
 from libs.utils.utils import Utils
 from libs.utils.role_utils import RoleUtils
 import re
+from libs.storages.storage import Storage
 
 
 class AdminCommands(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.__error_handler = Handler()
+        self.storage = Storage()
 
     @discord.slash_command(description="Broadcast a message to a any channel as admin")
     @discord.option("channel", discord.abc.GuildChannel, require=True)
@@ -448,8 +450,8 @@ class AdminCommands(discord.Cog):
                     if not banner_url:
                         await ctx.respond("You must specify a banner URL.")
                         return
-                    if Utils.is_url_image(banner_url) is False:
-                        await ctx.respond("Invalid banner URL, it must be an image.")
+                    if self.storage.get_file_type(banner_url) not in ["png", "jpeg", "jpg"]:
+                        await ctx.respond("Invalid banner URL, it must be an image (png, jpeg, jpg).")
                         return
                     guild.banner_image = banner_url
                     guild.saveOrFail()

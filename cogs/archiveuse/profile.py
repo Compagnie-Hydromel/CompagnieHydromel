@@ -1,3 +1,4 @@
+import io
 import discord
 from libs.databases.models.guild_user import GuildUser
 from libs.databases.models.profile_layout import ProfileLayout
@@ -6,7 +7,7 @@ from libs.exception.handler import Handler
 
 from libs.log import Log
 from libs.image_factory.profile_maker import ProfilMaker
-from libs.utils.utils import Utils
+from libs.storages.storage import Storage
 import traceback
 
 
@@ -14,6 +15,7 @@ class Profile(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.__error_handler = Handler()
+        self.__storage = Storage()
 
     @discord.slash_command(description="Get your beautiful profile")
     async def profile(self, ctx: discord.commands.context.ApplicationContext):
@@ -42,12 +44,11 @@ class Profile(discord.Cog):
                 name_color=name_color,
                 badges=user.user.badges,
                 coords=(user.profileLayout or ProfileLayout.default()
-                        ).layout.dict(),
-                gif=Utils.is_url_animated_gif(wallpaper.url)
+                        ).layout.dict()
             )
             Log.info(ctx.author.name + " profile saved at " + pro.profil_path)
 
-            await ctx.respond(file=discord.File(pro.profil_path))
+            await ctx.respond(file=discord.File(self.__storage.get_path(pro.profil_path)))
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
