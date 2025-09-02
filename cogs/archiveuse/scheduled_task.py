@@ -35,9 +35,10 @@ class ScheduledTask(discord.Cog):
             most_active_users: list[GuildUser] = guild.get_monthly_top_users()
             most_active_reward: list[int] = [70, 50, 30, 5, 3]
 
-            for user, i in zip(most_active_users, range(len(most_active_users))):
-                user.point += most_active_reward[i]
-                user.smartpoint += most_active_reward[i]
+            rewards = most_active_reward[:len(most_active_users)]
+            for user, reward in zip(most_active_users, rewards):
+                user.point += reward
+                user.smartpoint += reward
                 user.save()
 
             monthlytop_channel_id = int(guild.monthlytop_channel_id)
