@@ -5,6 +5,7 @@ import sys
 from libs.databases.bootstrap import init
 import importlib
 import subprocess
+from libs.utils.utils import Utils
 
 load_dotenv()
 
@@ -30,53 +31,7 @@ init()
 
 match sys.argv[1]:
     case 'webserver':
-        from fastapi import FastAPI
-        from fastapi.staticfiles import StaticFiles
-        from contextlib import asynccontextmanager
-        import importlib.util
-        import uvicorn
-
-        @asynccontextmanager
-        async def lifespan(app: FastAPI):
-            Log.info(
-                f"Webserver is starting on http://{os.getenv('HOST', '127.0.0.1')}:{os.getenv('WEB_PORT', 8000)}")
-            yield
-            Log.info("Webserver is shutting down...")
-
-        app = FastAPI(debug=os.getenv("DEBUG", "false").lower()
-                      == "true", lifespan=lifespan, docs_url="/api/docs", redoc_url="/api/redoc", openapi_url="/api/openapi.json")
-
-        def import_module_from_path(module_name: str, file_path: str):
-            spec = importlib.util.spec_from_file_location(
-                module_name, file_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)  # type: ignore
-            return module
-
-        controllers_path = os.path.join(
-            os.path.dirname(__file__), "http", "controllers")
-        for file in os.listdir(controllers_path):
-            if file.endswith("_controller.py"):
-                module_name = file[:-3]
-                file_path = os.path.join(controllers_path, file)
-                module = import_module_from_path(module_name, file_path)
-                app.include_router(
-                    module.router, prefix="/api")  # type: ignore
-
-        middlewares_path = os.path.join(
-            os.path.dirname(__file__), "http", "middlewares")
-        for file in os.listdir(middlewares_path):
-            if file.endswith("_middleware.py"):
-                module_name = file[:-3]
-                file_path = os.path.join(middlewares_path, file)
-                module = import_module_from_path(module_name, file_path)
-                app.middleware("http")(module.middleware)  # type: ignore
-
-        app.mount("/", StaticFiles(directory="http/public",
-                  html=True), name="public")
-
-        uvicorn.run(app, port=os.getenv("WEB_PORT", 8000), host=os.getenv("WEB_HOST", "127.0.0.1"),
-                    log_config=None, access_log=False)
+        Utils.import_module_from_path("bootstrap", "./http/bootstrap.py")
     case 'barman' | 'menestrel' | 'archiveuse':
         import discord
 
