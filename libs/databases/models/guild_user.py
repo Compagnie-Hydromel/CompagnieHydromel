@@ -3,7 +3,7 @@ from MIWOS.libs.sql.association import BelongsTo, HasAndBelongsToMany
 
 from libs.databases.models.guild import Guild
 from libs.databases.models.user import User
-from libs.databases.models.wallpaper import Wallpaper
+from libs.exception.bot_exception import BotException
 from libs.utils.utils import Utils
 
 
@@ -56,6 +56,9 @@ class GuildUser(Model):
             self.name_color = Utils.check_color(self.name_color)
         if self.isDirty("bar_color"):
             self.bar_color = Utils.check_color(self.bar_color)
+        if self.isDirty("wallpaper"):
+            if self.wallpaper not in self.wallpapers and self.wallpaper is not None:
+                raise YouDontOwnThisWallpaperException()
 
     def beforeSave(self):
         if self.isDirty("point"):
@@ -82,3 +85,8 @@ class GuildUser(Model):
                     self.wallpapers.append(wallpaper)
                 except:
                     pass
+
+
+class YouDontOwnThisWallpaperException(BotException):
+    def __init__(self):
+        super().__init__("You don't own this wallpaper.")
