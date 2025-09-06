@@ -37,11 +37,10 @@ class ProfileManager(discord.Cog):
             match option:
                 case "set wallpaper":
                     wallpaper = Wallpaper.from_name(options_specifies)
-                    if wallpaper is None:
-                        wallpaper = Wallpaper.default()
-                        options_specifies = "default wallpaper"
                     user.wallpaper = wallpaper
-                    wallpaper.saveOrFail()
+                    if options_specifies == "":
+                        options_specifies = "default"
+                    user.saveOrFail()
                     await ctx.respond("Wallpaper set to " + options_specifies)
                 case "buy wallpaper":
                     wallpaper = Wallpaper.from_name(options_specifies)
