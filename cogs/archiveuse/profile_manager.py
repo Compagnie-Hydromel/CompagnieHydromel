@@ -41,6 +41,7 @@ class ProfileManager(discord.Cog):
                         wallpaper = Wallpaper.default()
                         options_specifies = "default wallpaper"
                     user.wallpaper = wallpaper
+                    wallpaper.saveOrFail()
                     await ctx.respond("Wallpaper set to " + options_specifies)
                 case "buy wallpaper":
                     wallpaper = Wallpaper.from_name(options_specifies)
