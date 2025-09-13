@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: 'MedievalSharp';
+    src: url('/assets/fonts/MedievalSharp-Regular.ttf') format('truetype');
+}
+
+* {
+    font-family: 'MedievalSharp', sans-serif;
+}
