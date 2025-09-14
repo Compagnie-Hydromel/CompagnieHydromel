@@ -1,3 +1,4 @@
+from starlette.middleware.sessions import SessionMiddleware
 import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -15,8 +16,8 @@ async def lifespan(app: FastAPI):
     yield
     Log.info("Webserver is shutting down...")
 
-app = FastAPI(debug=os.getenv("DEBUG", "false").lower()
-              == "true", lifespan=lifespan, docs_url="/api/docs", redoc_url="/api/redoc", openapi_url="/api/openapi.json")
+app = FastAPI(lifespan=lifespan, docs_url="/api/docs",
+              redoc_url="/api/redoc", openapi_url="/api/openapi.json")
 
 
 def load_modules_from_directory(directory: str, callback: callable):
@@ -34,6 +35,8 @@ load_modules_from_directory(
 
 load_modules_from_directory(
     "middlewares", lambda module: app.middleware("http")(module.middleware))
+app.add_middleware(SessionMiddleware, secret_key=os.getenv(
+    "SESSION_SECRET_KEY", "supersecretkey"), session_cookie="session")
 
 app.mount("/", StaticFiles(directory="http/public",
                            html=True), name="public")
