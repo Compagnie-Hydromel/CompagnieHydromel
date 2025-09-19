@@ -9,7 +9,8 @@ class RoleUtils():
     @staticmethod
     async def remove_all_roles(member: discord.Member, roles=None):
         if roles is None:
-            roles = Guild.from_discord_id(member.guild.id).roles
+            roles = Guild.from_discord_id(
+                member.guild.id).roles.whereNotNull("level")
         for one_role in roles:
             role: discord.Role = discord.utils.get(
                 member.guild.roles, id=int(one_role.discord_id))
