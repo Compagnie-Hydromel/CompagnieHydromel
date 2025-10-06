@@ -45,6 +45,17 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Webserver debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "bot.py",
+            "args": [
+                "webserver"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
