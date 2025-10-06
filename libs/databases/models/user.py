@@ -1,11 +1,12 @@
 import os
-from MIWOS.model import Model
 from MIWOS.libs.sql.association import HasMany, HasAndBelongsToMany
 import jwt
 from datetime import datetime, timedelta
 
+from libs.databases.models.application_model import ApplicationModel
 
-class User(Model):
+
+class User(ApplicationModel):
     _has_many = [HasMany("guildusers")]
     _has_and_belongs_to_many = [HasAndBelongsToMany("badges", verb="deserve")]
 
@@ -33,3 +34,20 @@ class User(Model):
             return cls.find(payload.get("user_id"))
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
             return None
+
+    def get_user(self):
+        return self.get_bot().get_user(int(self.discord_id))
+
+    @property
+    def avatar_url(self):
+        return self.get_user().avatar.url
+
+    @property
+    def display_name(self):
+        return self.get_user().display_name
+
+    def to_dict(self):
+        base_dict = super().to_dict()
+        base_dict["avatar_url"] = self.avatar_url
+        base_dict["display_name"] = self.display_name
+        return base_dict

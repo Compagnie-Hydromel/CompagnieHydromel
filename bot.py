@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from libs.databases.models.application_model import ApplicationModel
 from libs.log import Log
 import sys
 from libs.databases.bootstrap import init
@@ -53,6 +54,7 @@ match sys.argv[1]:
 
         @bot.event
         async def on_ready():
+            ApplicationModel.set_bot(bot)
             Log.info(bot_name.capitalize() + ' start with ' +
                      str(bot.user) + ' : ' + str(bot.user.id))
 
