@@ -11,6 +11,7 @@ class Listener(discord.Cog):
     def __init__(self, bot: discord.bot.Bot) -> None:
         self.__bot = bot
         self.loop_check_point_in_vocal.start()
+        self.earned_points = {}
 
     def cog_unload(self):
         self.loop_check_point_in_vocal.cancel()
@@ -24,6 +25,10 @@ class Listener(discord.Cog):
             return
 
         if isinstance(message.author, discord.member.Member):
+            self.earned_points[message.author.id] = self.earned_points.get(
+                message.author.id, 0) + 1
+            if self.earned_points[message.author.id] >= 10:
+                return
             await LevelUtils.add_point(message.author)
 
     @discord.Cog.listener()
@@ -40,6 +45,7 @@ class Listener(discord.Cog):
 
     @tasks.loop(seconds=299)
     async def loop_check_point_in_vocal(self):
+        self.earned_points = {}
         try:
             guilds = self.__bot.guilds
             for guild in guilds:
