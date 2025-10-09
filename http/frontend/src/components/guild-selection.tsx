@@ -46,6 +46,7 @@ const GuildSelection: React.FC<GuildSelectionProps> = ({ guilds, onSelect }) => 
                     src={guilds.find((g) => g.get("id") == selectedGuild)?.get("icon_url") || ''}
                     alt="Guild Icon"
                     style={{ width: '50px', height: '50px', marginTop: '10px' }}
+                    className="rounded-full"
                 />
             )}
             <select id="guild-select" value={selectedGuild || ''} onChange={handleChange} className="ml-4 p-2 w-full rounded">
