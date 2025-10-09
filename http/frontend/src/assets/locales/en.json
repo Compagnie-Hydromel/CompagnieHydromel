@@ -1,0 +1,30 @@
+{
+    "home": {
+        "welcome_to": "Welcome to",
+        "name": "Compagny of Hydromel",
+        "description": "The best community and discord server. 🍺",
+        "about_us": {
+            "title": "About Us",
+            "paragraph1": "The Compagny of Hydromel is your ultimate hangout spot, where fun knows no bounds! Whether you're into epic gaming sessions, groovy tunes, creative masterpieces, or just want to chill with awesome folks, we've got a little something for everyone.",
+            "paragraph2": "Cheers to new friendships and unforgettable experiences! 🍻"
+        },
+        "join_our_discord": {
+            "title": "Join Our Discord Server",
+            "description": "Want to become a member of our awesome community? You can contact us on Discord!"
+        },
+        "roles": {
+            "owner": "Owner",
+            "developer": "Developer"
+        }
+    },
+    "not_found": {
+        "title": "Page Not Found",
+        "message": "Oops! The page you're looking for doesn't exist.",
+        "go_home": "Go Back Home"
+    },
+    "generic": {
+        "all_rights_reserved": "All rights reserved.",
+        "logout": "Logout",
+        "settings": "Settings"
+    }
+}

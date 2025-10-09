@@ -6,9 +6,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Guild } from '../../models/guild';
 import { Images } from '../../assets';
+import { useTranslation } from 'react-i18next';
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [currentUser, setCurrentUser] = React.useState<User | null>(null);
     const [hideDropdown, setHideDropdown] = React.useState(true);
     const [guilds, setGuilds] = React.useState<Guild[]>([]);
@@ -63,13 +65,13 @@ const DashboardLayout = () => {
                                 </div>
                                 <ul className="py-2">
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                                        Settings
+                                        {t("generic.settings")}
                                     </li>
                                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={async () => {
                                         await User.logout();
                                         navigate('/');
                                     }}>
-                                        Logout
+                                        {t("generic.logout")}
                                     </li>
                                 </ul>
                             </div>

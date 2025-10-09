@@ -1,0 +1,30 @@
+{
+    "home": {
+        "welcome_to": "Bienvenue à",
+        "name": "Compagnie d'Hydromel",
+        "description": "La meilleure communauté et serveur Discord. 🍺",
+        "about_us": {
+            "title": "À Propos de Nous",
+            "paragraph1": "La Compagnie d'Hydromel est votre lieu de rencontre ultime, où le plaisir n'a pas de limites ! Que vous soyez passionné par des sessions de jeu épiques, des musiques entraînantes, des créations artistiques ou que vous souhaitiez simplement vous détendre avec des gens formidables, nous avons un petit quelque chose pour tout le monde.",
+            "paragraph2": "À la santé de nouvelles amitiés et d'expériences inoubliables ! 🍻"
+        },
+        "join_our_discord": {
+            "title": "Rejoignez Notre Serveur Discord",
+            "description": "Vous voulez devenir membre de notre incroyable communauté ? Vous pouvez nous contacter sur Discord !"
+        },
+        "roles": {
+            "owner": "Propriétaire",
+            "developer": "Développeur"
+        }
+    },
+    "not_found": {
+        "title": "Page Introuvable",
+        "message": "Oups ! La page que vous recherchez n'existe pas.",
+        "go_home": "Retourner à l'Accueil"
+    },
+    "generic": {
+        "all_rights_reserved": "Tous droits réservés.",
+        "logout": "Se Déconnecter",
+        "settings": "Paramètres"
+    }
+}

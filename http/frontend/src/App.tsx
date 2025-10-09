@@ -3,6 +3,7 @@ import Home from "./pages/home"
 import NotFoundPage from "./pages/404"
 import Dashboard from "./pages/dashboard"
 import DashboardLayout from "./pages/dashboard/layout"
+import "./i18n";
 
 function App() {
   return (
