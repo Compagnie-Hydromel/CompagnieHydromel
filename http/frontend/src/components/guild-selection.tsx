@@ -48,7 +48,7 @@ const GuildSelection: React.FC<GuildSelectionProps> = ({ guilds, onSelect }) => 
                     style={{ width: '50px', height: '50px', marginTop: '10px' }}
                 />
             )}
-            <select id="guild-select" value={selectedGuild || ''} onChange={handleChange}>
+            <select id="guild-select" value={selectedGuild || ''} onChange={handleChange} className="ml-4 p-2 w-full rounded">
                 <option value="" disabled>
                     -- Choose a Guild --
                 </option>

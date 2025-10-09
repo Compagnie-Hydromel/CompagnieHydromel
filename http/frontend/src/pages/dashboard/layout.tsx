@@ -5,6 +5,7 @@ import GuildSelection from '../../components/guild-selection';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Guild } from '../../models/guild';
+import { Images } from '../../assets';
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
@@ -26,7 +27,22 @@ const DashboardLayout = () => {
     
     return (  
         <>
-            <header className="flex justify-between items-center p-4 bg-yellow-300 text-black">
+            <header className="flex justify-between items-center text-black p-8 mx-8" 
+                style={{ backgroundImage: 'url(' + Images.MENU.MIDDLE + ')', backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'repeat' }} >
+                <img src={Images.MENU.LEFT} alt="Left Decoration" style={{
+                    height: '144px',
+                    width: 'auto',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0
+                }} />
+                <img src={Images.MENU.RIGHT} alt="Right Decoration" style={{
+                    height: '144px',
+                    width: 'auto',
+                    position: 'absolute',
+                    right: 0,
+                    top: 0
+                }} />
                 <GuildSelection guilds={guilds} onSelect={(guild) => console.log(guild)} />
                 <div className="flex items-center space-x-4">
                     {currentUser && (
