@@ -71,6 +71,7 @@ class ProfileManager(discord.Cog):
                 case "change profile layout":
                     user.profileLayout = ProfileLayout.from_name(
                         options_specifies)
+                    user.saveOrFail()
                     await ctx.respond("Profile layout changed to " + options_specifies)
                 case _:
                     await ctx.respond("Invalid option. Please choose a valid profile management option.")
