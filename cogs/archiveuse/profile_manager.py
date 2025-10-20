@@ -69,7 +69,7 @@ class ProfileManager(discord.Cog):
                 case "list profile layout":
                     await self.__respond_list(ctx, ProfileLayout.all(), "Profile layout")
                 case "change profile layout":
-                    user.profileLayout = ProfileLayout.from_name(
+                    user.profilelayout = ProfileLayout.from_name(
                         options_specifies)
                     user.saveOrFail()
                     await ctx.respond("Profile layout changed to " + options_specifies)

@@ -43,7 +43,7 @@ class Profile(discord.Cog):
                 bar_color=bar_color,
                 name_color=name_color,
                 badges=user.user.badges,
-                coords=(user.profileLayout or ProfileLayout.default()
+                coords=(user.profilelayout or ProfileLayout.default()
                         ).layout.dict()
             )
             Log.info(ctx.author.name + " profile saved at " + pro.profil_path)
