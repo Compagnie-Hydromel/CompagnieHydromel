@@ -244,10 +244,10 @@ class AdminCommands(discord.Cog):
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
     @discord.slash_command(description="Manage profile layout as superadmin")
-    @discord.option("option", description="add/remove/update/rename/show", choices=["add", "remove", "update", "rename", "show"])
+    @discord.option("option", description="add/remove/update/rename/show", choices=["add", "remove", "update", "show"])
     @discord.option("profile_layout_name", str, require=True)
-    @discord.option("profile_picture_x", int, require=False)
-    @discord.option("profile_picture_y", int, require=False)
+    @discord.option("profil_picture_x", int, require=False)
+    @discord.option("profil_picture_y", int, require=False)
     @discord.option("name_x", int, require=False)
     @discord.option("name_y", int, require=False)
     @discord.option("username_x", int, require=False)
@@ -259,7 +259,7 @@ class AdminCommands(discord.Cog):
     @discord.option("level_bar_x", int, require=False)
     @discord.option("level_bar_y", int, require=False)
     @discord.option("new_name", str, require=False)
-    async def manage_profile_layout(self, ctx: discord.commands.context.ApplicationContext, option: str, profile_layout_name: str, profile_picture_x: int = None, profile_picture_y: int = None, name_x: int = None, name_y: int = None, username_x: int = None, username_y: int = None, level_x: int = None, level_y: int = None, badge_x: int = None, badge_y: int = None, level_bar_x: int = None, level_bar_y: int = None, new_name: str = None):
+    async def manage_profile_layout(self, ctx: discord.commands.context.ApplicationContext, option: str, profile_layout_name: str, profil_picture_x: int = None, profil_picture_y: int = None, name_x: int = None, name_y: int = None, username_x: int = None, username_y: int = None, level_x: int = None, level_y: int = None, badge_x: int = None, badge_y: int = None, level_bar_x: int = None, level_bar_y: int = None, new_name: str = None):
         Log.command(ctx.author.name +
                     " is launching manage profile layout commands")
         try:
@@ -285,8 +285,8 @@ class AdminCommands(discord.Cog):
                     await ctx.respond("Profile layout " + profile_layout_name + " removed")
                 case "add":
                     layout = Layout(
-                        Coords(profile_picture_x or 0,
-                               profile_picture_y or 0),
+                        Coords(profil_picture_x or 0,
+                               profil_picture_y or 0),
                         Coords(name_x or 0,
                                name_y or 0),
                         Coords(username_x or 0,
@@ -311,8 +311,8 @@ class AdminCommands(discord.Cog):
 
                     current_profile_layout = profile_layout.layout
                     layout = Layout(
-                        Coords(profile_picture_x or current_profile_layout.profile_picture.x,
-                               profile_picture_y or current_profile_layout.profile_picture.y),
+                        Coords(profil_picture_x or current_profile_layout.profile_picture.x,
+                               profil_picture_y or current_profile_layout.profile_picture.y),
                         Coords(name_x or current_profile_layout.name.x,
                                name_y or current_profile_layout.name.y),
                         Coords(username_x or current_profile_layout.username.x,
@@ -326,7 +326,7 @@ class AdminCommands(discord.Cog):
                     )
                     if new_name is not None:
                         profile_layout.name = new_name
-                    profile_layout.layout = layout
+                    profile_layout.setLayout(layout)
                     profile_layout.saveOrFail()
                     await ctx.respond("Profile layout " + profile_layout_name + " updated")
                 case _:
