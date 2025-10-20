@@ -16,8 +16,9 @@ import discord
 async def lifespan(app: FastAPI):
     Log.info(
         f"Webserver is starting on http://{os.getenv('HOST', '127.0.0.1')}:{os.getenv('WEB_PORT', 8000)}")
-    # Initialize Discord bot
-    discord_bot = discord.Bot(intents=discord.Intents.all())
+    # Initialize Discord bot with commands disabled
+    discord_bot = discord.Bot(
+        intents=discord.Intents.all(), auto_sync_commands=False)
 
     @discord_bot.event
     async def on_ready():
