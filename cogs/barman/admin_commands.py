@@ -190,8 +190,8 @@ class AdminCommands(discord.Cog):
 
             match option:
                 case "show":
-                    wallpaper = Wallpaper.whereFirst(
-                        name=wallpaper_name, guild_id=ctx.guild.id)
+                    wallpaper = Wallpaper.from_guild_and_name(
+                        ctx.guild.id, wallpaper_name)
                     if wallpaper is None:
                         await ctx.respond("Wallpaper " + wallpaper_name + " not found")
                         return
@@ -204,8 +204,8 @@ class AdminCommands(discord.Cog):
                                      price=price or 0, level=level or 0, guild=Guild.from_discord_id(ctx.guild.id))
                     await ctx.respond("Wallpaper " + wallpaper_name + " added")
                 case "remove":
-                    wallpaper = Wallpaper.whereFirst(
-                        name=wallpaper_name, guild_id=ctx.guild.id)
+                    wallpaper = Wallpaper.from_guild_and_name(
+                        ctx.guild.id, wallpaper_name)
                     if wallpaper is None:
                         await ctx.respond("Wallpaper " + wallpaper_name + " not found")
                         return
@@ -214,8 +214,8 @@ class AdminCommands(discord.Cog):
 
                     await ctx.respond("Wallpaper " + wallpaper_name + " removed")
                 case "update":
-                    wallpaper = Wallpaper.whereFirst(
-                        name=wallpaper_name, guild_id=ctx.guild.id)
+                    wallpaper = Wallpaper.from_guild_and_name(
+                        ctx.guild.id, wallpaper_name)
 
                     if wallpaper is None:
                         await ctx.respond("Wallpaper " + wallpaper_name + " not found")
