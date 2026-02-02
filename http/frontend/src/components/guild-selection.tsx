@@ -49,14 +49,23 @@ const GuildSelection: React.FC<GuildSelectionProps> = ({
         value={selectedGuild || ""}
         onChange={handleChange}
         className="p-2 rounded"
-        style={{ appearance: "none", paddingLeft: "50px", backgroundPosition: "left center", backgroundSize: "40px 40px", backgroundRepeat: "no-repeat", backgroundImage: selectedGuild ? `url(${guilds.find(g => g.get("id") === selectedGuild)?.get("icon_url")})` : 'none' }}
+        style={{
+          appearance: "none",
+          paddingLeft: "50px",
+          backgroundPosition: "left center",
+          backgroundSize: "40px 40px",
+          backgroundRepeat: "no-repeat",
+          backgroundImage: selectedGuild
+            ? `url(${guilds.find((g) => g.get("id") === selectedGuild)?.get("icon_url")})`
+            : "none",
+        }}
       >
-      <option value="" disabled>
-        -- Choose a Guild --
-      </option>
+        <option value="" disabled>
+          -- Choose a Guild --
+        </option>
         {guilds.map((guild) => (
           <option key={guild.get("id")} value={guild.get("id")}>
-          {guild.get("name")}
+            {guild.get("name")}
           </option>
         ))}
       </select>

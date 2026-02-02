@@ -3,7 +3,9 @@ import { User } from "../models/user";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-export const Profile: React.FC<{ currentUser: User | null }> = ({ currentUser }) => {
+export const Profile: React.FC<{ currentUser: User | null }> = ({
+  currentUser,
+}) => {
   const { t } = useTranslation();
   const [hideDropdown, setHideDropdown] = React.useState(true);
   const navigate = useNavigate();

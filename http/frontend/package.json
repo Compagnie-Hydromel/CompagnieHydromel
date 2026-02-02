@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build --outDir ../public",
     "lint": "eslint .",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "check-pretty": "prettier --check ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.1",
