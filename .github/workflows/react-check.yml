@@ -1,0 +1,81 @@
+name: React Check
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: http/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: http/frontend
+      
+      - name: Run code formatter
+        run: npm run check-pretty
+        working-directory: http/frontend
+    
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: http/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: http/frontend
+
+      - name: Run linter
+        run: npm run lint
+        working-directory: http/frontend
+
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: http/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: http/frontend
+
+      - name: Build project
+        run: npm run build
+        working-directory: http/frontend
