@@ -44,29 +44,19 @@ const GuildSelection: React.FC<GuildSelectionProps> = ({
 
   return (
     <div className="flex flex-row items-center">
-      {selectedGuild && (
-        <img
-          src={
-            guilds.find((g) => g.get("id") == selectedGuild)?.get("icon_url") ||
-            ""
-          }
-          alt="Guild Icon"
-          style={{ width: "50px", height: "50px", marginTop: "10px" }}
-          className="rounded-full"
-        />
-      )}
       <select
         id="guild-select"
         value={selectedGuild || ""}
         onChange={handleChange}
-        className="ml-4 p-2 w-full rounded"
+        className="p-2 rounded"
+        style={{ appearance: "none", paddingLeft: "50px", backgroundPosition: "left center", backgroundSize: "40px 40px", backgroundRepeat: "no-repeat", backgroundImage: selectedGuild ? `url(${guilds.find(g => g.get("id") === selectedGuild)?.get("icon_url")})` : 'none' }}
       >
-        <option value="" disabled>
-          -- Choose a Guild --
-        </option>
+      <option value="" disabled>
+        -- Choose a Guild --
+      </option>
         {guilds.map((guild) => (
           <option key={guild.get("id")} value={guild.get("id")}>
-            {guild.get("name")}
+          {guild.get("name")}
           </option>
         ))}
       </select>

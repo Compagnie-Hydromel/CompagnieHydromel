@@ -1,6 +1,6 @@
 import React from "react";
 
-const Dashboard: React.FC = () => {
+const Profile: React.FC = () => {
   return (
     <div className="h-screen">
       
@@ -8,4 +8,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default Profile;

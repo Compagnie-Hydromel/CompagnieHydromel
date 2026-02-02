@@ -4,6 +4,7 @@ import NotFoundPage from "./pages/404";
 import Dashboard from "./pages/dashboard";
 import DashboardLayout from "./pages/dashboard/layout";
 import "./i18n";
+import Profile from "./pages/dashboard/profile";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
