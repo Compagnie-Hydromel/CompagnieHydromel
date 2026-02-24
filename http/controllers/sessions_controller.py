@@ -23,17 +23,13 @@ async def one(request: Request) -> dict[str, UserProjection]:
         request.session["user_id"] = user.id
         return RedirectResponse(url="/dashboard")
 
-    user = User.find(request.session.get("user_id", None))
-    if not user:
-        raise HTTPException(status_code=401, detail="No active session found.")
+    user = get_user_from_session(request)
     return {"user": UserProjection.from_user(user)}
 
 
 @router.get("/guilds")
 async def guilds(request: Request) -> list[GuildProjection]:
-    user = User.find(request.session.get("user_id", None))
-    if not user:
-        raise HTTPException(status_code=401, detail="No active session found.")
+    user = get_user_from_session(request)
     guild_list = []
 
     for guild_user in user.guildusers:
@@ -44,14 +40,8 @@ async def guilds(request: Request) -> list[GuildProjection]:
 
 @router.get("/guilds/{guild_id}/user")
 async def guild_user(request: Request, guild_id: int) -> GuildUserProjection:
-    user = User.find(request.session.get("user_id", None))
-    guild = Guild.find(guild_id)
-
-    if not user:
-        raise HTTPException(status_code=401, detail="No active session found.")
-
-    if not guild:
-        raise HTTPException(status_code=404, detail="Guild not found.")
+    user = get_user_from_session(request)
+    guild = Guild.findOrFail(guild_id)
 
     guilduser = GuildUser.from_user_and_guild(user, guild)
 
@@ -60,7 +50,13 @@ async def guild_user(request: Request, guild_id: int) -> GuildUserProjection:
 
 @router.delete("")
 async def delete(request: Request) -> dict[str, str]:
-    if not request.session.get("user_id"):
-        raise HTTPException(status_code=401, detail="No active session found.")
+    get_user_from_session(request)
     request.session.clear()
     return {"message": "Logged out successfully"}
+
+
+def get_user_from_session(request: Request) -> User:
+    user = User.find(request.session.get("user_id", None))
+    if not user:
+        raise HTTPException(status_code=401, detail="No active session found.")
+    return user
