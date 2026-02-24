@@ -21,6 +21,7 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = React.useState<User | null>(null);
   const [guilds, setGuilds] = React.useState<Guild[]>([]);
+  const [selectedGuild, setSelectedGuild] = React.useState<Guild | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -29,7 +30,9 @@ export const Header: React.FC = () => {
         navigate("/");
       }
       setCurrentUser(user);
-      setGuilds((await user?.guilds()) || []);
+      setGuilds((await Guild.myGuilds()) || []);
+      const guild = await Guild.currentlySelectedGuild();
+      setSelectedGuild(guild ?? null);
     };
     checkAuth();
   }, [navigate]);
@@ -68,7 +71,7 @@ export const Header: React.FC = () => {
       />
       <GuildSelection
         guilds={guilds}
-        onSelect={(guild) => console.log(guild)}
+        defaultSelectedGuild={selectedGuild ?? undefined}
       />
       <nav className="w-full">
         <ul className="flex flex-col md:flex-row gap-5">

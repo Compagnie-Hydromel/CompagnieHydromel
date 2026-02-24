@@ -37,7 +37,7 @@ class Profile(discord.Cog):
                 ctx.author.name,
                 ctx.author.display_avatar.url,
                 user.level,
-                user.point,
+                user.progress(),
                 ctx.author.display_name,
                 wallpaper.url,
                 bar_color=bar_color,

@@ -25,7 +25,7 @@ class ProfilMaker():
                  user_name: str,
                  user_profil_picture: str,
                  level: int,
-                 point: int,
+                 progress: float,
                  display_name: str,
                  background_url: str | list[str],
                  coords: dict = __coords,
@@ -40,7 +40,7 @@ class ProfilMaker():
             user_name (str): Username show in the profile.
             user_profil_picture (str): Users profile picture url (https://discord.com/path/to/profil.png).
             level (int): Level show in the profile.
-            point (int): Point show in the profile.
+            prgress (float): The level of progress in percentage (between 0 and 1).
             display_name (str): Display name show in the profile.
             background_url (str | list[str]): background url (https://example.com/path/to/background.png) or a list of background image.
             coords (dict, optional): Coordonate to puts the different display object (name, profilPicture) see behind the paterns. Defaults to __coords.
@@ -129,8 +129,6 @@ class ProfilMaker():
         font_level = ImageFont.truetype(
             "assets/fonts/LiberationSans-Regular.ttf", 30)
 
-        calculated_point_per_level = min(200 * level, 200 * 15)
-        progress = (point * 100 / calculated_point_per_level) / 100
         level_bar = ImageFactoryUtils.pillow_new_bar(
             1, 1, 500, 25, progress, fg=_bar_color)
 

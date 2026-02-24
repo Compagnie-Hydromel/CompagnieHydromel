@@ -1,3 +1,6 @@
+import importlib
+import os
+
 from MIWOS.config import DBConfig
 from os import getenv
 
@@ -16,3 +19,14 @@ def init():
         sql_log_file=getenv(
             "SQL_LOG_FILE") or "libs/databases/" + (db_type) + ".sql.log",
     )
+
+
+def load_all_models():
+    for filename in os.listdir('./libs/databases/models/'):
+        if filename.endswith('.py') and filename != '__init__.py':
+            module_name = f'libs.databases.models.{filename[:-3]}'
+            globals()[filename[:-3]] = importlib.import_module(module_name)
+            globals().update({name: getattr(globals()[filename[:-3]], name) for name in dir(
+                globals()[filename[:-3]]) if not name.startswith('_')})
+
+    return globals()

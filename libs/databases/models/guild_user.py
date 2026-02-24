@@ -1,13 +1,13 @@
-from MIWOS.model import Model
 from MIWOS.libs.sql.association import BelongsTo, HasAndBelongsToMany
 
+from libs.databases.models.application_model import ApplicationModel
 from libs.databases.models.guild import Guild
 from libs.databases.models.user import User
 from libs.exception.bot_exception import BotException
 from libs.utils.utils import Utils
 
 
-class GuildUser(Model):
+class GuildUser(ApplicationModel):
     _belongs_to = [BelongsTo("guild"), BelongsTo("user"),
                    BelongsTo("wallpaper"), BelongsTo("profilelayout")]
     _has_and_belongs_to_many = [HasAndBelongsToMany("wallpapers", verb="buy")]
@@ -49,7 +49,22 @@ class GuildUser(Model):
 
     @property
     def bar_color(self) -> str:
-        return f"#{self._bar_color.lstrip('#')}"
+        return f"#{super().bar_color.lstrip('#')}"
+
+    def get_guilduser(self):
+        return self.get_bot().get_guild(int(self.guild.discord_id)).get_member(int(self.user.discord_id))
+
+    @property
+    def avatar_url(self):
+        return self.get_guilduser().avatar.url
+
+    @property
+    def display_name(self):
+        return self.get_guilduser().display_name
+
+    @property
+    def username(self):
+        return self.get_guilduser().name
 
     def beforeValidation(self):
         if self.isDirty("name_color"):
@@ -75,6 +90,23 @@ class GuildUser(Model):
                 self.point = 0
                 self.smartpoint += calculated_money_per_level
                 self.__check_add_if_wallpaper_at_this_level()
+
+    def progress(self):
+        point = self.point
+        level = self.level
+        calculated_point_per_level = 200 * level
+        if level > 15:
+            calculated_point_per_level = 200 * 15
+
+        return point / calculated_point_per_level
+
+    def to_dict(self):
+        base_dict = super().to_dict()
+        base_dict["avatar_url"] = self.avatar_url
+        base_dict["display_name"] = self.display_name
+        base_dict["username"] = self.username
+        base_dict["progress"] = self.progress()
+        return base_dict
 
     def __check_add_if_wallpaper_at_this_level(self) -> None:
         """This method is designed to check if the user can add a wallpaper at this level.

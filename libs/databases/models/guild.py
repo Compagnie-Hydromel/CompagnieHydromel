@@ -1,6 +1,7 @@
 from MIWOS.libs.sql.association import HasMany
 
 from libs.databases.models.application_model import ApplicationModel
+from libs.exception.bot_exception import BotException
 
 
 class Guild(ApplicationModel):

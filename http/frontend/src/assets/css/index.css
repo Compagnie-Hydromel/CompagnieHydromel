@@ -5,12 +5,9 @@
   src: url("/assets/fonts/MedievalSharp-Regular.ttf") format("truetype");
 }
 
-* {
-  font-family: "MedievalSharp", sans-serif;
-}
-
 html,
 body {
   background-color: black;
   color: white;
+  font-family: "MedievalSharp", sans-serif;
 }

@@ -3,8 +3,7 @@ from dotenv import load_dotenv
 from libs.databases.models.application_model import ApplicationModel
 from libs.log import Log
 import sys
-from libs.databases.bootstrap import init
-import importlib
+from libs.databases.bootstrap import init, load_all_models
 import subprocess
 from libs.utils.utils import Utils
 
@@ -29,6 +28,8 @@ if len(sys.argv) < 2:
     exit()
 
 init()
+
+load_all_models()
 
 match sys.argv[1]:
     case 'webserver':
@@ -65,15 +66,8 @@ match sys.argv[1]:
             Log.error(bot_token_id + " is not defined in .env file")
     case 'interactive':
         import code
-
         Log.info("Starting interactive mode")
-        for filename in os.listdir('./libs/databases/models/'):
-            if filename.endswith('.py') and filename != '__init__.py':
-                module_name = f'libs.databases.models.{filename[:-3]}'
-                globals()[filename[:-3]] = importlib.import_module(module_name)
-                globals().update({name: getattr(globals()[filename[:-3]], name) for name in dir(
-                    globals()[filename[:-3]]) if not name.startswith('_')})
-        code.interact(local=globals())
+        code.interact(local=load_all_models())
     case 'migrate':
         from MIWOS.db import migrate
 

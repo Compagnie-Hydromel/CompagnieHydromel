@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Guild } from "../models/guild";
 
 interface GuildSelectionProps {
   guilds: Guild[];
-  onSelect: (guild: Guild) => void;
+  onSelect?: (guild: Guild) => void;
+  defaultSelectedGuild?: Guild;
 }
 
 const GuildSelection: React.FC<GuildSelectionProps> = ({
   guilds,
-  onSelect,
+  onSelect = () => {},
+  defaultSelectedGuild,
 }) => {
   const [selectedGuild, setSelectedGuild] = useState<string | null>(null);
 
@@ -21,18 +23,14 @@ const GuildSelection: React.FC<GuildSelectionProps> = ({
     }
   };
 
-  React.useEffect(() => {
-    const storedGuildId = localStorage.getItem("selectedGuild");
+  useEffect(() => {
     if (guilds.length === 0) {
       setSelectedGuild(null);
       return;
     }
-    if (storedGuildId) {
-      setSelectedGuild(storedGuildId);
-      const guild = guilds.find((g) => g.get("id") === storedGuildId);
-      if (guild) {
-        onSelect(guild);
-      }
+    if (defaultSelectedGuild) {
+      setSelectedGuild(defaultSelectedGuild.get("id"));
+      onSelect(defaultSelectedGuild);
     } else {
       const firstGuild = guilds[0];
       if (firstGuild) {
@@ -40,7 +38,7 @@ const GuildSelection: React.FC<GuildSelectionProps> = ({
         onSelect(firstGuild);
       }
     }
-  }, [guilds, onSelect]);
+  }, [defaultSelectedGuild, guilds, onSelect]);
 
   return (
     <div className="flex flex-row items-center">

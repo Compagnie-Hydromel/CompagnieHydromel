@@ -46,8 +46,13 @@ class User(ApplicationModel):
     def display_name(self):
         return self.get_user().display_name
 
+    @property
+    def username(self):
+        return self.get_user().name
+
     def to_dict(self):
         base_dict = super().to_dict()
         base_dict["avatar_url"] = self.avatar_url
         base_dict["display_name"] = self.display_name
+        base_dict["username"] = self.username
         return base_dict

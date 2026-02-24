@@ -6,7 +6,7 @@ export class Model {
   static endpoint: string = "";
   attributes: Record<string, any> = {};
   modified_attributes: Record<string, any> = {};
-  static modfiable_attributes: string[] = [];
+  static modifiable_attributes: string[] = [];
 
   constructor(initialAttributes: Record<string, any> = {}) {
     this.attributes = {};
@@ -69,7 +69,7 @@ export class Model {
 
   set(key: string, value: any): void {
     if (
-      !(this.constructor as typeof Model).modfiable_attributes.includes(key)
+      !(this.constructor as typeof Model).modifiable_attributes.includes(key)
     ) {
       throw new Error(`Attribute ${key} is not modifiable.`);
     }
