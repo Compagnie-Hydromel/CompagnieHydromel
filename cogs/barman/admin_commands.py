@@ -1,9 +1,12 @@
 import traceback
+import os
+import uuid
 import discord
 import requests
 from libs.databases.dto.coords import Coords
 from libs.databases.dto.layout import Layout
 from libs.databases.models.guild import Guild
+from libs.databases.models.scheduled_message import ScheduledMessage
 from libs.databases.models.guild_user import GuildUser
 from libs.databases.models.profile_layout import ProfileLayout
 from libs.databases.models.role import Role
@@ -108,6 +111,128 @@ class AdminCommands(discord.Cog):
             await ctx.respond("Information channel set to " + value.mention)
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
+
+    @discord.slash_command(description="Configure recurring messages as admin")
+    @discord.option("option", choices=["set", "show", "remove", "list"], require=True)
+    @discord.option("name", str, require=False)
+    @discord.option("channel", discord.abc.GuildChannel, require=False)
+    @discord.option("message", str, require=False)
+    @discord.option("day", choices=["daily", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"], require=False)
+    @discord.option("time", str, require=False, description="Time in HH:MM format")
+    @discord.option("timezone", str, require=False, description="IANA timezone, e.g. Europe/Zurich")
+    @discord.option("attachment", discord.Attachment, require=False)
+    @discord.option("remove_attachment", bool, require=False)
+    async def automatic_message(self, ctx: discord.commands.context.ApplicationContext,
+                                option: str, name: str = None,
+                                channel: discord.abc.GuildChannel = None,
+                                message: str = "", day: str = None,
+                                time: str = None,
+                                timezone: str = "Europe/Zurich",
+                                attachment: discord.Attachment = None,
+                                remove_attachment: bool = False):
+        Log.command(ctx.author.name + " is configuring an automatic message")
+        try:
+            if not await self.__check_if_admin(ctx):
+                return
+
+            guild = Guild.from_discord_id(ctx.guild.id)
+            if option != "list" and not name:
+                await ctx.respond("You must specify a configuration name.")
+                return
+            configuration = ScheduledMessage.by_name_and_guild(name, guild)
+
+            match option:
+                case "set":
+                    if channel is None or message is None or day is None or time is None:
+                        await ctx.respond(
+                            "You must specify a channel, message, day, and time.")
+                        return
+                    if channel.guild != ctx.guild:
+                        await ctx.respond("The channel must belong to this server.")
+                        return
+                    if not isinstance(channel, discord.abc.Messageable):
+                        await ctx.respond("Channel is not messageable.")
+                        return
+
+                    try:
+                        ScheduledMessage.validate_schedule(time, timezone)
+                    except ValueError as error:
+                        await ctx.respond(str(error))
+                        return
+
+                    content = message.replace("\\n", "\n")
+                    attachment_path = None
+                    if attachment is not None:
+                        extension = re.sub(
+                            r"[^a-zA-Z0-9.]", "",
+                            os.path.splitext(attachment.filename)[1])[:16]
+                        attachment_path = (
+                            "local://scheduled_messages/" + uuid.uuid4().hex +
+                            extension)
+                        self.storage.put(
+                            await attachment.read(), attachment_path)
+                    if configuration is None:
+                        ScheduledMessage.createOrFail(
+                            name=name, channel_id=str(channel.id),
+                            message=content, day=day, time=time,
+                            timezone=timezone,
+                            attachment_path=attachment_path,
+                            attachment_name=(attachment.filename
+                                             if attachment else None),
+                            guild=guild)
+                    else:
+                        old_attachment_path = configuration.attachment_path
+                        configuration.channel_id = str(channel.id)
+                        configuration.message = content
+                        configuration.day = day
+                        configuration.time = time
+                        configuration.timezone = timezone
+                        if attachment is not None:
+                            configuration.attachment_path = attachment_path
+                            configuration.attachment_name = attachment.filename
+                        elif remove_attachment:
+                            configuration.attachment_path = None
+                            configuration.attachment_name = None
+                        configuration.saveOrFail()
+                        if ((attachment is not None or remove_attachment) and
+                                old_attachment_path):
+                            self.storage.delete(old_attachment_path)
+                    await ctx.respond(
+                        f"Automatic message **{name}** will be sent "
+                        f"{day} at {time} ({timezone}) in {channel.mention}.")
+                case "show":
+                    if configuration is None:
+                        await ctx.respond(f"Automatic message **{name}** was not found.")
+                        return
+                    await ctx.respond(
+                        f"**{configuration.name}**\n"
+                        f"Channel: <#{configuration.channel_id}>\n"
+                        f"Schedule: {configuration.day} at {configuration.time} "
+                        f"({configuration.timezone})\n"
+                        f"Attachment: {configuration.attachment_name or 'None'}\n"
+                        f"Message:\n{configuration.message}")
+                case "remove":
+                    if configuration is None:
+                        await ctx.respond(f"Automatic message **{name}** was not found.")
+                        return
+                    if configuration.attachment_path:
+                        self.storage.delete(configuration.attachment_path)
+                    configuration.delete()
+                    await ctx.respond(f"Automatic message **{name}** removed.")
+                case "list":
+                    configurations = guild.scheduledmessages
+                    if len(configurations) == 0:
+                        await ctx.respond("No automatic messages are configured.")
+                        return
+                    lines = [
+                        f"**{item.name}** — {item.day} at {item.time} "
+                        f"({item.timezone}) in <#{item.channel_id}>"
+                        for item in configurations
+                    ]
+                    await ctx.respond("\n".join(lines))
+        except Exception as e:
+            await ctx.respond(self.__error_handler.response_handler(
+                e, traceback.format_exc()))
 
     @discord.slash_command(description="Clear message in a channel as admin")
     async def clear(self, ctx: discord.commands.context.ApplicationContext):
