@@ -109,3 +109,12 @@ instead of named volumes, pre-create and make the storage directory writable by
 UID/GID 10001:10001. The image excludes `.env`, local databases, uploads, virtual
 environments and `node_modules` from its build context. Runtime configuration and
 tokens belong in `.env`, never in the image or Git repository.
+
+## CI validation
+
+The workflow validates both Compose examples with
+`HYDROMEL_ENV_FILE=.env.example`, which selects the committed example for the
+services' `env_file` as well as the CLI's interpolation file. No real `.env` or
+Discord credentials are needed for validation. Normal deployments still default
+to the required `.env` file. This avoids relying on `--no-env-resolution`, whose
+handling of missing service env files differs between Compose versions.

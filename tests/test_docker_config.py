@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -35,6 +36,18 @@ class TestDockerFiles(unittest.TestCase):
             "value=latest,enable=${{ github.ref == 'refs/heads/main' }}", metadata["with"]["tags"])
         self.assertIn("type=ref,event=tag", metadata["with"]["tags"])
 
+    def test_ci_validates_with_example_environment_not_missing_secrets(self):
+        workflow = yaml.safe_load(
+            Path(".github/workflows/docker-publish.yml").read_text())
+        validation = next(step for step in workflow["jobs"]["docker"]["steps"]
+                          if step.get("name") == "Validate Compose examples")
+        self.assertEqual(validation["env"]
+                         ["HYDROMEL_ENV_FILE"], ".env.example")
+        self.assertNotIn("--no-env-resolution", validation["run"])
+        compose = yaml.safe_load(Path("docs/docker/compose.yml").read_text())
+        self.assertEqual(compose["x-app"]["env_file"],
+                         ["${HYDROMEL_ENV_FILE:-.env}"])
+
 
 @unittest.skipUnless(shutil.which("docker"), "Docker CLI is not installed")
 class TestComposeConfiguration(unittest.TestCase):
@@ -50,7 +63,8 @@ class TestComposeConfiguration(unittest.TestCase):
         for backend, extra in (("sqlite", []), ("mariadb", ["-f", "docs/docker/compose.mariadb.yml"])):
             with self.subTest(backend=backend):
                 result = subprocess.run(
-                    base + extra + ["config", "--no-env-resolution", "--format", "json"], capture_output=True, text=True)
+                    base + extra + ["config", "--format", "json"], capture_output=True, text=True,
+                    env={**os.environ, "HYDROMEL_ENV_FILE": ".env.example"})
                 self.assertEqual(result.returncode, 0, result.stderr)
                 services = json.loads(result.stdout)["services"]
                 for name in ("migrate", "barman", "menestrel", "archiveuse", "webserver"):
@@ -59,6 +73,8 @@ class TestComposeConfiguration(unittest.TestCase):
                         service["environment"]["DB_TYPE"], backend)
                     self.assertEqual(
                         service["environment"]["WEB_HOST"], "0.0.0.0")
+                    self.assertEqual(
+                        service["environment"]["WEBSERVER_BOT"], "BARMAN")
                     self.assertEqual(
                         service["environment"]["SQL_LOG_FILE"], "/app/storages/sql.log")
                     self.assertEqual(
