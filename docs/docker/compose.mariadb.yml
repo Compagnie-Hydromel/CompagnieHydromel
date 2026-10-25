@@ -1,0 +1,47 @@
+# Optional override, alongside compose.yml. Use before the first startup.
+x-database-environment: &database-environment
+  DB_TYPE: mariadb
+  DB_HOST: database
+  DB_PORT: "3306"
+  DB_NAME: ${DB_NAME:-compagnieHydromel}
+  DB_USER: ${DB_USER:-hydromel}
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in docs/docker/.env}
+
+services:
+  database:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-compagnieHydromel}
+      MARIADB_USER: ${DB_USER:-hydromel}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in docs/docker/.env}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Set MARIADB_ROOT_PASSWORD in docs/docker/.env}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 10
+
+  migrate:
+    environment: *database-environment
+    depends_on:
+      database:
+        condition: service_healthy
+
+  barman:
+    environment: *database-environment
+
+  menestrel:
+    environment: *database-environment
+
+  archiveuse:
+    environment: *database-environment
+
+  webserver:
+    environment: *database-environment
+
+volumes:
+  mariadb-data:

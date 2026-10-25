@@ -1,0 +1,71 @@
+# Run from the repository root:
+# docker compose --env-file docs/docker/.env -f docs/docker/compose.yml up -d --build
+name: hydromel
+
+x-app: &app
+  image: ${HYDROMEL_IMAGE:-ghcr.io/compagnie-hydromel/compagniehydromel:latest}
+  build:
+    context: ../..
+    dockerfile: Dockerfile
+  env_file:
+    - .env
+  environment: &environment
+    DB_TYPE: sqlite
+    DB_NAME: /app/storages/hydromel.sqlite3
+    SQL_LOG_FILE: /app/storages/sql.log
+    WEB_HOST: 0.0.0.0
+    WEB_PORT: "8000"
+  volumes:
+    - hydromel-data:/app/storages
+  init: true
+  restart: unless-stopped
+  stop_grace_period: 30s
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  migrate:
+    <<: *app
+    command: ["migrate"]
+    restart: "no"
+
+  barman:
+    <<: *app
+    command: ["barman"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  menestrel:
+    <<: *app
+    command: ["menestrel"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  archiveuse:
+    <<: *app
+    command: ["archiveuse"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  webserver:
+    <<: *app
+    command: ["webserver"]
+    ports:
+      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${WEB_PUBLISHED_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/openapi.json', timeout=5).close()"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  hydromel-data:
