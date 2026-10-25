@@ -111,6 +111,26 @@ members. Administrators can set exact smartpoint balances, levels, and current-l
 XP. XP must remain below `200 × min(level, 15)`; these manual edits do not grant
 level-up rewards or change monthly XP. Changes only affect the selected guild.
 
+**Administration → Roles** replaces the Discord `/manage_role` command. Add,
+edit, and remove rules for existing Discord roles: level rewards or reaction
+roles (message ID + emoji). Level rules synchronize tracked members after each
+change; synchronization can also be retried from the page. Members receive their
+highest eligible level role after accepting the rules. Reaction assignment stays
+in Barman, including removal of roles when reactions are removed. Add the initial
+reaction to the message on Discord. Unicode and custom emoji are supported.
+The bot needs Manage Roles and a role above the roles it assigns. Your own role
+hierarchy is enforced; managed, @everyone, and privileged administrative roles
+cannot be configured for automatic assignment. Removing a rule does not delete
+the Discord role or revoke existing reaction-role assignments.
+
+In **Administration → Roles → Rules acceptance**, set the rules message link
+or ID and its acceptance emoji. This replaces `/manage_accepted_rules_message`.
+Message links are checked against the selected server and fetched using the bot;
+plain IDs remain supported for existing setups. Add the initial reaction on
+Discord. You can view, change, or disable the setting from the web interface.
+Existing settings are loaded automatically, and changing or disabling the message
+does not reset members who have already accepted the rules.
+
 Layouts are created by dragging profile elements on the preview (or using arrow
 keys, with Shift for larger steps). Wallpapers are uploaded from your computer
 (static PNG, JPEG or WebP, up to 8 MiB / 16 megapixels), with a smartpoint price,

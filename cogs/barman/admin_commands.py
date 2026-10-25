@@ -6,15 +6,12 @@ from libs.databases.dto.layout import Layout
 from libs.databases.models.guild import Guild
 from libs.databases.models.guild_user import GuildUser
 from libs.databases.models.profile_layout import ProfileLayout
-from libs.databases.models.role import Role
 from libs.databases.models.user import User
 from libs.databases.models.voice_channels import VoiceChannel
 from libs.databases.models.wallpaper import Wallpaper
 from libs.exception.handler import Handler
 from libs.log import Log
 from libs.utils.utils import Utils
-from libs.utils.role_utils import RoleUtils
-import re
 from libs.storages.storage import Storage
 
 
@@ -140,73 +137,6 @@ class AdminCommands(discord.Cog):
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Manage role")
-    @discord.option("option", description="add/remove/show", choices=["list", "add", "remove", "show", "update"])
-    @discord.option("role", discord.role.Role, require=False)
-    @discord.option("level", int, require=False)
-    @discord.option("emoji", str, require=False)
-    @discord.option("message_discord_id", str, require=False)
-    async def manage_role(self, ctx: discord.commands.context.ApplicationContext, option: str, role: discord.role.Role, level: int = None, emoji: str = None, message_discord_id: str = None):
-        Log.command(ctx.author.name +
-                    " is launching manage role commands with " + option)
-        try:
-            if not await self.__check_if_admin(ctx):
-                return
-
-            guild = Guild.from_discord_id(ctx.guild.id)
-
-            if not role and option != "list":
-                await ctx.respond("You must specify a role.")
-                return
-
-            match option:
-                case "list":
-                    await ctx.respond(self.__all_roles(ctx.guild))
-                case "show":
-                    await ctx.respond("**Name** " + role.name + "\n**Level** " + str(Role.from_discord_id(role.id).level))
-                case "add":
-                    if level is None:
-                        if emoji is None or message_discord_id is None:
-                            await ctx.respond("You must specify a level or both emoji and message id.")
-                            return
-                        Role.createOrFail(discord_id=role.id,
-                                          emoji=emoji, message_discord_id=message_discord_id, guild=guild)
-                        await ctx.respond("Role added with message id " + str(message_discord_id) + " and emoji " + emoji)
-                    else:
-                        Role.createOrFail(discord_id=role.id,
-                                          level=level, guild=guild)
-                        await ctx.respond("Role added with level " + str(level or 1))
-                        await RoleUtils.update_all_user_role(ctx.guild)
-                case "remove":
-                    role = Role.from_discord_id(role.id)
-                    if role is None:
-                        await ctx.respond(f"Role not found")
-                        return
-                    role.delete()
-                    await ctx.respond(f"Role removed")
-                    await RoleUtils.update_all_user_role(ctx.guild)
-                case "update":
-                    role: Role = Role.from_discord_id(role.id)
-                    if role is None:
-                        await ctx.respond(f"Role not found")
-                        return
-                    if role.level is None and (role.emoji is None or role.message_discord_id is None):
-                        await ctx.respond("You must specify a level or both emoji and message id.")
-                        return
-
-                    role.level = level
-
-                    role.emoji = emoji
-                    role.message_discord_id = message_discord_id
-
-                    role.saveOrFail()
-                    await ctx.respond(f"Role updated")
-                    await RoleUtils.update_all_user_role(ctx.guild)
-                case _:
-                    await ctx.respond("Option not found, please use add/remove/show/update.")
-        except Exception as e:
-            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
-
     @discord.slash_command(description="Move all users in a voice channel to a another voice channel")
     @discord.option("from_channel", discord.VoiceChannel, require=True)
     @discord.option("to_channel", discord.VoiceChannel, require=True)
@@ -310,46 +240,6 @@ class AdminCommands(discord.Cog):
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    @discord.slash_command(description="Manage banner voice channels as admin")
-    @discord.option("option", description="set/show", choices=["set", "show"])
-    @discord.option("message_id", str, require=False)
-    @discord.option("emoji", str, require=False)
-    async def manage_accepted_rules_message(self, ctx: discord.commands.context.ApplicationContext, option: str, message_id: str = None, emoji: str = None):
-        Log.command(
-            ctx.author.name + " is launching manage accepted rules message commands with " + option)
-        try:
-            if not await self.__check_if_admin(ctx):
-                return
-
-            guild = Guild.from_discord_id(ctx.guild.id)
-
-            match option:
-                case "set":
-                    if not message_id:
-                        await ctx.respond("You must specify a message id.")
-                        return
-                    if not emoji:
-                        await ctx.respond("You must specify an emoji.")
-                        return
-                    if re.match(r"\d{17,22}", message_id) is None:
-                        await ctx.respond("Invalid message id, it must be a valid Discord message ID.")
-                        return
-                    guild.accepted_rules_message_id = str(message_id)
-                    guild.accepted_rules_emoji = emoji
-                    guild.saveOrFail()
-                    await ctx.respond(f"Accepted rules message id set to {message_id} with emoji {emoji}")
-                case "show":
-                    embed = discord.Embed(title="Accepted Rules Message",
-                                          description=guild.accepted_rules_message_id if guild.accepted_rules_message_id else "Not set",
-                                          color=discord.Color.blue())
-                    embed.set_footer(
-                        text=f"Emoji: {guild.accepted_rules_emoji}")
-                    await ctx.respond(embed=embed)
-                case _:
-                    await ctx.respond("Option not found, please use set/show.")
-        except Exception as e:
-            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
-
     async def __check_if_superadmin(self, ctx: discord.commands.context.ApplicationContext) -> bool:
         if not User.from_discord_id(str(ctx.author.id)).is_superadmin:
             await ctx.respond("You don't have permission to use this command.")
@@ -368,18 +258,6 @@ class AdminCommands(discord.Cog):
             await ctx.respond("You don't have permission to use this command.")
             return False
         return True
-
-    def __all_roles(self, guild) -> str:
-        roles = Guild.from_discord_id(guild.id).roles.orderBy("level")
-        if len(roles) == 0:
-            return "No roles found"
-        content = ""
-        for role in roles:
-            if role.level is None:
-                content += f"**<@&{role.discord_id}>** {role.emoji} {role.message_discord_id}\n"
-            else:
-                content += f"**<@&{role.discord_id}>** {str(role.level)}\n"
-        return content
 
 
 def setup(bot: discord.bot.Bot):

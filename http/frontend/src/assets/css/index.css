@@ -595,6 +595,126 @@ body {
   flex-wrap: wrap;
 }
 
+.roles-editor-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 1fr);
+}
+.role-mode-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.role-mode-picker button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffffff20;
+  border-radius: 10px;
+  padding: 14px 8px;
+  font-size: 12px;
+  color: var(--admin-muted);
+  cursor: pointer;
+}
+.role-mode-picker button span {
+  font-size: 22px;
+}
+.role-mode-picker button.selected {
+  background: #e9bd7512;
+  border-color: #e9bd7590;
+  color: var(--admin-gold);
+}
+.role-explainer {
+  display: grid;
+  gap: 22px;
+}
+.role-explainer h3 {
+  font-size: 24px;
+  font-family: "MedievalSharp", serif;
+}
+.role-explainer > div:not(.admin-info) {
+  display: flex;
+  gap: 14px;
+  color: var(--admin-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.role-explainer > div > span {
+  font-size: 28px;
+  color: var(--admin-gold);
+}
+.role-rule-card {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+.role-rule-card .admin-panel-heading {
+  margin: 0;
+  flex-wrap: wrap;
+}
+.role-discord-pill {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.role-discord-pill > span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.role-rule-condition {
+  color: #d1c8b6;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.role-remove-button {
+  color: #e9968e;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.role-remove-button:disabled,
+.role-rule-card button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rules-acceptance-panel {
+  display: grid;
+  gap: 20px;
+  border-color: #e9bd7545;
+}
+.rules-acceptance-panel .admin-section-title p:not(.admin-eyebrow) {
+  text-shadow: none;
+}
+.rules-acceptance-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(140px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.rules-acceptance-fields > .wallpaper-edit-actions {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+  .rules-acceptance-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .roles-editor-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 1000px) {
   .admin-editor-grid {
     grid-template-columns: minmax(0, 1fr);

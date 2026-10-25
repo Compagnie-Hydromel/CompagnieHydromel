@@ -13,13 +13,16 @@ class ReactionRole(discord.Cog):
 
     @discord.Cog.listener()
     async def on_raw_reaction_add(self, added_reaction: discord.RawReactionActionEvent) -> None:
+        if added_reaction.guild_id is None:
+            return
         guild = Guild.from_discord_id(added_reaction.guild_id)
         if guild is None:
             Log.warning(f"Guild {added_reaction.guild_id} not found")
             return
 
-        await self.add_role_with_reaction(
-            added_reaction, int(guild.accepted_rules_message_id), guild.accepted_rules_emoji, 0, "accept_rules")
+        if guild.accepted_rules_message_id and guild.accepted_rules_emoji:
+            await self.add_role_with_reaction(
+                added_reaction, int(guild.accepted_rules_message_id), guild.accepted_rules_emoji, 0, "accept_rules")
 
         for role in guild.roles.whereNull("level"):
             await self.add_role_with_reaction(
@@ -27,12 +30,15 @@ class ReactionRole(discord.Cog):
 
     @discord.Cog.listener()
     async def on_raw_reaction_remove(self, added_reaction: discord.RawReactionActionEvent) -> None:
+        if added_reaction.guild_id is None:
+            return
         guild = Guild.from_discord_id(added_reaction.guild_id)
         if guild is None:
             Log.warning(f"Guild {added_reaction.guild_id} not found")
             return
-        await self.remove_role_with_reaction(
-            added_reaction, int(guild.accepted_rules_message_id), guild.accepted_rules_emoji, 0, "accept_rules")
+        if guild.accepted_rules_message_id and guild.accepted_rules_emoji:
+            await self.remove_role_with_reaction(
+                added_reaction, int(guild.accepted_rules_message_id), guild.accepted_rules_emoji, 0, "accept_rules")
         for role in guild.roles.whereNull("level"):
             await self.remove_role_with_reaction(
                 added_reaction, int(role.message_discord_id), role.emoji, int(role.discord_id), "emoji_to_role")
@@ -55,7 +61,7 @@ class ReactionRole(discord.Cog):
             emoji (str): The attended emoji.
             role_id (int): The role id to add.
         """
-        if (reaction.message_id == message_id and reaction.emoji.name == emoji):
+        if reaction.message_id == message_id and RoleUtils.emoji_matches(reaction.emoji, emoji):
             match(action):
                 case "accept_rules":
                     user = GuildUser.from_user_discord_id_and_guild_discord_id(
@@ -82,7 +88,7 @@ class ReactionRole(discord.Cog):
             role_id (int): The role id to remove.
         """
         guild = self.__bot.get_guild(reaction.guild_id)
-        if (reaction.message_id == message_id and reaction.emoji.name == emoji):
+        if reaction.message_id == message_id and RoleUtils.emoji_matches(reaction.emoji, emoji):
             member: discord.Member = discord.utils.get(
                 guild.members, id=reaction.user_id)
             match action:
