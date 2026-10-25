@@ -48,6 +48,11 @@ Let's now create the 3 Bot on Discord Developer Portal and invite it on the Disc
 
 ## Installation
 
+For a containerized deployment (SQLite or MariaDB), see
+[the Docker guide](docs/docker/README.md) and [Compose example](docs/docker/compose.yml).
+Container images are published to GHCR with `latest` for `main` and matching Git
+tags for tagged releases.
+
 ```bash
 # create env folder
 python3 -m venv env 

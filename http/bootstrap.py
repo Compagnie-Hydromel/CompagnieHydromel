@@ -62,5 +62,5 @@ app.add_middleware(SessionMiddleware, secret_key=os.getenv(
 app.mount("/", StaticFiles(directory="http/public",
                            html=True), name="public")
 
-uvicorn.run(app, port=os.getenv("WEB_PORT", 8000), host=os.getenv("WEB_HOST", "127.0.0.1"),
+uvicorn.run(app, port=int(os.getenv("WEB_PORT", 8000)), host=os.getenv("WEB_HOST", "127.0.0.1"),
             log_config=None, access_log=False)
