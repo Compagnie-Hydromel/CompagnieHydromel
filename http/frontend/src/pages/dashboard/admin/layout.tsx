@@ -69,6 +69,12 @@ export default function AdminLayout() {
       </div>
       <nav className="admin-tabs" aria-label={t("admin.title")}>
         <NavLink
+          to="/dashboard/admin/banner"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          ▧ {t("admin.banner.title")}
+        </NavLink>
+        <NavLink
           to="/dashboard/admin/roles"
           className={({ isActive }) => (isActive ? "active" : "")}
         >

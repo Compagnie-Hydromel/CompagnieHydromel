@@ -14,13 +14,15 @@ class WallpaperUploads:
     MAX_PIXELS = 16000000
     FILENAME = re.compile(r"[1-9][0-9]*-[0-9a-f]{32}\.png")
     PREFIX = "local://wallpapers/"
+    PUBLIC_PREFIX = "/api/wallpapers/"
+    SIZE = (500, 281)
 
     @classmethod
     def public_url(cls, url):
         if url.startswith(cls.PREFIX):
             filename = url[len(cls.PREFIX):]
             if cls.FILENAME.fullmatch(filename):
-                return "/api/wallpapers/" + filename
+                return cls.PUBLIC_PREFIX + filename
         return url
 
     @classmethod
@@ -38,7 +40,7 @@ class WallpaperUploads:
                         raise ValueError("Image exceeds 16 megapixels")
                     source.load()
                     image = ImageOps.fit(ImageOps.exif_transpose(source).convert("RGBA"),
-                                         (500, 281), method=Image.Resampling.LANCZOS)
+                                         cls.SIZE, method=Image.Resampling.LANCZOS)
                     image.info.clear()
                     output = BytesIO()
                     image.save(output, format="PNG")

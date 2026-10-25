@@ -4,7 +4,6 @@ from fastapi import APIRouter, HTTPException, Path, Query, Request
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
-from starlette.formparsers import MultiPartException, MultiPartParser
 
 from libs.databases.models.profile_layout import ProfileLayout
 from libs.databases.models.wallpaper import Wallpaper
@@ -13,6 +12,7 @@ from libs.databases.models.user import User
 from libs.projections.profile_layout_projection import layout_data
 from libs.utils.http_utils import HTTPUtils
 from libs.storages.wallpaper_uploads import WallpaperUploads
+from libs.utils.upload_utils import image_upload_form
 
 
 router = APIRouter(prefix="/sessions/guilds/{guild_id}/admin")
@@ -89,30 +89,8 @@ def wallpaper_data(wallpaper):
     }
 
 
-class UploadTooLarge(MultiPartException):
-    pass
-
-
 async def wallpaper_form(request):
-    if not request.headers.get("content-type", "").startswith("multipart/form-data"):
-        raise HTTPException(
-            status_code=415, detail="Upload an image using multipart/form-data")
-
-    async def bounded_stream():
-        size = 0
-        async for chunk in request.stream():
-            size += len(chunk)
-            if size > WallpaperUploads.MAX_BYTES + 65536:
-                raise UploadTooLarge("Upload exceeds 8 MiB")
-            yield chunk
-
-    try:
-        return await MultiPartParser(request.headers, bounded_stream(), max_files=1,
-                                     max_fields=3, max_part_size=4096).parse()
-    except UploadTooLarge:
-        raise HTTPException(status_code=413, detail="Image exceeds 8 MiB")
-    except MultiPartException:
-        raise HTTPException(status_code=400, detail="Invalid image upload")
+    return await image_upload_form(request, WallpaperUploads.MAX_BYTES, max_fields=3)
 
 
 @router.get("/access")

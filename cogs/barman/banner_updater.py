@@ -41,16 +41,18 @@ class BannerUpdater(discord.Cog):
             people[coord["id"]] = []
             vocal_id = coord["id"]
             if vocal_id == 0:
-                Log.warning("BannerUpdater: The vocal id of " +
-                            coord + " is 0, so it will be ignored.")
+                Log.warning(
+                    f"BannerUpdater: Invalid voice channel {coord}; ignoring it.")
                 continue
             vocal = self.__get_voice_channel(vocal_id, guild)
+            if vocal is None:
+                continue
             for member in vocal.members:
                 avatar_url = member.display_avatar.url
                 people[coord["id"]].append(
                     {"username": member.name, "profil": avatar_url})
 
-        return BannerBarCreator('caches://banner.png', db_guild.banner_image, coords, people).file_path
+        return BannerBarCreator(f'caches://banner_{db_guild.id}.png', db_guild.banner_image, coords, people).file_path
 
     def __get_voice_channel(self, id: int, guild: discord.guild) -> Union[discord.VoiceChannel, None]:
         channels = guild.channels

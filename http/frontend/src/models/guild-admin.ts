@@ -36,6 +36,22 @@ export interface MembersPage {
   page_size: number;
 }
 
+export interface BannerChannel {
+  id: number;
+  discord_id: string;
+  name: string;
+  missing: boolean;
+  x: number;
+  y: number;
+}
+
+export interface BannerData {
+  image_url: string | null;
+  channels: BannerChannel[];
+  available_channels: { discord_id: string; name: string; avatars: string[] }[];
+  can_update_banner: boolean;
+}
+
 export interface DiscordRole {
   discord_id: string;
   name: string;
@@ -81,6 +97,22 @@ export class GuildAdminError extends Error {
 }
 
 export class GuildAdmin extends Model {
+  static async uploadBanner(
+    guildId: number,
+    form: FormData,
+  ): Promise<{ image_url: string }> {
+    const response = await fetch(
+      `/api/sessions/guilds/${guildId}/admin/banner/image`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: form,
+      },
+    );
+    if (!response.ok) throw new GuildAdminError(response.status);
+    return response.json();
+  }
+
   static async uploadWallpaper(
     guildId: number,
     form: FormData,

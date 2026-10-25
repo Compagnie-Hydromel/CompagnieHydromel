@@ -131,6 +131,17 @@ Discord. You can view, change, or disable the setting from the web interface.
 Existing settings are loaded automatically, and changing or disabling the message
 does not reset members who have already accepted the rules.
 
+**Administration → Voice banner** replaces `/manage_banner_voice_channels`.
+Upload a background (PNG/JPEG/WebP, 8 MiB / 16 megapixels maximum; normalized to
+960 × 540), add existing voice channels, then drag their sample avatars on the
+preview or enter exact positions. Save each position; zero coordinates are valid.
+Existing images and channel settings are loaded automatically. You can remove
+channels from the banner or disable automatic updates without deleting Discord
+channels or changing the current Discord banner. Uploaded files are stored in
+`storages/locals/banners`; keep this directory alongside wallpaper uploads.
+Barman applies the configuration on the next voice-state update. Discord must
+support server banners, and the bot needs Manage Server permission.
+
 Layouts are created by dragging profile elements on the preview (or using arrow
 keys, with Shift for larger steps). Wallpapers are uploaded from your computer
 (static PNG, JPEG or WebP, up to 8 MiB / 16 megapixels), with a smartpoint price,
