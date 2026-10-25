@@ -75,6 +75,15 @@ python3 bot.py rollback
 
 ## Usage
 
+**Administration → Automatic messages** replaces `/automatic_message` for
+creating, editing, listing, and deleting daily or weekly messages. Choose a text
+channel, local time, and IANA timezone; existing schedules remain available.
+Attachments (up to 8 MiB) can be uploaded, replaced, or removed after saving the
+message. They are stored privately in `storages/locals/scheduled_messages`, which
+must be shared with Barman and included in backups. Barman must remain online;
+its scheduler checks every 30 seconds and does not catch up missed schedules.
+Editing preserves the last-send date to prevent duplicate delivery that day.
+
 The web **Dashboard** shows visible voice/stage channels and their participants,
 plus the monthly top 10 and level top 10 using the same ordering as Discord’s
 leaderboards (level ties use current-level XP). It refreshes every 20 seconds

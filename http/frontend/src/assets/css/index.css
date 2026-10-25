@@ -1,5 +1,39 @@
 @import "tailwindcss";
 
+.admin-form .automatic-message-content {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid #ffffff26;
+  border-radius: 10px;
+  padding: 12px;
+  background: #0e141c;
+  color: #fff4dd;
+  font: inherit;
+}
+.automatic-message-preview {
+  padding: 20px;
+  border-radius: 12px;
+  background: #0e141c;
+  border-left: 3px solid #e9bd75;
+}
+.automatic-message-preview strong {
+  color: #e9bd75;
+  font-size: 12px;
+}
+.automatic-message-preview p,
+.automatic-message-excerpt {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  color: #d7d9df;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+.automatic-message-excerpt {
+  max-height: 160px;
+  overflow-y: auto;
+}
+
 @font-face {
   font-family: "MedievalSharp";
   src: url("/assets/fonts/MedievalSharp-Regular.ttf") format("truetype");

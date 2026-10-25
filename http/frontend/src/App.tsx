@@ -16,6 +16,7 @@ import AdminWallpapers from "./pages/dashboard/admin/wallpapers";
 import AdminMembers from "./pages/dashboard/admin/members";
 import AdminRoles from "./pages/dashboard/admin/roles";
 import AdminBanner from "./pages/dashboard/admin/banner";
+import AdminMessages from "./pages/dashboard/admin/messages";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="admin" element={<AdminLayout />}>
+            <Route path="messages" element={<AdminMessages />} />
             <Route path="banner" element={<AdminBanner />} />
             <Route path="roles" element={<AdminRoles />} />
             <Route path="members" element={<AdminMembers />} />
