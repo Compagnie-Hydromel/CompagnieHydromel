@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GuildAdmin } from "../../../models/guild-admin";
 import type { AdminWallpaper } from "../../../models/guild-admin";
@@ -20,10 +20,70 @@ export default function WallpaperCard({
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const submitting = useRef(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState("");
+
+  useEffect(() => {
+    if (!file) {
+      setPreview("");
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  const clearFile = () => {
+    setFile(null);
+    if (fileInput.current) fileInput.current.value = "";
+  };
+
+  const chooseFile = (selected: File | undefined) => {
+    if (!selected || busy) return;
+    setNotice("");
+    if (selected.size > 8 * 1024 * 1024) {
+      clearFile();
+      setNotice("admin.imageTooLarge");
+    } else if (
+      selected.type &&
+      !["image/png", "image/jpeg", "image/webp"].includes(selected.type)
+    ) {
+      clearFile();
+      setNotice("admin.invalidImage");
+    } else {
+      setFile(selected);
+    }
+  };
+
+  const replaceImage = async () => {
+    if (!file || submitting.current) return;
+    submitting.current = true;
+    setBusy(true);
+    setNotice("");
+    try {
+      const form = new FormData();
+      form.append("image", file);
+      onUpdate(await GuildAdmin.uploadWallpaper(guildId, form, item.id));
+      clearFile();
+      setNotice("admin.wallpaperImageSaved");
+    } catch (error) {
+      setNotice(
+        error instanceof Error && error.message === "413"
+          ? "admin.imageTooLarge"
+          : error instanceof Error && error.message === "422"
+            ? "admin.invalidImage"
+            : "admin.createError",
+      );
+    } finally {
+      setBusy(false);
+      submitting.current = false;
+    }
+  };
 
   const save = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (submitting.current) return;
+    if (submitting.current || file) return;
     submitting.current = true;
     setBusy(true);
     setNotice("");
@@ -52,10 +112,16 @@ export default function WallpaperCard({
   return (
     <article className="admin-asset-card">
       <img
-        src={item.url}
+        src={preview || item.url}
         alt={item.name}
         loading="lazy"
         className="admin-wallpaper-thumbnail"
+        onError={() => {
+          if (file) {
+            clearFile();
+            setNotice("admin.invalidImage");
+          }
+        }}
       />
       {editing ? (
         <form
@@ -63,6 +129,37 @@ export default function WallpaperCard({
           onSubmit={(event) => void save(event)}
         >
           <fieldset disabled={busy} className="admin-form-fields">
+            <label>
+              {t("admin.replaceWallpaperImage")}
+              <input
+                ref={fileInput}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={(event) => chooseFile(event.target.files?.[0])}
+              />
+              <span className="admin-hint">{t("admin.imageFormats")}</span>
+            </label>
+            <p className="admin-hint">{t("admin.replaceWallpaperImageHint")}</p>
+            {file && (
+              <div className="wallpaper-edit-actions">
+                <button
+                  type="button"
+                  className="admin-button primary"
+                  disabled={busy}
+                  onClick={() => void replaceImage()}
+                >
+                  {t(busy ? "profile.saving" : "admin.replaceWallpaperImage")}
+                </button>
+                <button
+                  type="button"
+                  className="admin-button secondary"
+                  disabled={busy}
+                  onClick={clearFile}
+                >
+                  {t("admin.cancelImage")}
+                </button>
+              </div>
+            )}
             <label>
               {t("admin.name")}
               <input
@@ -98,14 +195,19 @@ export default function WallpaperCard({
             </label>
             <p className="admin-hint">{t("admin.wallpaperEditHint")}</p>
             {notice && (
-              <p role="alert" className="admin-notice error">
+              <p
+                role={
+                  notice === "admin.wallpaperImageSaved" ? "status" : "alert"
+                }
+                className={`admin-notice ${notice === "admin.wallpaperImageSaved" ? "success" : "error"}`}
+              >
                 {t(notice)}
               </p>
             )}
             <div className="wallpaper-edit-actions">
               <button
                 className="admin-button primary"
-                disabled={busy || !name.trim()}
+                disabled={busy || !name.trim() || file !== null}
               >
                 {t(busy ? "profile.saving" : "admin.saveChanges")}
               </button>
@@ -116,6 +218,7 @@ export default function WallpaperCard({
                 onClick={() => {
                   setEditing(false);
                   setNotice("");
+                  clearFile();
                 }}
               >
                 {t("admin.cancel")}
@@ -146,6 +249,7 @@ export default function WallpaperCard({
               setPrice(String(item.price));
               setLevel(String(item.level));
               setNotice("");
+              clearFile();
               setEditing(true);
             }}
           >

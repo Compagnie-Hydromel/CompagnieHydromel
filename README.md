@@ -150,6 +150,9 @@ stored in `storages/locals/wallpapers`; keep this directory when deploying or
 backing up the application. Both the webserver and Discord bots need access to it.
 Existing wallpapers have an **Edit wallpaper** action for changing the name,
 price, and level requirement without re-uploading the image or affecting ownership.
+The same editor also offers **Replace image**: choose a file, check its preview,
+then upload it without changing the wallpaper ID or existing ownership. Image
+replacement is saved separately from metadata edits and uses a new immutable URL.
 New creations are scoped to the selected guild; legacy layouts remain shared.
 
 After updating, run `python3 bot.py migrate` before restarting the webserver to

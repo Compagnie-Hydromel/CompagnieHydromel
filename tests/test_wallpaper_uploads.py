@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 import unittest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 from fastapi import HTTPException
 from PIL import Image
@@ -207,3 +207,70 @@ class TestWallpaperUploadEndpoint(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(HTTPException) as error:
             await controller.create_wallpaper(request, 10)
         self.assertEqual(error.exception.status_code, 415)
+
+    def existing_wallpaper(self):
+        return SimpleNamespace(id=7, name="Forest", price=25, level=3,
+                               url=WallpaperUploads.store(image_bytes(), 10), saveOrFail=Mock(), owners=["Alice"])
+
+    async def test_replacement_preserves_identity_metadata_and_owners(self):
+        wallpaper = self.existing_wallpaper()
+        previous_url = wallpaper.url
+        with patch.object(controller.Wallpaper, "whereFirst", return_value=wallpaper) as lookup:
+            result = await controller.replace_wallpaper_image(multipart_request(image_bytes("JPEG"), fields={}), 10, 7)
+        lookup.assert_called_once_with(id=7, guild_id=10)
+        self.assertEqual(
+            (result["id"], result["name"], result["price"], result["level"]), (7, "Forest", 25, 3))
+        self.assertEqual(wallpaper.owners, ["Alice"])
+        self.assertNotEqual(wallpaper.url, previous_url)
+        self.assertTrue(result["url"].startswith("/api/wallpapers/10-"))
+        self.assertTrue(WallpaperUploads.image_path(
+            previous_url.removeprefix(WallpaperUploads.PREFIX)).is_file())
+        self.assertEqual(len(list(self.root.iterdir())), 2)
+        wallpaper.saveOrFail.assert_called_once_with()
+
+    async def test_replacement_rejects_invalid_image_without_changing_existing_image(self):
+        wallpaper = self.existing_wallpaper()
+        previous_url = wallpaper.url
+        with patch.object(controller.Wallpaper, "whereFirst", return_value=wallpaper), self.assertRaises(HTTPException) as error:
+            await controller.replace_wallpaper_image(multipart_request(b"not an image", fields={}), 10, 7)
+        self.assertEqual(error.exception.status_code, 422)
+        self.assertEqual(wallpaper.url, previous_url)
+        wallpaper.saveOrFail.assert_not_called()
+        self.assertEqual(len(list(self.root.iterdir())), 1)
+
+    async def test_replacement_database_failure_removes_only_new_image(self):
+        wallpaper = self.existing_wallpaper()
+        previous_url = wallpaper.url
+        wallpaper.saveOrFail.side_effect = RuntimeError("database failed")
+        with patch.object(controller.Wallpaper, "whereFirst", return_value=wallpaper), self.assertRaisesRegex(RuntimeError, "database failed"):
+            await controller.replace_wallpaper_image(multipart_request(image_bytes(), fields={}), 10, 7)
+        self.assertEqual(wallpaper.url, previous_url)
+        self.assertEqual(len(list(self.root.iterdir())), 1)
+
+    async def test_replacement_requires_permission_before_parsing(self):
+        self.authorize.side_effect = HTTPException(403)
+        with patch.object(controller, "image_upload_form", new_callable=AsyncMock) as parse, self.assertRaises(HTTPException):
+            await controller.replace_wallpaper_image(multipart_request(image_bytes(), fields={}), 10, 7)
+        parse.assert_not_awaited()
+
+    async def test_other_guild_wallpaper_cannot_be_replaced(self):
+        with patch.object(controller, "image_upload_form", new_callable=AsyncMock) as parse, self.assertRaises(HTTPException) as error:
+            await controller.replace_wallpaper_image(multipart_request(image_bytes(), fields={}), 10, 7)
+        self.assertEqual(error.exception.status_code, 404)
+        parse.assert_not_awaited()
+
+    async def test_replacement_accepts_only_an_image_without_metadata_fields(self):
+        wallpaper = self.existing_wallpaper()
+        with patch.object(controller.Wallpaper, "whereFirst", return_value=wallpaper), self.assertRaises(HTTPException) as error:
+            await controller.replace_wallpaper_image(multipart_request(image_bytes()), 10, 7)
+        self.assertEqual(error.exception.status_code, 400)
+        wallpaper.saveOrFail.assert_not_called()
+
+    async def test_replacement_enforces_size_limit(self):
+        wallpaper = self.existing_wallpaper()
+        with patch.object(controller.Wallpaper, "whereFirst", return_value=wallpaper), patch.object(
+            WallpaperUploads, "MAX_BYTES", 10
+        ), self.assertRaises(HTTPException) as error:
+            await controller.replace_wallpaper_image(multipart_request(image_bytes(), fields={}), 10, 7)
+        self.assertEqual(error.exception.status_code, 413)
+        wallpaper.saveOrFail.assert_not_called()

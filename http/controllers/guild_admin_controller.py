@@ -215,3 +215,32 @@ async def update_wallpaper(request: Request, guild_id: int, wallpaper_id: Annota
     wallpaper.level = changes.level
     wallpaper.saveOrFail()
     return wallpaper_data(wallpaper)
+
+
+@router.post("/wallpapers/{wallpaper_id}/image")
+async def replace_wallpaper_image(request: Request, guild_id: int, wallpaper_id: Annotated[int, Path(gt=0)]):
+    guild = await HTTPUtils.get_guild_admin_from_session(request, guild_id)
+    wallpaper = Wallpaper.whereFirst(id=wallpaper_id, guild_id=guild.id)
+    if wallpaper is None:
+        raise HTTPException(
+            status_code=404, detail="Wallpaper not found in this guild")
+    form = await image_upload_form(request, WallpaperUploads.MAX_BYTES, max_fields=0)
+    try:
+        if len(form.multi_items()) != 1 or not isinstance(form.get("image"), UploadFile):
+            raise HTTPException(
+                status_code=422, detail="One image file is required")
+        content = await form["image"].read(WallpaperUploads.MAX_BYTES + 1)
+        url = await run_in_threadpool(WallpaperUploads.store, content, guild.id)
+        previous_url = wallpaper.url
+        try:
+            wallpaper.url = url
+            wallpaper.saveOrFail()
+        except Exception:
+            wallpaper.url = previous_url
+            WallpaperUploads.delete(url)
+            raise
+        # Keep the old immutable image: another request or bot render may still
+        # be reading it. The new URL also avoids stale browser/CDN caches.
+        return wallpaper_data(wallpaper)
+    finally:
+        await form.close()

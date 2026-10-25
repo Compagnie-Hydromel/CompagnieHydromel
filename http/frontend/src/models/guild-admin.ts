@@ -116,9 +116,10 @@ export class GuildAdmin extends Model {
   static async uploadWallpaper(
     guildId: number,
     form: FormData,
+    wallpaperId?: number,
   ): Promise<AdminWallpaper> {
     const response = await fetch(
-      `/api/sessions/guilds/${guildId}/admin/wallpapers`,
+      `/api/sessions/guilds/${guildId}/admin/wallpapers${wallpaperId === undefined ? "" : `/${wallpaperId}/image`}`,
       {
         method: "POST",
         credentials: "include",
