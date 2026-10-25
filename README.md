@@ -67,7 +67,7 @@ python3 -m pip install -r requirements.txt
 ```bash
 python3 bot.py migrate
 
-# rollback migration if needed
+# rollback migration if needed
 python3 bot.py rollback
 ```
 
@@ -86,6 +86,9 @@ python3 bot.py menestrel
 
 # To start the archiveuse
 python3 bot.py archiveuse
+
+# To start the webserver
+python3 bot.py webserver
 ```
 
 ## Avoid users to see admin commands 

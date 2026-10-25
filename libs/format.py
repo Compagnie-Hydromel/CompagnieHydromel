@@ -3,7 +3,7 @@ import subprocess
 
 
 class PythonFormatter:
-    def __init__(self, directories=["libs", "cogs", "test"], files=["bot.py"]):
+    def __init__(self, directories=["libs", "cogs", "commands", "test"], files=["bot.py"]):
         self.directories = directories
         self.files = files
 
