@@ -17,7 +17,7 @@ const GuildSelection: React.FC<GuildSelectionProps> = ({
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const guildId = event.target.value;
     setSelectedGuild(guildId);
-    const guild = guilds.find((g) => g.get("id") === guildId);
+    const guild = guilds.find((g) => String(g.get("id")) === guildId);
     if (guild) {
       onSelect(guild);
     }

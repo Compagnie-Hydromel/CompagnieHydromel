@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 import discord
@@ -7,6 +8,10 @@ from libs.log import Log
 
 
 def run_bot(bot_name):
+    asyncio.run(_run_bot(bot_name))
+
+
+async def _run_bot(bot_name):
     intents: discord.Intents = discord.Intents.all()
     bot: discord.bot.Bot = discord.Bot(
         intents=intents, max_messages=1000000)
@@ -28,7 +33,10 @@ def run_bot(bot_name):
                  str(bot.user) + ' : ' + str(bot.user.id))
 
     bot_token_id: str = bot_name.upper() + "_TOKEN"
-    if os.getenv(bot_token_id) is not None:
-        bot.run(os.getenv(bot_token_id))
-    else:
-        Log.error(bot_token_id + " is not defined in .env file")
+    try:
+        if os.getenv(bot_token_id) is not None:
+            await bot.start(os.getenv(bot_token_id))
+        else:
+            Log.error(bot_token_id + " is not defined in .env file")
+    finally:
+        await bot.close()

@@ -45,7 +45,7 @@ async def guild_user(request: Request, guild_id: int) -> GuildUserProjection:
     user = HTTPUtils.get_user_from_session(request)
     guild = Guild.findOrFail(guild_id)
 
-    guilduser = GuildUser.from_user_and_guild(user, guild)
+    guilduser = await HTTPUtils.sync_guild_admin(user, guild)
 
     return GuildUserProjection.from_guild_user(guilduser)
 

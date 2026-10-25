@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { Guild } from "../models/guild";
 import { Images } from "../assets";
 import { Profile } from "./profile";
+import { GuildAdmin } from "../models/guild-admin";
+import { useTranslation } from "react-i18next";
 
 interface MenuItem {
   label: string;
@@ -14,14 +16,60 @@ interface MenuItem {
 }
 
 export const Header: React.FC = () => {
-  const items: MenuItem[] = [
-    { label: "Dashboard", href: "/dashboard", icon: <></> },
-    { label: "Profile", href: "/dashboard/profile", icon: <></> },
-  ];
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = React.useState<User | null>(null);
   const [guilds, setGuilds] = React.useState<Guild[]>([]);
   const [selectedGuild, setSelectedGuild] = React.useState<Guild | null>(null);
+  const [canAdmin, setCanAdmin] = React.useState(false);
+  const [guildRevision, setGuildRevision] = React.useState(0);
+  const items: MenuItem[] = [
+    { label: "Dashboard", href: "/dashboard", icon: <></> },
+    { label: "Profile", href: "/dashboard/profile", icon: <></> },
+    ...(canAdmin
+      ? [
+          {
+            label: t("admin.title"),
+            href: "/dashboard/admin/layouts",
+            icon: <></>,
+          },
+        ]
+      : []),
+  ];
+  const selectGuild = React.useCallback((guild: Guild) => {
+    const id = String(guild.get("id"));
+    if (localStorage.getItem("selectedGuild") !== id) {
+      localStorage.setItem("selectedGuild", id);
+      window.dispatchEvent(new Event("guild-changed"));
+    }
+  }, []);
+
+  useEffect(() => {
+    const changed = () => {
+      setCanAdmin(false);
+      setGuildRevision((value) => value + 1);
+    };
+    window.addEventListener("guild-changed", changed);
+    return () => window.removeEventListener("guild-changed", changed);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      try {
+        const guild = await Guild.currentlySelectedGuild();
+        if (!guild) return;
+        await GuildAdmin.request(guild.get("id"), "/access");
+        if (!cancelled) setCanAdmin(true);
+      } catch {
+        if (!cancelled) setCanAdmin(false);
+      }
+    };
+    void check();
+    return () => {
+      cancelled = true;
+    };
+  }, [guildRevision]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -72,6 +120,7 @@ export const Header: React.FC = () => {
       <GuildSelection
         guilds={guilds}
         defaultSelectedGuild={selectedGuild ?? undefined}
+        onSelect={selectGuild}
       />
       <nav className="w-full">
         <ul className="flex flex-col md:flex-row gap-5">

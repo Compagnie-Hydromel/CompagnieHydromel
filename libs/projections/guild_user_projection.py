@@ -18,6 +18,7 @@ class GuildUserProjection(BaseModel):
     avatar_url: str
     display_name: str
     username: str
+    is_admin: bool = False
 
     @classmethod
     def from_guild_user(cls, guild_user: GuildUser):
@@ -35,5 +36,6 @@ class GuildUserProjection(BaseModel):
             name_color=guild_user.name_color,
             avatar_url=guild_user.avatar_url,
             display_name=guild_user.display_name,
-            username=guild_user.username
+            username=guild_user.username,
+            is_admin=bool(guild_user.is_admin)
         )

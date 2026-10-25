@@ -91,7 +91,40 @@ python3 bot.py archiveuse
 python3 bot.py webserver
 ```
 
-## Avoid users to see admin commands 
+### Profile customization
+
+Profile customization is available exclusively in the web dashboard. Use `/web`
+on Discord to receive your login link, select your server, then open **Profile**.
+You can change name and progress-bar colors, select a profile layout, preview
+wallpapers, buy them with smartpoints, and choose an owned wallpaper.
+The `/profile` command remains available to display your profile on Discord.
+
+### Guild administration
+
+Members with the Discord **Administrator** permission can open
+**Administration → Layouts / Wallpapers** in the dashboard. The guild user's
+`is_admin` flag is synchronized with Discord when the server is accessed;
+revoking the permission also revokes web administration access.
+
+**Administration → Members** provides a searchable, paginated list of Discord
+members. Administrators can set exact smartpoint balances, levels, and current-level
+XP. XP must remain below `200 × min(level, 15)`; these manual edits do not grant
+level-up rewards or change monthly XP. Changes only affect the selected guild.
+
+Layouts are created by dragging profile elements on the preview (or using arrow
+keys, with Shift for larger steps). Wallpapers are uploaded from your computer
+(static PNG, JPEG or WebP, up to 8 MiB / 16 megapixels), with a smartpoint price,
+level reward, or exclusive availability. Images are cropped to 500 × 281 and
+stored in `storages/locals/wallpapers`; keep this directory when deploying or
+backing up the application. Both the webserver and Discord bots need access to it.
+Existing wallpapers have an **Edit wallpaper** action for changing the name,
+price, and level requirement without re-uploading the image or affecting ownership.
+New creations are scoped to the selected guild; legacy layouts remain shared.
+
+After updating, run `python3 bot.py migrate` before restarting the webserver to
+add guild ownership to profile layouts.
+
+## Avoid users to see admin commands
 use the discord default slash commands permission system
 https://discord.com/blog/slash-commands-permissions-discord-apps-bots
 

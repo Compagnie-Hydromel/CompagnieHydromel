@@ -30,8 +30,8 @@ class Profile(discord.Cog):
 
             Log.info("create profile for " + str(ctx.author))
             wallpaper = user.wallpaper or Wallpaper.default()
-            bar_color = "#" + user.bar_color
-            name_color = "#" + user.name_color
+            bar_color = user.bar_color
+            name_color = user.name_color
             pro = ProfilMaker(
                 ctx.author.id,
                 ctx.author.name,

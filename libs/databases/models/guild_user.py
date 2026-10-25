@@ -45,11 +45,15 @@ class GuildUser(ApplicationModel):
 
     @property
     def name_color(self) -> str:
-        return f"#{super().name_color.lstrip('#')}"
+        value = self._modified_attributes.get(
+            "name_color", self._attributes.get("name_color")) or "0000FF"
+        return "#" + value.lstrip('#')
 
     @property
     def bar_color(self) -> str:
-        return f"#{super().bar_color.lstrip('#')}"
+        value = self._modified_attributes.get(
+            "bar_color", self._attributes.get("bar_color")) or "ADFF2F"
+        return "#" + value.lstrip('#')
 
     def get_guilduser(self):
         return self.get_bot().get_guild(int(self.guild.discord_id)).get_member(int(self.user.discord_id))

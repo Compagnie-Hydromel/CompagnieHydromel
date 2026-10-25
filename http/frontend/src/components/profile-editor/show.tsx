@@ -49,7 +49,6 @@ const ShowProfile: React.FC<ShowProfileProps> = ({
 }) => {
   return (
     <div
-      id="profile-preview"
       className="relative h-[281px] w-[500px] overflow-hidden select-none"
       style={{ fontFamily: "Arial, sans-serif" }}
     >

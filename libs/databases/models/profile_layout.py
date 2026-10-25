@@ -8,7 +8,13 @@ from libs.databases.models.guild import Guild
 
 
 class ProfileLayout(Model):
+    _belongs_to = [BelongsTo("guild")]
     _has_many = [HasMany("guildusers")]
+
+    @classmethod
+    def available_for_guild(cls, guild_id):
+        return [layout for layout in cls.all()
+                if layout.guild_id is None or layout.guild_id == guild_id]
 
     @classmethod
     def default(cls):

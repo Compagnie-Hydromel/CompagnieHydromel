@@ -7,7 +7,7 @@ import "./assets/css/index.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <div
-      className="bg-black text-white"
+      className="min-h-screen bg-black text-white"
       style={{
         backgroundImage: "url(" + Images.TAVERNE + ")",
         backgroundSize: "cover",

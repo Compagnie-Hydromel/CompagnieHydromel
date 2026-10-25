@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from libs.databases.models.wallpaper import Wallpaper
+from libs.storages.wallpaper_uploads import WallpaperUploads
 
 
 class WallpaperProjection(BaseModel):
@@ -12,4 +13,4 @@ class WallpaperProjection(BaseModel):
     def from_wallpaper(cls, wallpaper: Wallpaper):
         return cls(id=wallpaper.id,
                    name=wallpaper.name,
-                   url=wallpaper.url)
+                   url=WallpaperUploads.public_url(wallpaper.url))
