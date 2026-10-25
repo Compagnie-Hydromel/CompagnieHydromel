@@ -87,7 +87,7 @@ export const Header: React.FC = () => {
 
   return (
     <header
-      className="flex justify-between items-center text-black p-8 mx-8"
+      className="sticky top-0 z-50 flex justify-between items-center text-black p-8 mx-8"
       style={{
         backgroundImage: "url(" + Images.MENU.MIDDLE + ")",
         backgroundSize: "contain",
