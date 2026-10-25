@@ -1,18 +1,37 @@
+import importlib
+import os
+from pathlib import Path
+
 from MIWOS.config import DBConfig
 from os import getenv
 
 
 def init():
     db_type = getenv("DB_TYPE") or "sqlite"
+    db_database = getenv("DB_NAME") or "compagnieHydromel"
+    if db_type == "sqlite":
+        Path(db_database).parent.mkdir(parents=True, exist_ok=True)
+
     DBConfig.set(
         db_connector=db_type,
         db_host=getenv("DB_HOST") or "localhost",
         db_port=int(getenv("DB_PORT") or 3306),
         db_user=getenv("DB_USER") or "root",
         db_password=getenv("DB_PASSWORD") or "",
-        db_database=getenv("DB_NAME") or "compagnieHydromel",
+        db_database=db_database,
         db_collation=getenv("DB_COLLATION") or "utf8mb4_general_ci",
         db_migration_dir="libs/databases/migrations",
         sql_log_file=getenv(
             "SQL_LOG_FILE") or "libs/databases/" + (db_type) + ".sql.log",
     )
+
+
+def load_all_models():
+    for filename in os.listdir('./libs/databases/models/'):
+        if filename.endswith('.py') and filename != '__init__.py':
+            module_name = f'libs.databases.models.{filename[:-3]}'
+            globals()[filename[:-3]] = importlib.import_module(module_name)
+            globals().update({name: getattr(globals()[filename[:-3]], name) for name in dir(
+                globals()[filename[:-3]]) if not name.startswith('_')})
+
+    return globals()

@@ -39,7 +39,9 @@ class ScheduledMessages(discord.Cog):
         now = datetime.datetime.now(ZoneInfo(configuration.timezone))
         today = now.date().isoformat()
         scheduled_day = configuration.day.lower()
-        if scheduled_day != "daily" and scheduled_day != now.strftime("%A").lower():
+        weekdays = ("monday", "tuesday", "wednesday",
+                    "thursday", "friday", "saturday", "sunday")
+        if scheduled_day != "daily" and scheduled_day != weekdays[now.weekday()]:
             return
         if now.strftime("%H:%M") != configuration.time:
             return
@@ -47,7 +49,8 @@ class ScheduledMessages(discord.Cog):
             return
 
         channel = self.__bot.get_channel(int(configuration.channel_id))
-        if channel is None or not isinstance(channel, discord.abc.Messageable):
+        if (channel is None or not isinstance(channel, discord.abc.Messageable) or
+                str(channel.guild.id) != str(configuration.guild.discord_id)):
             Log.warning(
                 f"Scheduled message channel {configuration.channel_id} was not found")
             return

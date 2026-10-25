@@ -67,13 +67,56 @@ python3 -m pip install -r requirements.txt
 ```bash
 python3 bot.py migrate
 
-# rollback migration if needed
+# rollback migration if needed
 python3 bot.py rollback
 ```
 
 `WARNING`: check that python3 is the good version of python you want to use. Don't hesitate to specifies the version with python3.* commands
 
 ## Usage
+
+**Super administration → Badges** is restricted to users whose global database
+flag `users.is_superadmin` is enabled (Discord guild Administrator is not enough).
+Manage this flag from the server terminal, using **Discord user IDs**, not database IDs:
+
+```bash
+python3 bot.py superadmin add 123456789012345678
+python3 bot.py superadmin remove 123456789012345678
+python3 bot.py superadmin list
+```
+
+`add` creates the application user if needed. `remove` only revokes superadmin
+access; it never deletes the user. No Discord bot connection is required. Run
+database migrations first, and restrict shell access to trusted operators.
+
+Create badges with PNG/JPEG/WebP uploads, rename them, replace their images, or
+delete them and their assignments. Badges can be assigned or revoked for existing
+application users, searchable by Discord ID. Badges are global across guilds.
+The superadmin area has separate **Users** and **Badges** menus. Open a user’s
+detail page to view their recorded guild memberships, level, XP, monthly points,
+smartpoints, stored permissions, and badge assignments. Assign/revoke badges from
+that detail page, not the badge catalog. Search supports Discord IDs and names
+available in the bot cache. Guild presence is indicative, not a live verification.
+Images are normalized to 128 × 128 with transparency preserved and stored in
+`storages/locals/badges`; share this directory with the bots and include it in
+backups. No web endpoint allows users to change the superadmin flag.
+
+**Administration → Automatic messages** replaces `/automatic_message` for
+creating, editing, listing, and deleting daily or weekly messages. Choose a text
+channel, local time, and IANA timezone; existing schedules remain available.
+Attachments (up to 8 MiB) can be uploaded, replaced, or removed after saving the
+message. They are stored privately in `storages/locals/scheduled_messages`, which
+must be shared with Barman and included in backups. Barman must remain online;
+its scheduler checks every 30 seconds and does not catch up missed schedules.
+Editing preserves the last-send date to prevent duplicate delivery that day.
+
+The web **Dashboard** shows visible voice/stage channels and their participants,
+plus the monthly top 10 and level top 10 using the same ordering as Discord’s
+leaderboards (level ties use current-level XP). It refreshes every 20 seconds
+while the page is visible and follows the selected guild. Any current guild
+member can view it; private channels are filtered using both the viewer’s and
+bot’s Discord permissions. Missing Discord profiles fall back to their user IDs.
+
 ```bash
 # To start all the bot
 python3 bot.py
@@ -86,9 +129,79 @@ python3 bot.py menestrel
 
 # To start the archiveuse
 python3 bot.py archiveuse
+
+# To start the webserver
+python3 bot.py webserver
 ```
 
-## Avoid users to see admin commands 
+### Profile customization
+
+Profile customization is available exclusively in the web dashboard. Use `/web`
+on Discord to receive your login link, select your server, then open **Profile**.
+You can change name and progress-bar colors, select a profile layout, preview
+wallpapers, buy them with smartpoints, and choose an owned wallpaper.
+The `/profile` command remains available to display your profile on Discord.
+
+### Guild administration
+
+Members with the Discord **Administrator** permission can open
+**Administration → Layouts / Wallpapers** in the dashboard. The guild user's
+`is_admin` flag is synchronized with Discord when the server is accessed;
+revoking the permission also revokes web administration access.
+
+**Administration → Members** provides a searchable, paginated list of Discord
+members. Administrators can set exact smartpoint balances, levels, and current-level
+XP. XP must remain below `200 × min(level, 15)`; these manual edits do not grant
+level-up rewards or change monthly XP. Changes only affect the selected guild.
+
+**Administration → Roles** replaces the Discord `/manage_role` command. Add,
+edit, and remove rules for existing Discord roles: level rewards or reaction
+roles (message ID + emoji). Level rules synchronize tracked members after each
+change; synchronization can also be retried from the page. Members receive their
+highest eligible level role after accepting the rules. Reaction assignment stays
+in Barman, including removal of roles when reactions are removed. Add the initial
+reaction to the message on Discord. Unicode and custom emoji are supported.
+The bot needs Manage Roles and a role above the roles it assigns. Your own role
+hierarchy is enforced; managed, @everyone, and privileged administrative roles
+cannot be configured for automatic assignment. Removing a rule does not delete
+the Discord role or revoke existing reaction-role assignments.
+
+In **Administration → Roles → Rules acceptance**, set the rules message link
+or ID and its acceptance emoji. This replaces `/manage_accepted_rules_message`.
+Message links are checked against the selected server and fetched using the bot;
+plain IDs remain supported for existing setups. Add the initial reaction on
+Discord. You can view, change, or disable the setting from the web interface.
+Existing settings are loaded automatically, and changing or disabling the message
+does not reset members who have already accepted the rules.
+
+**Administration → Voice banner** replaces `/manage_banner_voice_channels`.
+Upload a background (PNG/JPEG/WebP, 8 MiB / 16 megapixels maximum; normalized to
+960 × 540), add existing voice channels, then drag their sample avatars on the
+preview or enter exact positions. Save each position; zero coordinates are valid.
+Existing images and channel settings are loaded automatically. You can remove
+channels from the banner or disable automatic updates without deleting Discord
+channels or changing the current Discord banner. Uploaded files are stored in
+`storages/locals/banners`; keep this directory alongside wallpaper uploads.
+Barman applies the configuration on the next voice-state update. Discord must
+support server banners, and the bot needs Manage Server permission.
+
+Layouts are created by dragging profile elements on the preview (or using arrow
+keys, with Shift for larger steps). Wallpapers are uploaded from your computer
+(static PNG, JPEG or WebP, up to 8 MiB / 16 megapixels), with a smartpoint price,
+level reward, or exclusive availability. Images are cropped to 500 × 281 and
+stored in `storages/locals/wallpapers`; keep this directory when deploying or
+backing up the application. Both the webserver and Discord bots need access to it.
+Existing wallpapers have an **Edit wallpaper** action for changing the name,
+price, and level requirement without re-uploading the image or affecting ownership.
+The same editor also offers **Replace image**: choose a file, check its preview,
+then upload it without changing the wallpaper ID or existing ownership. Image
+replacement is saved separately from metadata edits and uses a new immutable URL.
+New creations are scoped to the selected guild; legacy layouts remain shared.
+
+After updating, run `python3 bot.py migrate` before restarting the webserver to
+add guild ownership to profile layouts.
+
+## Avoid users to see admin commands
 use the discord default slash commands permission system
 https://discord.com/blog/slash-commands-permissions-discord-apps-bots
 

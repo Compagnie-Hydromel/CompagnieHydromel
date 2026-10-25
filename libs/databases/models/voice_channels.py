@@ -3,7 +3,7 @@ from MIWOS.libs.sql.association import BelongsTo
 
 
 class VoiceChannel(Model):
-    _belongs_to = BelongsTo("guild")
+    _belongs_to = [BelongsTo("guild")]
 
     @classmethod
     def from_discord_id(cls, discord_id: str):
