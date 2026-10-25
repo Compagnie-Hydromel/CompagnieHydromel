@@ -26,6 +26,15 @@ export const Header: React.FC = () => {
   const items: MenuItem[] = [
     { label: "Dashboard", href: "/dashboard", icon: <></> },
     { label: "Profile", href: "/dashboard/profile", icon: <></> },
+    ...(currentUser?.get("is_superadmin")
+      ? [
+          {
+            label: t("superadmin.title"),
+            href: "/dashboard/superadmin/users",
+            icon: <></>,
+          },
+        ]
+      : []),
     ...(canAdmin
       ? [
           {

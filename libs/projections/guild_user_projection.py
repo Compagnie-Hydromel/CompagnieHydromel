@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from libs.databases.models.guild_user import GuildUser
 from libs.databases.models.wallpaper import Wallpaper
 from libs.projections.wallpaper_projection import WallpaperProjection
+from libs.storages.badge_uploads import BadgeUploads
 
 
 class GuildUserProjection(BaseModel):
@@ -31,7 +32,8 @@ class GuildUserProjection(BaseModel):
             progress=guild_user.progress(),
             wallpaper=WallpaperProjection.from_wallpaper(
                 wallpaper) if wallpaper else WallpaperProjection.from_wallpaper(Wallpaper.default()),
-            badges=[badge.url for badge in guild_user.user.badges],
+            badges=[BadgeUploads.public_url(badge.url)
+                    for badge in guild_user.user.badges],
             bar_color=guild_user.bar_color,
             name_color=guild_user.name_color,
             avatar_url=guild_user.avatar_url,

@@ -75,6 +75,32 @@ python3 bot.py rollback
 
 ## Usage
 
+**Super administration → Badges** is restricted to users whose global database
+flag `users.is_superadmin` is enabled (Discord guild Administrator is not enough).
+Manage this flag from the server terminal, using **Discord user IDs**, not database IDs:
+
+```bash
+python3 bot.py superadmin add 123456789012345678
+python3 bot.py superadmin remove 123456789012345678
+python3 bot.py superadmin list
+```
+
+`add` creates the application user if needed. `remove` only revokes superadmin
+access; it never deletes the user. No Discord bot connection is required. Run
+database migrations first, and restrict shell access to trusted operators.
+
+Create badges with PNG/JPEG/WebP uploads, rename them, replace their images, or
+delete them and their assignments. Badges can be assigned or revoked for existing
+application users, searchable by Discord ID. Badges are global across guilds.
+The superadmin area has separate **Users** and **Badges** menus. Open a user’s
+detail page to view their recorded guild memberships, level, XP, monthly points,
+smartpoints, stored permissions, and badge assignments. Assign/revoke badges from
+that detail page, not the badge catalog. Search supports Discord IDs and names
+available in the bot cache. Guild presence is indicative, not a live verification.
+Images are normalized to 128 × 128 with transparency preserved and stored in
+`storages/locals/badges`; share this directory with the bots and include it in
+backups. No web endpoint allows users to change the superadmin flag.
+
 **Administration → Automatic messages** replaces `/automatic_message` for
 creating, editing, listing, and deleting daily or weekly messages. Choose a text
 channel, local time, and IANA timezone; existing schedules remain available.

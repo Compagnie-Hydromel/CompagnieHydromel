@@ -18,6 +18,7 @@ COMMANDS = {
     "format": "format",
     "check-format": "check_format",
     "test": "test",
+    "superadmin": "superadmin",
 }
 
 

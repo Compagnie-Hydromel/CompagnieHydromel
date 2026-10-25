@@ -9,6 +9,14 @@ from libs.databases.models.user import User
 
 class HTTPUtils:
     @staticmethod
+    def get_superadmin_from_session(request: Request) -> User:
+        user = HTTPUtils.get_user_from_session(request)
+        if not user.is_superadmin:
+            raise HTTPException(
+                status_code=403, detail="Super administrator required")
+        return user
+
+    @staticmethod
     def get_user_from_session(request: Request) -> User:
         user = User.find(request.session.get("user_id", None))
         if not user:

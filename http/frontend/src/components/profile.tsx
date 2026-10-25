@@ -35,9 +35,6 @@ export const Profile: React.FC<{ currentUser: User | null }> = ({
               {currentUser?.get("display_name") ?? "Unknown User"}
             </div>
             <ul className="py-2">
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                {t("generic.settings")}
-              </li>
               <li
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 onClick={async () => {

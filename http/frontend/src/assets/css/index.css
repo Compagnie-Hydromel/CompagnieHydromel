@@ -1,5 +1,68 @@
 @import "tailwindcss";
 
+.superuser-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.superuser-stats dt {
+  font-size: 11px;
+  color: #a9afb6;
+  margin-bottom: 4px;
+}
+.superuser-stats dd {
+  font-size: 16px;
+  color: #e9bd75;
+}
+
+.badge-management {
+  margin-top: 24px;
+}
+.badge-preview {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  background-image: radial-gradient(ellipse at center, #e9bd7512, transparent);
+}
+.badge-preview > img {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+}
+.badge-placeholder {
+  font-size: 90px;
+  color: #e9bd75;
+}
+.badge-card {
+  display: grid;
+  gap: 16px;
+}
+.badge-card > img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+.badge-user-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.badge-user-list button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 5px 8px;
+  border: 1px solid #e9bd7540;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.badge-user-list img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
 .admin-form .automatic-message-content {
   width: 100%;
   resize: vertical;
