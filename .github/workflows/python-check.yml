@@ -1,5 +1,8 @@
 name: Python Check
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:

@@ -6,7 +6,8 @@ from libs.exception.bot_exception import BotException
 
 class Guild(ApplicationModel):
     _has_many = [HasMany("roles"), HasMany(
-        "wallpapers"), HasMany("guildusers"), HasMany("voicechannels")]
+        "wallpapers"), HasMany("guildusers"), HasMany("voicechannels"),
+        HasMany("scheduledmessages")]
     _default_attributes = {
         "information_channel_id": "0",
         "monthlytop_channel_id": "0"
