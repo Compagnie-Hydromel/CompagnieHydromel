@@ -74,6 +74,14 @@ python3 bot.py rollback
 `WARNING`: check that python3 is the good version of python you want to use. Don't hesitate to specifies the version with python3.* commands
 
 ## Usage
+
+The web **Dashboard** shows visible voice/stage channels and their participants,
+plus the monthly top 10 and level top 10 using the same ordering as Discord’s
+leaderboards (level ties use current-level XP). It refreshes every 20 seconds
+while the page is visible and follows the selected guild. Any current guild
+member can view it; private channels are filtered using both the viewer’s and
+bot’s Discord permissions. Missing Discord profiles fall back to their user IDs.
+
 ```bash
 # To start all the bot
 python3 bot.py
