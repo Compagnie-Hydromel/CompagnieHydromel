@@ -104,7 +104,9 @@ export const Header: React.FC = () => {
         if (event.key === "Escape") setMenuOpen(false);
       }}
       style={
-        { "--parchment-image": `url(${Images.MENU.MIDDLE})` } as React.CSSProperties
+        {
+          "--parchment-image": `url(${Images.MENU.MIDDLE})`,
+        } as React.CSSProperties
       }
     >
       <img
