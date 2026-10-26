@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import { User } from "../models/user";
 import GuildSelection from "../components/guild-selection";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Guild } from "../models/guild";
 import { Images } from "../assets";
 import { Profile } from "./profile";
@@ -18,6 +18,9 @@ interface MenuItem {
 export const Header: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  useEffect(() => setMenuOpen(false), [location.pathname]);
   const [currentUser, setCurrentUser] = React.useState<User | null>(null);
   const [guilds, setGuilds] = React.useState<Guild[]>([]);
   const [selectedGuild, setSelectedGuild] = React.useState<Guild | null>(null);
@@ -96,52 +99,56 @@ export const Header: React.FC = () => {
 
   return (
     <header
-      className="sticky top-0 z-50 flex justify-between items-center text-black p-8 mx-8"
-      style={{
-        backgroundImage: "url(" + Images.MENU.MIDDLE + ")",
-        backgroundSize: "contain",
-        backgroundPosition: "center",
-        backgroundRepeat: "repeat",
+      className="site-header sticky top-0 z-50 text-black"
+      onKeyDown={(event) => {
+        if (event.key === "Escape") setMenuOpen(false);
       }}
+      style={
+        { "--parchment-image": `url(${Images.MENU.MIDDLE})` } as React.CSSProperties
+      }
     >
       <img
         src={Images.MENU.LEFT}
-        alt="Left Decoration"
-        style={{
-          height: "144px",
-          width: "auto",
-          position: "absolute",
-          left: 0,
-          top: 0,
-        }}
+        className="site-header-decoration site-header-decoration-left"
+        alt=""
       />
       <img
         src={Images.MENU.RIGHT}
-        alt="Right Decoration"
-        style={{
-          height: "144px",
-          width: "auto",
-          position: "absolute",
-          right: 0,
-          top: 0,
-        }}
+        className="site-header-decoration site-header-decoration-right"
+        alt=""
       />
       <GuildSelection
         guilds={guilds}
         defaultSelectedGuild={selectedGuild ?? undefined}
         onSelect={selectGuild}
       />
-      <nav className="w-full">
-        <ul className="flex flex-col md:flex-row gap-5">
+      <button
+        type="button"
+        className="site-menu-toggle"
+        aria-expanded={menuOpen}
+        aria-controls="site-navigation"
+        aria-label={t("generic.navigation")}
+        onClick={() => setMenuOpen((open) => !open)}
+      >
+        <span aria-hidden="true">{menuOpen ? "✕" : "☰"}</span>
+      </button>
+      <nav
+        id="site-navigation"
+        className={`site-navigation${menuOpen ? " is-open" : ""}`}
+        aria-label={t("generic.navigation")}
+      >
+        <ul>
           {items.map((item) => (
             <li key={item.label}>
-              <a
-                href={item.href}
+              <NavLink
+                to={item.href!}
+                end={item.href === "/dashboard"}
+                onClick={() => setMenuOpen(false)}
                 className="text-gold-300 hover:text-gold-900 flex items-center gap-2"
               >
                 {item.icon}
                 {item.label}
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>

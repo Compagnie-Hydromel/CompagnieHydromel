@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ProfileLayout } from "../../models/profile";
 import ShowProfile from "./show";
@@ -23,6 +23,17 @@ interface Props {
 export default function LayoutCanvas({ layout, background, onChange }: Props) {
   const { t } = useTranslation();
   const canvas = useRef<HTMLDivElement>(null);
+  const container = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const element = container.current;
+    if (!element) return;
+    const resize = () => setScale(Math.min(1, element.clientWidth / 500));
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
   const drag = useRef<{
     key: ElementKey;
     x: number;
@@ -43,92 +54,102 @@ export default function LayoutCanvas({ layout, background, onChange }: Props) {
 
   return (
     <div className="layout-workspace">
-      <div className="layout-canvas-scroll">
+      <div ref={container} className="layout-canvas-scroll">
         <div
-          ref={canvas}
-          className="layout-canvas"
-          aria-label={t("admin.canvas")}
+          className="layout-canvas-viewport"
+          style={{ width: 500 * scale, height: 281 * scale }}
         >
-          <ShowProfile
-            {...layout}
-            background={background}
-            displayName="Capitaine Hydromel"
-            username="compagnie"
-            level={12}
-            progress={65}
-            name_color="#fff4d4"
-            bar_color="#edbd68"
-            badges={["https://cdn.discordapp.com/embed/avatars/1.png"]}
-          />
-          <div className="layout-grid" aria-hidden="true" />
-          {elements.map((element) => (
-            <button
-              key={element.key}
-              type="button"
-              className={`layout-handle ${selected === element.key ? "selected" : ""}`}
-              style={{
-                left: layout[`${element.key}_x`],
-                top: layout[`${element.key}_y`],
-                width: element.width,
-                height: element.height,
-              }}
-              aria-label={t(`admin.elements.${element.key}`)}
-              aria-pressed={selected === element.key}
-              onFocus={() => setSelected(element.key)}
-              onPointerDown={(event) => {
-                if (event.button !== 0) return;
-                event.preventDefault();
-                event.currentTarget.focus();
-                event.currentTarget.setPointerCapture(event.pointerId);
-                setSelected(element.key);
-                drag.current = {
-                  key: element.key,
-                  x: layout[`${element.key}_x`],
-                  y: layout[`${element.key}_y`],
-                  startX: event.clientX,
-                  startY: event.clientY,
-                };
-              }}
-              onPointerMove={(event) => {
-                const current = drag.current;
-                if (!current || current.key !== element.key) return;
-                const scale =
-                  500 / (canvas.current?.getBoundingClientRect().width || 500);
-                move(
-                  element.key,
-                  current.x + (event.clientX - current.startX) * scale,
-                  current.y + (event.clientY - current.startY) * scale,
-                );
-              }}
-              onPointerUp={() => {
-                drag.current = null;
-              }}
-              onPointerCancel={() => {
-                drag.current = null;
-              }}
-              onLostPointerCapture={() => {
-                drag.current = null;
-              }}
-              onKeyDown={(event) => {
-                const step = event.shiftKey ? 10 : 1;
-                const delta = {
-                  ArrowLeft: [-step, 0],
-                  ArrowRight: [step, 0],
-                  ArrowUp: [0, -step],
-                  ArrowDown: [0, step],
-                }[event.key];
-                if (!delta) return;
-                event.preventDefault();
-                move(
-                  element.key,
-                  layout[`${element.key}_x`] + delta[0],
-                  layout[`${element.key}_y`] + delta[1],
-                );
-              }}
-            >
-              <span>{t(`admin.elements.${element.key}`)}</span>
-            </button>
-          ))}
+          <div
+            ref={canvas}
+            className="layout-canvas"
+            style={{
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+            }}
+            aria-label={t("admin.canvas")}
+          >
+            <ShowProfile
+              {...layout}
+              background={background}
+              displayName="Capitaine Hydromel"
+              username="compagnie"
+              level={12}
+              progress={65}
+              name_color="#fff4d4"
+              bar_color="#edbd68"
+              badges={["https://cdn.discordapp.com/embed/avatars/1.png"]}
+            />
+            <div className="layout-grid" aria-hidden="true" />
+            {elements.map((element) => (
+              <button
+                key={element.key}
+                type="button"
+                className={`layout-handle ${selected === element.key ? "selected" : ""}`}
+                style={{
+                  left: layout[`${element.key}_x`],
+                  top: layout[`${element.key}_y`],
+                  width: element.width,
+                  height: element.height,
+                }}
+                aria-label={t(`admin.elements.${element.key}`)}
+                aria-pressed={selected === element.key}
+                onFocus={() => setSelected(element.key)}
+                onPointerDown={(event) => {
+                  if (event.button !== 0) return;
+                  event.preventDefault();
+                  event.currentTarget.focus();
+                  event.currentTarget.setPointerCapture(event.pointerId);
+                  setSelected(element.key);
+                  drag.current = {
+                    key: element.key,
+                    x: layout[`${element.key}_x`],
+                    y: layout[`${element.key}_y`],
+                    startX: event.clientX,
+                    startY: event.clientY,
+                  };
+                }}
+                onPointerMove={(event) => {
+                  const current = drag.current;
+                  if (!current || current.key !== element.key) return;
+                  const scale =
+                    500 /
+                    (canvas.current?.getBoundingClientRect().width || 500);
+                  move(
+                    element.key,
+                    current.x + (event.clientX - current.startX) * scale,
+                    current.y + (event.clientY - current.startY) * scale,
+                  );
+                }}
+                onPointerUp={() => {
+                  drag.current = null;
+                }}
+                onPointerCancel={() => {
+                  drag.current = null;
+                }}
+                onLostPointerCapture={() => {
+                  drag.current = null;
+                }}
+                onKeyDown={(event) => {
+                  const step = event.shiftKey ? 10 : 1;
+                  const delta = {
+                    ArrowLeft: [-step, 0],
+                    ArrowRight: [step, 0],
+                    ArrowUp: [0, -step],
+                    ArrowDown: [0, step],
+                  }[event.key];
+                  if (!delta) return;
+                  event.preventDefault();
+                  move(
+                    element.key,
+                    layout[`${element.key}_x`] + delta[0],
+                    layout[`${element.key}_y`] + delta[1],
+                  );
+                }}
+              >
+                <span>{t(`admin.elements.${element.key}`)}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       <p className="admin-hint">↔ {t("admin.dragHint")}</p>

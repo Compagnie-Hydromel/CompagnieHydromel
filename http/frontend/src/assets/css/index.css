@@ -1,5 +1,131 @@
 @import "tailwindcss";
 
+/* Keep intrinsic table, form and canvas widths inside their own panels. */
+#root,
+main,
+fieldset,
+.admin-content,
+.admin-panel,
+.layout-workspace,
+.admin-editor-grid > *,
+.profile-editor-grid > * {
+  min-width: 0;
+}
+
+.site-header {
+  --parchment-roll-width: 34px;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(160px, 260px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  margin: 8px 16px 0;
+  padding: 24px 48px;
+}
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 calc(var(--parchment-roll-width) - 8px);
+  z-index: -1;
+  background-image: var(--parchment-image);
+  background-size: auto 100%;
+  background-position: center;
+  background-repeat: repeat-x;
+  pointer-events: none;
+}
+.site-header-decoration {
+  position: absolute;
+  top: 0;
+  width: var(--parchment-roll-width);
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+.site-header-decoration-left {
+  left: 0;
+}
+.site-header-decoration-right {
+  right: 0;
+}
+.guild-selection,
+.guild-selection select {
+  min-width: 0;
+  width: 100%;
+}
+.guild-selection select {
+  min-height: 44px;
+  text-overflow: ellipsis;
+}
+.site-navigation ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.site-navigation a {
+  min-height: 44px;
+  padding: 8px 4px;
+}
+.site-navigation a[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.header-avatar {
+  width: 64px;
+  height: 64px;
+}
+.site-menu-toggle {
+  display: none;
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+  border: 1px solid #382a1650;
+  border-radius: 8px;
+  font-size: 24px;
+}
+.site-header :focus-visible {
+  outline: 2px solid #553611;
+  outline-offset: 3px;
+}
+.layout-canvas-viewport {
+  margin-inline: auto;
+}
+
+@media (max-width: 1100px) {
+  .site-header {
+    --parchment-roll-width: 22px;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 8px;
+    margin-inline: 4px;
+    padding: 16px 28px;
+  }
+  .site-menu-toggle {
+    display: block;
+  }
+  .header-profile {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .header-avatar {
+    width: 44px;
+    height: 44px;
+  }
+  .site-navigation {
+    display: none;
+    grid-column: 1 / -1;
+    max-height: 60dvh;
+    overflow-y: auto;
+    border-top: 1px solid #382a1630;
+    padding-top: 8px;
+  }
+  .site-navigation.is-open {
+    display: block;
+  }
+  .site-navigation ul {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
 .profile-studio {
   --profile-gold: #e9bd75;
   --profile-muted: #a9afb6;
@@ -1938,5 +2064,77 @@ body {
   .admin-section-title {
     align-items: start;
     flex-direction: column;
+  }
+  .admin-tabs {
+    padding: 10px;
+    gap: 4px;
+  }
+  .admin-tabs a {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+  .admin-panel-heading,
+  .members-toolbar,
+  .members-pagination,
+  .profile-alert {
+    flex-wrap: wrap;
+  }
+  .members-search {
+    flex-basis: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+  .members-table-scroll {
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+  }
+  .admin-heading,
+  .admin-panel,
+  .profile-panel,
+  .dashboard-panel,
+  .superuser-stats dd {
+    overflow-wrap: anywhere;
+  }
+  .admin-form label,
+  .admin-form input,
+  .admin-form select,
+  .wallpaper-edit-actions > select {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .admin-form input,
+  .admin-form select,
+  .admin-form textarea,
+  .members-search input,
+  .member-number,
+  .profile-select-label select,
+  .profile-gallery-search input {
+    font-size: 16px;
+  }
+  .profile-button,
+  .profile-filter-tabs button,
+  .layout-layers button,
+  .admin-text-button,
+  .role-remove-button,
+  .dashboard-live-status button {
+    min-height: 44px;
+  }
+  .profile-color-grid,
+  .role-mode-picker,
+  .banner-coordinates {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .wallpaper-edit-actions > * {
+    flex: 1 1 140px;
+  }
+  .member-identity > div,
+  .dashboard-guild-identity > div {
+    min-width: 0;
+  }
+  .member-identity img {
+    flex-shrink: 0;
+  }
+  footer {
+    padding-inline: 16px;
   }
 }

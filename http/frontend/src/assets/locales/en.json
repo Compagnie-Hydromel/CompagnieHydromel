@@ -424,6 +424,8 @@
     "stopPreview": "Close preview"
   },
   "generic": {
+    "navigation": "Main navigation",
+    "account": "Account menu",
     "all_rights_reserved": "All rights reserved.",
     "logout": "Logout",
     "settings": "Settings"

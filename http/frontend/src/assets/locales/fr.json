@@ -424,6 +424,8 @@
     "stopPreview": "Fermer l’aperçu"
   },
   "generic": {
+    "navigation": "Navigation principale",
+    "account": "Menu du compte",
     "all_rights_reserved": "Tous droits réservés.",
     "logout": "Se Déconnecter",
     "settings": "Paramètres"

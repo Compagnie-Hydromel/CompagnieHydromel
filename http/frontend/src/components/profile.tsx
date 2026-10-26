@@ -11,23 +11,31 @@ export const Profile: React.FC<{ currentUser: User | null }> = ({
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center space-x-4 w-40 justify-end">
+    <div className="header-profile flex items-center justify-end">
       {currentUser && (
         <div className="relative">
-          <div className="flex items-center space-x-2 cursor-pointer">
+          <button
+            type="button"
+            className="flex items-center cursor-pointer rounded-full"
+            aria-label={t("generic.account")}
+            aria-expanded={!hideDropdown}
+            aria-controls="account-dropdown"
+            onClick={() => setHideDropdown(!hideDropdown)}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") setHideDropdown(true);
+            }}
+          >
             <img
-              onClick={() => {
-                setHideDropdown(!hideDropdown);
-              }}
               src={
                 currentUser?.get("avatar_url") ??
                 "https://cdn.discordapp.com/embed/avatars/0.png"
               }
               alt="Profile"
-              className="w-20 h-20 rounded-full"
+              className="header-avatar rounded-full"
             />
-          </div>
+          </button>
           <div
+            id="account-dropdown"
             className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg"
             hidden={hideDropdown}
           >
@@ -35,14 +43,17 @@ export const Profile: React.FC<{ currentUser: User | null }> = ({
               {currentUser?.get("display_name") ?? "Unknown User"}
             </div>
             <ul className="py-2">
-              <li
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={async () => {
-                  await User.logout();
-                  navigate("/");
-                }}
-              >
-                {t("generic.logout")}
+              <li>
+                <button
+                  type="button"
+                  className="w-full text-left px-4 py-3 hover:bg-gray-100 cursor-pointer"
+                  onClick={async () => {
+                    await User.logout();
+                    navigate("/");
+                  }}
+                >
+                  {t("generic.logout")}
+                </button>
               </li>
             </ul>
           </div>

@@ -7,12 +7,12 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <header className="flex flex-col items-center justify-center min-h-screen text-white">
-        <h1 className="text-6xl font-extrabold mb-6 drop-shadow-lg">
+      <header className="flex flex-col items-center justify-center min-h-screen px-4 py-12 text-center text-white">
+        <h1 className="text-4xl sm:text-6xl font-extrabold mb-6 drop-shadow-lg">
           {t("home.welcome_to")}{" "}
           <span className="text-yellow-300">{t("home.name")}</span>
         </h1>
-        <p className="text-2xl mb-8 max-w-lg text-center drop-shadow-md">
+        <p className="text-lg sm:text-2xl mb-8 max-w-lg text-center drop-shadow-md">
           {t("home.description")}
         </p>
       </header>

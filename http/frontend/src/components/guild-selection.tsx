@@ -41,9 +41,10 @@ const GuildSelection: React.FC<GuildSelectionProps> = ({
   }, [defaultSelectedGuild, guilds, onSelect]);
 
   return (
-    <div className="flex flex-row items-center">
+    <div className="guild-selection">
       <select
         id="guild-select"
+        aria-label="Discord server"
         value={selectedGuild || ""}
         onChange={handleChange}
         className="p-2 rounded"
