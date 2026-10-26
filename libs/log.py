@@ -1,5 +1,6 @@
 from enum import Enum
 import datetime
+import os
 
 import discord
 
@@ -37,7 +38,7 @@ class Log():
     def __write_log(self):
         """This method is designed to write into the log file.
         """
-        with open("log.txt", "a") as log:
+        with open(os.getenv("LOG_FILE") or "log.txt", "a") as log:
             log.write(self.__log + "\n")
 
     @staticmethod

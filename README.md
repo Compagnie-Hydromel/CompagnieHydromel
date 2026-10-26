@@ -80,6 +80,10 @@ python3 bot.py rollback
 
 ## Usage
 
+Set `LOG_FILE` in `.env` to customize the application log file path. When unset
+or empty, it defaults to `log.txt`. Relative paths use the working directory;
+the parent directory must already exist. Logs are also printed to the console.
+
 **Super administration → Badges** is restricted to users whose global database
 flag `users.is_superadmin` is enabled (Discord guild Administrator is not enough).
 Manage this flag from the server terminal, using **Discord user IDs**, not database IDs:
