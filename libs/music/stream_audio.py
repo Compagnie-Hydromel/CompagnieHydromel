@@ -39,7 +39,8 @@ class StreamingAudio(discord.FFmpegPCMAudio):
         # passing the integer creates a pipe-reader thread that calls int.write.
         self._error_sink = open(os.devnull, "wb")
         try:
-            super().__init__(stream, before_options=stream_options(headers), options="-vn", stderr=self._error_sink)
+            super().__init__(stream, before_options=stream_options(
+                headers), options="-vn", stderr=self._error_sink)
         except BaseException:
             self._error_sink.close()
             raise

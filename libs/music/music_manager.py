@@ -42,10 +42,13 @@ def public_url(url):
     parsed = urlparse(url)
     if (parsed.scheme not in ("http", "https") or not parsed.hostname
             or parsed.username or parsed.password or parsed.port not in (None, 80, 443)):
-        raise ValueError("Utilisez une URL HTTP(S) publique, sans identifiants.")
-    addresses = socket.getaddrinfo(parsed.hostname, parsed.port or 443, type=socket.SOCK_STREAM)
+        raise ValueError(
+            "Utilisez une URL HTTP(S) publique, sans identifiants.")
+    addresses = socket.getaddrinfo(
+        parsed.hostname, parsed.port or 443, type=socket.SOCK_STREAM)
     if not addresses or any(not ipaddress.ip_address(item[4][0]).is_global for item in addresses):
-        raise ValueError("Les adresses locales et privées ne sont pas autorisées.")
+        raise ValueError(
+            "Les adresses locales et privées ne sont pas autorisées.")
     return url
 
 
@@ -69,7 +72,8 @@ class MusicManager:
                                "js_runtimes": {"node": {}}}) as downloader:
             info = downloader.extract_info(query, download=False)
             if info and "entries" in info:
-                info = next((entry for entry in info["entries"] if entry), None)
+                info = next(
+                    (entry for entry in info["entries"] if entry), None)
             if not info:
                 raise NoResultsFoundException
             return info
@@ -78,7 +82,8 @@ class MusicManager:
     def _search(cls, query, source):
         query = query.strip()
         if not query or len(query) > 500:
-            raise ValueError("Recherche vide ou trop longue (500 caractères maximum).")
+            raise ValueError(
+                "Recherche vide ou trop longue (500 caractères maximum).")
         if source not in ("youtube", "soundcloud", "radio"):
             raise ValueError("Source inconnue.")
         if source == "radio":
@@ -86,13 +91,17 @@ class MusicManager:
             return Track(radio.name, radio.url, "Radio en direct", 0, "radio", radio.slug)
         if "://" in query:
             parsed = urlparse(query)
-            hosts = ("youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be") if source == "youtube" else ("soundcloud.com", "www.soundcloud.com")
+            hosts = ("youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com",
+                     "youtu.be") if source == "youtube" else ("soundcloud.com", "www.soundcloud.com")
             if parsed.scheme not in ("http", "https") or parsed.hostname not in hosts or parsed.username or parsed.password or parsed.port not in (None, 80, 443):
-                raise ValueError("Le lien doit appartenir à la source sélectionnée.")
+                raise ValueError(
+                    "Le lien doit appartenir à la source sélectionnée.")
         else:
-            query = ("ytsearch1:" if source == "youtube" else "scsearch1:") + query
+            query = ("ytsearch1:" if source ==
+                     "youtube" else "scsearch1:") + query
         info = cls._extract(query)
-        uri = ("https://www.youtube.com/watch?v=" + info["id"]) if source == "youtube" else info["webpage_url"]
+        uri = ("https://www.youtube.com/watch?v=" +
+               info["id"]) if source == "youtube" else info["webpage_url"]
         return Track(info.get("title", "Sans titre"), uri, info.get("uploader") or "Inconnu",
                      int((info.get("duration") or 0) * 1000), source)
 
@@ -109,12 +118,14 @@ class MusicManager:
         if not voice or not voice.channel:
             raise NotConnectedToVoiceChannelException
         if self.voice_clients and self.voice_clients.is_connected() and self.voice_clients.channel.id != voice.channel.id:
-            raise ValueError("Rejoignez le salon vocal du Ménestrel pour le contrôler.")
+            raise ValueError(
+                "Rejoignez le salon vocal du Ménestrel pour le contrôler.")
         if not isinstance(voice.channel, discord.VoiceChannel):
             raise ValueError("La musique nécessite un salon vocal classique.")
         permissions = voice.channel.permissions_for(member.guild.me)
         if not (permissions.view_channel and permissions.connect and permissions.speak):
-            raise ValueError("Le Ménestrel doit pouvoir voir, rejoindre et parler dans ce salon.")
+            raise ValueError(
+                "Le Ménestrel doit pouvoir voir, rejoindre et parler dans ce salon.")
 
     async def join(self, voice_state):
         if not voice_state or not voice_state.channel:
@@ -141,7 +152,8 @@ class MusicManager:
                 if attempt or track.source == "radio":
                     raise
                 if track.source == "youtube":
-                    Log.info("Flux direct YouTube indisponible : tentative du flux HLS.")
+                    Log.info(
+                        "Flux direct YouTube indisponible : tentative du flux HLS.")
 
     async def _start_stream(self, track, *, youtube_hls=False):
         # Resolve at playback time: expiring stream URLs never enter the queue.
@@ -170,7 +182,8 @@ class MusicManager:
         loop = asyncio.get_running_loop()
 
         def ended(error):
-            asyncio.run_coroutine_threadsafe(self._finished(generation, error), loop)
+            asyncio.run_coroutine_threadsafe(
+                self._finished(generation, error), loop)
 
         try:
             self.voice_clients.play(source, after=ended)
@@ -241,7 +254,8 @@ class MusicManager:
             if not self.back_queue:
                 raise NothingLeftInBackQueueException
             if self._current and len(self._queue) >= 100:
-                raise ValueError("La file est pleine : impossible de réinsérer le titre actuel.")
+                raise ValueError(
+                    "La file est pleine : impossible de réinsérer le titre actuel.")
             previous = self.back_queue.popleft()
             if self._current:
                 self._queue.appendleft(self._current)
@@ -301,7 +315,8 @@ class MusicManager:
         return list(self._queue)
 
     def state(self):
-        connected = bool(self.voice_clients and self.voice_clients.is_connected())
+        connected = bool(
+            self.voice_clients and self.voice_clients.is_connected())
         return {"connected": connected, "paused": connected and self.voice_clients.is_paused(),
                 "channel_id": str(self.voice_clients.channel.id) if connected else None,
                 "channel_name": self.voice_clients.channel.name if connected else None,

@@ -31,7 +31,8 @@ class ComponentBus:
         self._writer = asyncio.Lock()
         self._socket = None
         self._runner = None
-        self.register("system.ping", self._ping, callers=set(DEFAULT_COMPONENTS) | component_names())
+        self.register("system.ping", self._ping, callers=set(
+            DEFAULT_COMPONENTS) | component_names())
 
     @classmethod
     def from_env(cls, component):
@@ -49,7 +50,8 @@ class ComponentBus:
 
     def register(self, action, handler, *, callers):
         if isinstance(callers, str):
-            raise ValueError("Callers must be an explicit collection of component names")
+            raise ValueError(
+                "Callers must be an explicit collection of component names")
         callers = set(callers)
         if not valid_name(action) or not callable(handler) or any(not valid_name(name) for name in callers):
             raise ValueError("Invalid action registration")
@@ -85,7 +87,8 @@ class ComponentBus:
         def finished(done):
             self._tasks.discard(done)
             if not done.cancelled() and done.exception() is not None:
-                Log.warning(f"Bus background task failed [{self.component}]: {type(done.exception()).__name__}")
+                Log.warning(
+                    f"Bus background task failed [{self.component}]: {type(done.exception()).__name__}")
 
         task.add_done_callback(finished)
         return task
@@ -150,7 +153,8 @@ class ComponentBus:
             sent = True
             return await asyncio.wait_for(future, timeout=max(0, deadline - asyncio.get_running_loop().time()))
         except asyncio.TimeoutError:
-            raise BusError("Délai d'appel dépassé.", code="timeout", status=504) from None
+            raise BusError("Délai d'appel dépassé.",
+                           code="timeout", status=504) from None
         finally:
             self._pending.pop(request_id, None)
             if sent and future.cancelled():
@@ -161,7 +165,8 @@ class ComponentBus:
             if not future.done():
                 future.cancel()
             elif not future.cancelled():
-                future.exception()  # Also consume disconnect errors if sending failed.
+                # Also consume disconnect errors if sending failed.
+                future.exception()
 
     async def publish(self, topic, payload=None):
         if not valid_name(topic) or not valid_name(self.component + "." + topic):
@@ -179,24 +184,28 @@ class ComponentBus:
         try:
             entry = self._handlers.get(message.get("action"))
             if entry is None:
-                raise BusError("Action inconnue.", code="not_found", status=404)
+                raise BusError("Action inconnue.",
+                               code="not_found", status=404)
             handler, callers = entry
             if message.get("caller") not in callers:
                 raise BusError("Appel refusé.", code="forbidden", status=403)
-            result = handler(message.get("payload"), CallContext(message["caller"]))
+            result = handler(message.get("payload"),
+                             CallContext(message["caller"]))
             if inspect.isawaitable(result):
                 result = await result
             response = {"type": "result", "id": route_id, "result": result}
             try:
                 encode(response)
             except (ValueError, TypeError):
-                raise BusError("Réponse non sérialisable ou trop volumineuse.", code="invalid_result", status=502) from None
+                raise BusError("Réponse non sérialisable ou trop volumineuse.",
+                               code="invalid_result", status=502) from None
         except BusError as error:
             response = {"type": "error", "id": route_id, "error": error.data()}
         except asyncio.CancelledError:
             raise
         except Exception as error:
-            Log.warning(f"Bus action failed [{self.component}/{message.get('action')}]: {type(error).__name__}")
+            Log.warning(
+                f"Bus action failed [{self.component}/{message.get('action')}]: {type(error).__name__}")
             response = {"type": "error", "id": route_id,
                         "error": BusError("Erreur du composant distant.", code="internal", status=500).data()}
         finally:
@@ -208,11 +217,13 @@ class ComponentBus:
 
     async def _event(self, handler, message):
         try:
-            result = handler(message.get("payload"), CallContext(message["publisher"]))
+            result = handler(message.get("payload"),
+                             CallContext(message["publisher"]))
             if inspect.isawaitable(result):
                 await result
         except Exception as error:
-            Log.warning(f"Bus event handler failed [{self.component}]: {type(error).__name__}")
+            Log.warning(
+                f"Bus event handler failed [{self.component}]: {type(error).__name__}")
 
     async def _receive(self, message, socket):
         kind = message.get("type")
@@ -230,7 +241,8 @@ class ComponentBus:
                 await self._send({"type": "error", "id": message["id"],
                                   "error": BusError("Composant occupé.", code="busy", status=429).data()}, socket=socket)
             else:
-                self._invocations[message["id"]] = self._spawn(self._invoke(message, socket))
+                self._invocations[message["id"]] = self._spawn(
+                    self._invoke(message, socket))
         elif kind == "cancel":
             task = self._invocations.get(message.get("id"))
             if task:
@@ -248,7 +260,8 @@ class ComponentBus:
         self._socket = None
         for future in self._pending.values():
             if not future.done():
-                future.set_exception(BusError("Bus inter-composants déconnecté."))
+                future.set_exception(
+                    BusError("Bus inter-composants déconnecté."))
         tasks = list(self._tasks)
         for task in tasks:
             task.cancel()

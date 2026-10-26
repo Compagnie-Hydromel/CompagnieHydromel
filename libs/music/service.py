@@ -24,7 +24,8 @@ class MusicService:
     async def control(self, data, context):
         stage = "request"
         if context.caller != "webserver":
-            raise BusError("Appel musical refusé.", code="forbidden", status=403)
+            raise BusError("Appel musical refusé.",
+                           code="forbidden", status=403)
         if not self.bot.is_ready():
             raise BusError("Ménestrel indisponible.")
         try:
@@ -32,7 +33,8 @@ class MusicService:
                 raise ValueError("Requête invalide.")
             guild = self.bot.get_guild(int(data["guild_id"]))
             if guild is None:
-                raise BusError("Le Ménestrel n'est pas sur ce serveur.", code="not_found", status=404)
+                raise BusError(
+                    "Le Ménestrel n'est pas sur ce serveur.", code="not_found", status=404)
             stage = "membership"
             member = await guild.fetch_member(int(data["user_id"]))
             manager = self.managers.get(guild.id)
@@ -40,7 +42,8 @@ class MusicService:
             if action == "state":
                 stage = "state/catalogue"
                 if manager.voice_clients and not manager.voice_clients.channel.permissions_for(member).view_channel:
-                    raise BusError("Salon privé.", code="forbidden", status=403)
+                    raise BusError(
+                        "Salon privé.", code="forbidden", status=403)
                 return manager.state()
             if action not in ("play", "pause", "resume", "skip", "back", "stop"):
                 raise ValueError("Commande inconnue.")
@@ -65,11 +68,13 @@ class MusicService:
             stage = "state/catalogue"
             return manager.state()
         except (discord.NotFound, discord.Forbidden):
-            raise BusError("Accès au serveur refusé.", code="forbidden", status=403) from None
+            raise BusError("Accès au serveur refusé.",
+                           code="forbidden", status=403) from None
         except BusError:
             raise
         except (ValueError, KeyError, TypeError, BotException) as error:
-            detail = error.message if isinstance(error, BotException) else str(error)
+            detail = error.message if isinstance(
+                error, BotException) else str(error)
             raise BusError(detail, code="invalid", status=400) from None
         except Exception as error:
             Log.warning(music_diagnostic(error, stage))

@@ -30,7 +30,8 @@ class MusicPlayerDisplayer(discord.ui.View):
         duration = f"{seconds // 60}:{seconds % 60:02d}" if seconds else "En direct"
         embed = discord.Embed(
             title="En pause ⏸" if self.__music_manager.is_paused else "En lecture 🎶", color=0x2F3136)
-        embed.add_field(name="Titre", value=f"[{song.title}]({song.uri})", inline=True)
+        embed.add_field(
+            name="Titre", value=f"[{song.title}]({song.uri})", inline=True)
         embed.add_field(name="Artiste", value=song.author, inline=True)
         embed.add_field(name="Durée", value=duration, inline=True)
         embed.set_footer(text="source: " + song.source)

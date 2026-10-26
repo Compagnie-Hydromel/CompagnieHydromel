@@ -43,7 +43,8 @@ def configured_tokens():
 
 
 def component_names():
-    names = os.getenv("BUS_COMPONENTS", ",".join(DEFAULT_COMPONENTS)).split(",")
+    names = os.getenv("BUS_COMPONENTS", ",".join(
+        DEFAULT_COMPONENTS)).split(",")
     return {name.strip() for name in names if valid_name(name.strip())}
 
 

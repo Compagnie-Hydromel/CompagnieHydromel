@@ -25,7 +25,8 @@ class Music(discord.Cog):
         self.__service = MusicService(bot, self.__guild_music_manager)
         self.__bus = getattr(bot, "component_bus", None)
         if self.__bus:
-            self.__bus.register("music.control", self.__service.control, callers={"webserver"})
+            self.__bus.register(
+                "music.control", self.__service.control, callers={"webserver"})
 
     def cog_unload(self):
         if self.__bus:
@@ -35,16 +36,19 @@ class Music(discord.Cog):
     async def cog_before_invoke(self, ctx):
         try:
             if ctx.guild is None:
-                raise ValueError("Cette commande nécessite un serveur Discord.")
+                raise ValueError(
+                    "Cette commande nécessite un serveur Discord.")
             if ctx.command.name in ("play", "radio", "stop", "pause", "resume", "back", "skip"):
-                self.__guild_music_manager.get(ctx.guild.id).authorize(ctx.author)
+                self.__guild_music_manager.get(
+                    ctx.guild.id).authorize(ctx.author)
         except Exception as error:
             # Pycord only dispatches DiscordException subclasses from pre-hooks.
             raise discord.ApplicationCommandInvokeError(error) from error
 
     async def cog_command_error(self, ctx, error):
         error = getattr(error, "original", error)
-        message = str(error) if isinstance(error, ValueError) else self.__error_handler.response_handler(error, traceback.format_exc())
+        message = str(error) if isinstance(
+            error, ValueError) else self.__error_handler.response_handler(error, traceback.format_exc())
         await ctx.respond(message, ephemeral=True)
 
     @discord.slash_command(description="Command that can play music that we want.")
