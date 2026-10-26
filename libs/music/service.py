@@ -1,63 +1,38 @@
 import asyncio
-import hmac
-import os
 
 import discord
-from aiohttp import web
 
 from libs.exception.bot_exception import BotException
 from libs.exception.music.already_playing_exception import AlreadyPlayingException
 from libs.log import Log
 from libs.music.diagnostics import music_diagnostic, safe_music_error
+from libs.communication import BusError
 
 
-class MusicControlServer:
-    """Private bot RPC. Never publish this port to the internet."""
+class MusicService:
+    """Music actions exposed through the shared component bus."""
 
     def __init__(self, bot, managers):
         self.bot = bot
         self.managers = managers
-        self.runner = None
-        self.lock = asyncio.Lock()
-
-    async def start(self):
-        async with self.lock:
-            if self.runner or not os.getenv("MUSIC_CONTROL_SECRET"):
-                return
-            app = web.Application(client_max_size=4096)
-            app.router.add_post("/control", self.control)
-            runner = web.AppRunner(app, access_log=None)
-            await runner.setup()
-            try:
-                await web.TCPSite(runner, os.getenv("MUSIC_CONTROL_HOST", "127.0.0.1"),
-                                  int(os.getenv("MUSIC_CONTROL_PORT", "8001"))).start()
-            except Exception:
-                await runner.cleanup()
-                raise
-            self.runner = runner
 
     async def close(self):
-        if self.runner:
-            await self.runner.cleanup()
-            self.runner = None
         for manager in self.managers.guild.values():
-            if manager.voice_clients:
+            if manager.voice_clients and manager.voice_clients.is_connected():
                 await manager.disconnect()
 
-    async def control(self, request):
+    async def control(self, data, context):
         stage = "request"
-        secret = os.getenv("MUSIC_CONTROL_SECRET", "")
-        if not secret or not hmac.compare_digest(request.headers.get("Authorization", ""), "Bearer " + secret):
-            return web.json_response({"detail": "Unauthorized"}, status=401)
+        if context.caller != "webserver":
+            raise BusError("Appel musical refusé.", code="forbidden", status=403)
         if not self.bot.is_ready():
-            return web.json_response({"detail": "Ménestrel indisponible."}, status=503)
+            raise BusError("Ménestrel indisponible.")
         try:
-            data = await request.json()
             if not isinstance(data, dict):
                 raise ValueError("Requête invalide.")
             guild = self.bot.get_guild(int(data["guild_id"]))
             if guild is None:
-                return web.json_response({"detail": "Le Ménestrel n'est pas sur ce serveur."}, status=404)
+                raise BusError("Le Ménestrel n'est pas sur ce serveur.", code="not_found", status=404)
             stage = "membership"
             member = await guild.fetch_member(int(data["user_id"]))
             manager = self.managers.get(guild.id)
@@ -65,8 +40,8 @@ class MusicControlServer:
             if action == "state":
                 stage = "state/catalogue"
                 if manager.voice_clients and not manager.voice_clients.channel.permissions_for(member).view_channel:
-                    return web.json_response({"detail": "Salon privé."}, status=403)
-                return web.json_response(manager.state())
+                    raise BusError("Salon privé.", code="forbidden", status=403)
+                return manager.state()
             if action not in ("play", "pause", "resume", "skip", "back", "stop"):
                 raise ValueError("Commande inconnue.")
             manager.authorize(member)
@@ -88,12 +63,14 @@ class MusicControlServer:
                 stage = "playback control"
                 await getattr(manager, action)()
             stage = "state/catalogue"
-            return web.json_response(manager.state())
+            return manager.state()
         except (discord.NotFound, discord.Forbidden):
-            return web.json_response({"detail": "Accès au serveur refusé."}, status=403)
+            raise BusError("Accès au serveur refusé.", code="forbidden", status=403) from None
+        except BusError:
+            raise
         except (ValueError, KeyError, TypeError, BotException) as error:
             detail = error.message if isinstance(error, BotException) else str(error)
-            return web.json_response({"detail": detail}, status=400)
+            raise BusError(detail, code="invalid", status=400) from None
         except Exception as error:
             Log.warning(music_diagnostic(error, stage))
             if isinstance(error, discord.opus.OpusNotLoaded):
@@ -104,4 +81,4 @@ class MusicControlServer:
                 detail = "Délai dépassé lors de la connexion ou de l'ouverture du flux audio."
             else:
                 detail = f"Lecture impossible ({type(error).__name__}, étape : {stage}). Consultez le log du Ménestrel."
-            return web.json_response({"detail": detail}, status=503)
+            raise BusError(detail) from None

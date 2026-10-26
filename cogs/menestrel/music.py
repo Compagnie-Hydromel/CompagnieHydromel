@@ -6,7 +6,7 @@ from libs.music.guild_music_manager import GuildMusicManager
 from libs.log import Log
 from libs.paginator import Paginator
 from libs.music.music_player_displayer import MusicPlayerDisplayer
-from libs.music.control_server import MusicControlServer
+from libs.music.service import MusicService
 from libs.music.music_manager import Track
 from libs.music.radios import radio_choices
 
@@ -22,10 +22,15 @@ class Music(discord.Cog):
         self.__bot = bot
         self.__error_handler = Handler()
         self.__guild_music_manager = GuildMusicManager()
-        self.__control_server = MusicControlServer(bot, self.__guild_music_manager)
+        self.__service = MusicService(bot, self.__guild_music_manager)
+        self.__bus = getattr(bot, "component_bus", None)
+        if self.__bus:
+            self.__bus.register("music.control", self.__service.control, callers={"webserver"})
 
     def cog_unload(self):
-        self.__bot.loop.create_task(self.__control_server.close())
+        if self.__bus:
+            self.__bus.unregister("music.control")
+        self.__bot.loop.create_task(self.__service.close())
 
     async def cog_before_invoke(self, ctx):
         try:
@@ -41,10 +46,6 @@ class Music(discord.Cog):
         error = getattr(error, "original", error)
         message = str(error) if isinstance(error, ValueError) else self.__error_handler.response_handler(error, traceback.format_exc())
         await ctx.respond(message, ephemeral=True)
-
-    @discord.Cog.listener()
-    async def on_ready(self):
-        await self.__control_server.start()
 
     @discord.slash_command(description="Command that can play music that we want.")
     @discord.option("search", description="Titre, lien YouTube/SoundCloud ou identifiant radio (ex. fip)")

@@ -15,13 +15,13 @@ nouveau au moment de lire chaque titre.
 - Avant de redémarrer les services après cette mise à jour, exécuter
   `python3 bot.py migrate` pour créer le catalogue de radios en base de données.
   Docker Compose lance déjà les migrations avec son service `migrate`.
-- Pour le web, définir le même `MUSIC_CONTROL_SECRET` aléatoire dans les deux
-  processus et démarrer également `python3 bot.py webserver`.
-- Sur une même machine, conserver les valeurs par défaut : écoute
-  `127.0.0.1:8001`, `MUSIC_CONTROL_URL=http://127.0.0.1:8001`.
-  Docker Compose configure automatiquement `http://menestrel:8001`.
-- Ne jamais exposer l'API interne sur Internet. Sur plusieurs machines, utiliser
-  un réseau privé protégé (le secret circule dans l'en-tête HTTP).
+- Pour le web, configurer le [bus WebSocket partagé](communication.md) et démarrer
+  également `python3 bot.py webserver`. L'action `menestrel / music.control`
+  remplace l'ancien serveur HTTP musical : aucun port 8001 n'est nécessaire.
+- Définir des jetons distincts `BUS_WEBSERVER_TOKEN` et `BUS_MENESTREL_TOKEN`.
+  Les anciennes variables `MUSIC_CONTROL_*` ne sont plus utilisées.
+- En local, `BUS_URL=ws://127.0.0.1:8000/api/internal/bus` ; Docker Compose utilise
+  automatiquement `ws://webserver:8000/api/internal/bus`.
 - Le bot web doit utiliser un autre token que Ménestrel (Barman par défaut).
 
 ## Sources

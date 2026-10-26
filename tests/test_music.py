@@ -10,11 +10,14 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch
 
 import discord
-from aiohttp.test_utils import TestClient, TestServer
+from aiohttp import web
+from aiohttp.test_utils import TestServer
 
 from libs.exception.music.already_playing_exception import AlreadyPlayingException
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
-from libs.music.control_server import MusicControlServer
+from libs.music.service import MusicService
+from libs.communication import BusError
+from tests.bus_support import BusHarness
 from libs.music.guild_music_manager import GuildMusicManager
 from libs.music.music_manager import MusicManager, Track, YOUTUBE_HLS_FORMAT, public_url
 from libs.music.music_player_displayer import MusicPlayerDisplayer
@@ -320,7 +323,6 @@ class TestMusicManager(unittest.IsolatedAsyncioTestCase):
 
     @unittest.skipUnless(shutil.which("ffmpeg"), "FFmpeg is not installed")
     async def test_real_ffmpeg_streams_http_audio_into_discord_pcm_without_files(self):
-        from aiohttp import web
         audio = io.BytesIO()
         with wave.open(audio, "wb") as wav:
             wav.setnchannels(2)
@@ -458,24 +460,30 @@ class TestMusicControl(unittest.IsolatedAsyncioTestCase):
         self.bot.get_guild.return_value = self.guild
         self.managers = Mock()
         self.managers.get.return_value = self.manager
-        server = MusicControlServer(self.bot, self.managers)
-        app = web.Application()
-        app.router.add_post("/control", server.control)
-        self.client = TestClient(TestServer(app))
-        await self.client.start_server()
-        self.env = patch.dict("os.environ", {"MUSIC_CONTROL_SECRET": "test-secret", "MUSIC_CONTROL_URL": str(self.client.make_url("/")).rstrip("/")})
-        self.env.start()
+        service = MusicService(self.bot, self.managers)
+        self.harness = await BusHarness().start()
+        self.music_bus = self.harness.client("menestrel")
+        self.music_bus.register("music.control", service.control, callers={"webserver"})
+        self.web_bus = self.harness.client("webserver")
+        await self.harness.connect(self.music_bus, self.web_bus)
+        self.request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(component_bus=self.web_bus)))
 
     async def asyncTearDown(self):
-        self.env.stop()
-        await self.client.close()
+        await self.harness.close()
 
     async def post(self, **changes):
-        return await self.client.post("/control", json={"guild_id": "123", "user_id": "42", "action": "pause", **changes}, headers={"Authorization": "Bearer test-secret"})
+        try:
+            result = await self.web_bus.call("menestrel", "music.control", {"guild_id": "123", "user_id": "42", "action": "pause", **changes})
+            return SimpleNamespace(status=200, data=result)
+        except BusError as error:
+            return SimpleNamespace(status=error.status)
 
     async def test_rpc_requires_secret(self):
-        response = await self.client.post("/control", json={})
-        self.assertEqual(response.status, 401)
+        import aiohttp
+        async with aiohttp.ClientSession() as client:
+            with self.assertRaises(aiohttp.WSServerHandshakeError) as error:
+                await client.ws_connect(self.harness.url, headers={"X-Component": "webserver", "Authorization": "Bearer wrong"})
+        self.assertEqual(error.exception.status, 403)
         self.bot.get_guild.assert_not_called()
 
     async def test_controls_authorize_actual_member(self):
@@ -514,7 +522,7 @@ class TestMusicControl(unittest.IsolatedAsyncioTestCase):
         with patch.object(controller.HTTPUtils, "get_user_from_session", return_value=SimpleNamespace(discord_id="42")), patch.object(
             controller.Guild, "find", return_value=SimpleNamespace(discord_id="123")
         ):
-            result = await controller.control(Mock(), 7, controller.MusicCommand(action="pause"))
+            result = await controller.control(self.request, 7, controller.MusicCommand(action="pause"))
         self.assertEqual(result["queue"], [])
         self.bot.get_guild.assert_called_with(123)
         self.guild.fetch_member.assert_awaited_once_with(42)
@@ -530,8 +538,8 @@ class TestMusicControl(unittest.IsolatedAsyncioTestCase):
         self.manager.play.side_effect = RuntimeError("Failure in voice connection")
         with patch.object(controller.HTTPUtils, "get_user_from_session", return_value=SimpleNamespace(discord_id="42")), patch.object(
             controller.Guild, "find", return_value=SimpleNamespace(discord_id="123")
-        ), patch("libs.music.control_server.Log.warning") as log, self.assertRaises(HTTPException) as error:
-            await controller.control(Mock(), 7, controller.MusicCommand(action="play", query="test"))
+        ), patch("libs.music.service.Log.warning") as log, self.assertRaises(HTTPException) as error:
+            await controller.control(self.request, 7, controller.MusicCommand(action="play", query="test"))
         self.assertEqual(error.exception.status_code, 503)
         self.assertIn("RuntimeError", error.exception.detail)
         self.assertIn("voice connection/audio startup", error.exception.detail)

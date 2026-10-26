@@ -15,8 +15,7 @@ x-app: &app
     SQL_LOG_FILE: /app/storages/sql.log
     WEB_HOST: 0.0.0.0
     WEB_PORT: "8000"
-    MUSIC_CONTROL_HOST: 0.0.0.0
-    MUSIC_CONTROL_URL: http://menestrel:8001
+    BUS_URL: ws://webserver:8000/api/internal/bus
   volumes:
     - hydromel-data:/app/storages
   init: true

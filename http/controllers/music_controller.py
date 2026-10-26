@@ -1,13 +1,11 @@
-import asyncio
-import os
 from typing import Literal
 
-import aiohttp
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from libs.databases.models.guild import Guild
 from libs.utils.http_utils import HTTPUtils
+from libs.communication import BusError
 
 
 router = APIRouter(prefix="/sessions/guilds/{guild_id}/music")
@@ -27,22 +25,14 @@ async def forward(request, guild_id, command):
         raise HTTPException(404, "Guild not found")
     # Membership, visibility and voice permissions are checked by the actual
     # Ménestrel bot, not by the dashboard's separate Discord connection.
-    secret = os.getenv("MUSIC_CONTROL_SECRET")
-    if not secret:
-        raise HTTPException(503, "Le contrôle musical n'est pas configuré.")
+    bus = getattr(request.app.state, "component_bus", None)
+    if bus is None:
+        raise HTTPException(503, "Le bus inter-composants n'est pas configuré.")
     payload = {**command, "guild_id": str(guild.discord_id), "user_id": str(user.discord_id)}
-    url = os.getenv("MUSIC_CONTROL_URL", "http://127.0.0.1:8001").rstrip("/") + "/control"
     try:
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=90)) as client:
-            async with client.post(url, json=payload, headers={"Authorization": "Bearer " + secret}, allow_redirects=False) as response:
-                if response.status not in (200, 400, 403, 404, 503):
-                    raise HTTPException(503, "Le Ménestrel est indisponible.")
-                result = await response.json()
-                if response.status != 200:
-                    raise HTTPException(response.status, result.get("detail", "Commande refusée."))
-                return result
-    except (aiohttp.ClientError, asyncio.TimeoutError):
-        raise HTTPException(503, "Le Ménestrel est injoignable. Vérifiez qu'il est démarré.")
+        return await bus.call("menestrel", "music.control", payload, timeout=90)
+    except BusError as error:
+        raise HTTPException(error.status, str(error)) from None
 
 
 @router.get("")
