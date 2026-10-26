@@ -22,13 +22,13 @@ class Guild(ApplicationModel):
         return guild
 
     def get_monthly_top_users(self):
-        return self.guildusers.orderBy("monthly_point DESC").limit(10)
+        return self.guildusers.orderBy("monthly_point DESC").limit(10).withRelations("user")
 
     def get_top_users(self):
-        return self.guildusers.orderBy("level DESC", "point DESC").limit(10)
+        return self.guildusers.orderBy("level DESC", "point DESC").limit(10).withRelations("user")
 
     def get_most_smart_users(self):
-        return self.guildusers.orderBy("smartpoint DESC").limit(10)
+        return self.guildusers.orderBy("smartpoint DESC").limit(10).withRelations("user")
 
     def get_guild(self):
         return self.get_bot().get_guild(int(self.discord_id))

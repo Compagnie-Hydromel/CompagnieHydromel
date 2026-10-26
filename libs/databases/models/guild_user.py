@@ -26,6 +26,19 @@ class GuildUser(ApplicationModel):
     }
 
     @classmethod
+    def for_discord_ids(cls, guild, discord_ids):
+        discord_ids = [str(discord_id) for discord_id in discord_ids]
+        if not discord_ids:
+            return {}
+        users = {str(user.discord_id): user for user in User.whereIn(
+            discord_id=discord_ids)}
+        if not users:
+            return {}
+        records = {record.user_id: record for record in cls.where(guild_id=guild.id).whereIn(
+            user_id=[user.id for user in users.values()])}
+        return {discord_id: records[user.id] for discord_id, user in users.items() if user.id in records}
+
+    @classmethod
     def from_user_and_guild(cls, user: User, guild: Guild):
         guilduser = cls.whereFirst(
             user=user,

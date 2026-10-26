@@ -63,7 +63,7 @@ class TestProfileValidation(unittest.TestCase):
         member = SimpleNamespace(guild_id=10, wallpapers=[owned], wallpaper=owned,
                                  profilelayout=None, guild=SimpleNamespace(wallpapers=[owned, locked]))
         with patch.object(controller.GuildUserProjection, "from_guild_user", return_value={"smartpoint": 20}), patch.object(
-            controller.ProfileLayout, "all", return_value=[layout]
+            controller.ProfileLayout, "available_for_guild", return_value=[layout]
         ), patch.object(controller.ProfileLayout, "default", return_value=layout), patch.object(
             controller.Wallpaper, "default", return_value=SimpleNamespace(url="default.png")
         ):

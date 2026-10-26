@@ -120,11 +120,11 @@ async def members(request: Request, guild_id: int, search: str = Query(default="
     matches = sorted((member for member in discord_guild.members if not needle or
                       needle in member.display_name.casefold() or needle in member.name.casefold() or
                       needle in str(member.id)), key=lambda member: (member.display_name.casefold(), member.id))
-    result = []
-    for member in matches[(page - 1) * page_size:page * page_size]:
-        user = User.whereFirst(discord_id=str(member.id))
-        record = GuildUser.whereFirst(user=user, guild=guild) if user else None
-        result.append(member_data(member, record))
+    page_members = matches[(page - 1) * page_size:page * page_size]
+    records = GuildUser.for_discord_ids(
+        guild, [member.id for member in page_members])
+    result = [member_data(member, records.get(str(member.id)))
+              for member in page_members]
     return {"members": result, "total": len(matches), "page": page, "page_size": page_size}
 
 

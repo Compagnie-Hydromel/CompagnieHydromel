@@ -36,7 +36,7 @@ async def guilds(request: Request) -> list[GuildProjection]:
     HTTPUtils.require_discord_ready()
     guild_list = []
 
-    for guild_user in user.guildusers:
+    for guild_user in user.guildusers.withRelations("guild"):
         guild = GuildProjection.from_guild(guild_user.guild)
         guild_list.append(guild)
     return guild_list

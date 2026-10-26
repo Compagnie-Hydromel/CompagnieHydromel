@@ -42,7 +42,7 @@ async def show(request: Request, user_id: Annotated[int, Path(gt=0)]):
         raise HTTPException(status_code=404, detail="User not found")
     guilds = []
     bot = getattr(User, "bot", None)
-    for record in user.guildusers:
+    for record in user.guildusers.withRelations("guild"):
         guild = record.guild
         if guild is None:
             continue

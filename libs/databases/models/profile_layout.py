@@ -13,8 +13,7 @@ class ProfileLayout(Model):
 
     @classmethod
     def available_for_guild(cls, guild_id):
-        return [layout for layout in cls.all()
-                if layout.guild_id is None or layout.guild_id == guild_id]
+        return list(cls.whereIn(guild_id=[None, guild_id]))
 
     @classmethod
     def default(cls):

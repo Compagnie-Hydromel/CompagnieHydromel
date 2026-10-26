@@ -11,8 +11,10 @@ from libs.utils.http_utils import HTTPUtils
 from libs.utils.utils import Utils
 
 
-middleware = Utils.import_module_from_path("startup_log_middleware", "http/middlewares/log_requests_middleware.py")
-sessions = Utils.import_module_from_path("startup_sessions_controller", "http/controllers/sessions_controller.py")
+middleware = Utils.import_module_from_path(
+    "startup_log_middleware", "http/middlewares/log_requests_middleware.py")
+sessions = Utils.import_module_from_path(
+    "startup_sessions_controller", "http/controllers/sessions_controller.py")
 
 
 class TestRequestErrorHandling(unittest.IsolatedAsyncioTestCase):
@@ -20,7 +22,8 @@ class TestRequestErrorHandling(unittest.IsolatedAsyncioTestCase):
         with patch.object(middleware.Log, "info"), patch.object(middleware.Log, "error") as log:
             response = await middleware.log_requests(Mock(), AsyncMock(side_effect=RuntimeError("Original failure")))
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(json.loads(response.body)["message"], "Original failure")
+        self.assertEqual(json.loads(response.body)[
+                         "message"], "Original failure")
         self.assertIn("Original failure", log.call_args.args[0])
 
     async def test_mysql_errors_are_handled_by_imported_exception_class(self):
@@ -62,7 +65,8 @@ class TestDiscordStartup(unittest.IsolatedAsyncioTestCase):
 
     async def test_ready_bot_serves_guild_list_normally(self):
         guild = Mock()
-        user = SimpleNamespace(guildusers=[SimpleNamespace(guild=guild)])
+        user = SimpleNamespace(guildusers=Mock(withRelations=Mock(
+            return_value=[SimpleNamespace(guild=guild)])))
         projection = Mock()
         with patch.object(ApplicationModel, "bot", Mock(is_ready=Mock(return_value=True)), create=True), patch.object(
             HTTPUtils, "get_user_from_session", return_value=user

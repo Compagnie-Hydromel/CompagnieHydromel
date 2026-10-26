@@ -202,11 +202,12 @@ class TestAdminValidationAndScoping(unittest.TestCase):
                     "name": "Forest", "price": 20, "level": 0, **changes})
 
     def test_only_shared_and_current_guild_layouts_are_available(self):
-        shared, own, other = [SimpleNamespace(
-            id=id, guild_id=guild_id) for id, guild_id in ((1, None), (2, 10), (3, 11))]
-        with patch.object(ProfileLayout, "all", return_value=[shared, own, other]):
+        shared, own = [SimpleNamespace(
+            id=id, guild_id=guild_id) for id, guild_id in ((1, None), (2, 10))]
+        with patch.object(ProfileLayout, "whereIn", return_value=[shared, own]) as lookup:
             self.assertEqual(
                 ProfileLayout.available_for_guild(10), [shared, own])
+        lookup.assert_called_once_with(guild_id=[None, 10])
 
     def test_layout_migration_and_rollback_preserve_legacy_layouts(self):
         migration = importlib.import_module(

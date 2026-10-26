@@ -38,6 +38,8 @@ class TestMemberManagement(unittest.IsolatedAsyncioTestCase):
             controller.User, "whereFirst", return_value=self.user))
         self.lookup = self.stack.enter_context(patch.object(
             controller.GuildUser, "whereFirst", return_value=self.record))
+        self.batch_lookup = self.stack.enter_context(patch.object(
+            controller.GuildUser, "for_discord_ids", return_value={"42": self.record}))
         self.stack.enter_context(patch.object(
             controller.User, "from_discord_id", return_value=self.user))
         self.get_record = self.stack.enter_context(patch.object(
@@ -47,7 +49,7 @@ class TestMemberManagement(unittest.IsolatedAsyncioTestCase):
         request = Mock()
         result = await controller.members(request, 10, search="", page=1, page_size=20)
         self.authorize.assert_awaited_once_with(request, 10)
-        self.lookup.assert_called_once_with(user=self.user, guild=self.guild)
+        self.batch_lookup.assert_called_once_with(self.guild, [42])
         self.assertEqual(result["total"], 1)
         self.assertEqual(result["members"][0]["smartpoint"], 75)
         self.assertEqual(result["members"][0]["xp"], 125)
@@ -60,8 +62,10 @@ class TestMemberManagement(unittest.IsolatedAsyncioTestCase):
         result = await controller.members(Mock(), 10, search="BO", page=2, page_size=1)
         self.assertEqual(result["total"], 2)
         self.assertEqual(result["members"][0]["display_name"], "Bobby")
+        self.batch_lookup.assert_called_once_with(self.guild, [3])
 
     async def test_untracked_members_show_defaults_without_creating_database_records(self):
+        self.batch_lookup.return_value = {}
         with patch.object(controller.User, "whereFirst", return_value=None):
             result = await controller.members(Mock(), 10, search="42", page=1, page_size=20)
         self.assertEqual(result["members"][0]["level"], 1)
@@ -96,6 +100,7 @@ class TestMemberManagement(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(HTTPException):
             await controller.update_member(Mock(), 10, 42, controller.MemberUpdate(smartpoint=1, level=1, xp=0))
         self.lookup.assert_not_called()
+        self.batch_lookup.assert_not_called()
         self.discord_guild.fetch_member.assert_not_awaited()
         self.record.saveOrFail.assert_not_called()
 

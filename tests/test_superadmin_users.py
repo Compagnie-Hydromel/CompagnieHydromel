@@ -14,7 +14,7 @@ controller = Utils.import_module_from_path(
 class TestSuperadminUsers(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.user = SimpleNamespace(id=7, discord_id="123456789012345678", is_superadmin=False,
-                                    badges=[SimpleNamespace(id=1, name="Hero", url="https://example.com/badge.png")], guildusers=[])
+                                    badges=[SimpleNamespace(id=1, name="Hero", url="https://example.com/badge.png")], guildusers=Mock(withRelations=Mock(return_value=[])))
         authorization = patch.object(
             controller.HTTPUtils, "get_superadmin_from_session", return_value=Mock())
         self.authorize = authorization.start()
@@ -25,8 +25,8 @@ class TestSuperadminUsers(unittest.IsolatedAsyncioTestCase):
 
     async def test_details_include_badges_and_progress_for_each_recorded_guild(self):
         guild = SimpleNamespace(id=10, discord_id="234567890123456789")
-        self.user.guildusers = [SimpleNamespace(guild=guild, level=20, point=1500, monthly_point=400,
-                                                smartpoint=900, is_admin=True, has_accepted_rules=True)]
+        self.user.guildusers.withRelations.return_value = [SimpleNamespace(guild=guild, level=20, point=1500, monthly_point=400,
+                                                                           smartpoint=900, is_admin=True, has_accepted_rules=True)]
         with patch.object(controller.User, "find", return_value=self.user):
             result = await controller.show(Mock(), 7)
         self.assertEqual(result["badges"][0]["name"], "Hero")
@@ -41,8 +41,8 @@ class TestSuperadminUsers(unittest.IsolatedAsyncioTestCase):
         member = SimpleNamespace(
             display_name="Alice", name="alice", display_avatar=SimpleNamespace(url="avatar.png"))
         guild = SimpleNamespace(id=10, discord_id="234567890123456789")
-        self.user.guildusers = [SimpleNamespace(guild=guild, level=1, point=0, monthly_point=0,
-                                                smartpoint=20, is_admin=False, has_accepted_rules=False)]
+        self.user.guildusers.withRelations.return_value = [SimpleNamespace(guild=guild, level=1, point=0, monthly_point=0,
+                                                                           smartpoint=20, is_admin=False, has_accepted_rules=False)]
         bot = SimpleNamespace(get_user=lambda id: member, get_guild=lambda id: SimpleNamespace(
             name="Tavern", icon=SimpleNamespace(url="icon.png"), get_member=lambda id: member))
         with patch.object(controller.User, "bot", bot), patch.object(controller.User, "find", return_value=self.user):
