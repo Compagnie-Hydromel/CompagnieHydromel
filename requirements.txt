@@ -1,11 +1,11 @@
-py-cord[voice]==2.6.1
+py-cord[voice]==2.8.1
 audioop-lts; python_version>='3.13' 
 Pillow==12.3.0
 python-dotenv==1.2.3
 PyYAML==6.0.1
 Requests==2.33.0
 praw==7.7.1
-wavelink @ git+https://github.com/Compagnie-Hydromel/Wavelink-no-discordpy.git@v3.4.1
+yt-dlp[default]==2026.10.21
 scheduler==0.8.7
 autopep8==2.3.2
 miwos @ git+https://github.com/Compagnie-Hydromel/MIWOS.git@main

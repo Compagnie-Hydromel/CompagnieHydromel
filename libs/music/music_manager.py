@@ -1,274 +1,326 @@
-import traceback
+import asyncio
+import ipaddress
+import socket
+from collections import deque
+from dataclasses import asdict, dataclass, replace
+from urllib.parse import urlparse
+
 import discord
-import wavelink
+import yt_dlp
+
 from libs.exception.music.already_playing_exception import AlreadyPlayingException
 from libs.exception.music.no_music_playing_exception import NoMusicPlayingException
 from libs.exception.music.no_playing_instance_exception import NoPlayingInstanceException
 from libs.exception.music.no_result_found_exception import NoResultsFoundException
-
 from libs.exception.music.not_connected_to_voice_channel_exception import NotConnectedToVoiceChannelException
 from libs.exception.music.nothing_left_in_back_queue import NothingLeftInBackQueueException
 from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
 from libs.log import Log
+from libs.music.radios import get_radio, radio_choices
+from libs.music.stream_audio import StreamingAudio, StreamPlaybackError
+from libs.music.diagnostics import music_diagnostic
+
+
+YOUTUBE_HLS_FORMAT = "bestaudio[protocol^=m3u8]/best[protocol^=m3u8]"
+
+
+@dataclass(frozen=True)
+class Track:
+    title: str
+    uri: str
+    author: str
+    length: int
+    source: str
+    radio_id: str | None = None
+
+    def __str__(self):
+        return self.title
+
+
+def public_url(url):
+    """Reject local files and private network destinations before streaming."""
+    parsed = urlparse(url)
+    if (parsed.scheme not in ("http", "https") or not parsed.hostname
+            or parsed.username or parsed.password or parsed.port not in (None, 80, 443)):
+        raise ValueError(
+            "Utilisez une URL HTTP(S) publique, sans identifiants.")
+    addresses = socket.getaddrinfo(
+        parsed.hostname, parsed.port or 443, type=socket.SOCK_STREAM)
+    if not addresses or any(not ipaddress.ip_address(item[4][0]).is_global for item in addresses):
+        raise ValueError(
+            "Les adresses locales et privées ne sont pas autorisées.")
+    return url
 
 
 class MusicManager:
-    """Class that manage the music.
-    """
+    """Native Discord streaming. yt-dlp only resolves metadata/URLs, never downloads."""
 
-    def __init__(self, node: wavelink.Node) -> None:
-        """Constructor of MusicManager class.
-        """
-        self.voice_clients: wavelink.Player = None
-        self.back_queue: wavelink.Queue = wavelink.Queue()
-        node.client.add_listener(self.on_track_end, "on_wavelink_track_end")
-        self.__node = node
+    def __init__(self):
+        self.voice_clients = None
+        self.back_queue = deque(maxlen=100)
+        self._queue = deque()
+        self._current = None
+        self._lock = asyncio.Lock()
+        self._generation = 0
+        self.error = None
 
-    async def on_track_end(self, payload: wavelink.TrackEndEventPayload):
-        """Event that is called when the track ends.
+    @staticmethod
+    def _extract(query, *, format_selector="bestaudio/best"):
+        with yt_dlp.YoutubeDL({"format": format_selector, "noplaylist": True, "cachedir": False,
+                               "quiet": True, "no_warnings": True, "socket_timeout": 15,
+                               "retries": 2, "extractor_retries": 2,
+                               "js_runtimes": {"node": {}}}) as downloader:
+            info = downloader.extract_info(query, download=False)
+            if info and "entries" in info:
+                info = next(
+                    (entry for entry in info["entries"] if entry), None)
+            if not info:
+                raise NoResultsFoundException
+            return info
 
-        Args:
-            payload (wavelink.TrackEndEventPayload): The payload of the event.
-        """
-        match(payload.reason):
-            case "finished":
-                Log.info("Track end with reason: " + payload.reason)
+    @classmethod
+    def _search(cls, query, source):
+        query = query.strip()
+        if not query or len(query) > 500:
+            raise ValueError(
+                "Recherche vide ou trop longue (500 caractères maximum).")
+        if source not in ("youtube", "soundcloud", "radio"):
+            raise ValueError("Source inconnue.")
+        if source == "radio":
+            radio = get_radio(query)
+            return Track(radio.name, radio.url, "Radio en direct", 0, "radio", radio.slug)
+        if "://" in query:
+            parsed = urlparse(query)
+            hosts = ("youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com",
+                     "youtu.be") if source == "youtube" else ("soundcloud.com", "www.soundcloud.com")
+            if parsed.scheme not in ("http", "https") or parsed.hostname not in hosts or parsed.username or parsed.password or parsed.port not in (None, 80, 443):
+                raise ValueError(
+                    "Le lien doit appartenir à la source sélectionnée.")
+        else:
+            query = ("ytsearch1:" if source ==
+                     "youtube" else "scsearch1:") + query
+        info = cls._extract(query)
+        uri = ("https://www.youtube.com/watch?v=" +
+               info["id"]) if source == "youtube" else info["webpage_url"]
+        return Track(info.get("title", "Sans titre"), uri, info.get("uploader") or "Inconnu",
+                     int((info.get("duration") or 0) * 1000), source)
 
-                try:
-                    await self.skip()
-                    self.back_queue.put_at(0, payload.track)
-                except NoPlayingInstanceException:
-                    Log.info("No playing instance")
-                    await self.disconnect()
-                    return
-                except NothingLeftInQueueException:
-                    Log.info("Queue is empty")
-                    await self.disconnect()
-                    return
-                except Exception as e:
-                    Log.error("An error occurred: " + traceback.format_exc())
-            case "stopped":
-                pass
-            case _:
-                Log.warning("Track end with reason: " + payload.reason)
+    async def search(self, search, source="youtube"):
+        # MIWOS caches a thread-affine SQLite connection. Radio lookups must
+        # stay on the bot's event-loop thread, just like state/catalogue reads.
+        # Only external metadata extraction belongs in the worker pool.
+        if source == "radio":
+            return self._search(search, source)
+        return await asyncio.to_thread(self._search, search, source)
 
-    async def play(self, voice_state: discord.VoiceState | None, song: wavelink.Playable):
-        """Play a song.
+    def authorize(self, member):
+        voice = getattr(member, "voice", None)
+        if not voice or not voice.channel:
+            raise NotConnectedToVoiceChannelException
+        if self.voice_clients and self.voice_clients.is_connected() and self.voice_clients.channel.id != voice.channel.id:
+            raise ValueError(
+                "Rejoignez le salon vocal du Ménestrel pour le contrôler.")
+        if not isinstance(voice.channel, discord.VoiceChannel):
+            raise ValueError("La musique nécessite un salon vocal classique.")
+        permissions = voice.channel.permissions_for(member.guild.me)
+        if not (permissions.view_channel and permissions.connect and permissions.speak):
+            raise ValueError(
+                "Le Ménestrel doit pouvoir voir, rejoindre et parler dans ce salon.")
 
-        Args:
-            voice_state (discord.VoiceState | None): Voice state of the user if it's connected to a voice channel if is not it's none.
-            song (wavelink.Playable): The song to play.
+    async def join(self, voice_state):
+        if not voice_state or not voice_state.channel:
+            raise NotConnectedToVoiceChannelException
+        if not self.voice_clients or not self.voice_clients.is_connected():
+            self._halt()
+            # Pycord may retain a cached voice client after an interrupted
+            # handshake. Reuse a live client, or clean a stale one before joining.
+            existing = voice_state.channel.guild.voice_client
+            if existing is not None and not existing.is_connected():
+                await existing.disconnect(force=True)
+                existing = None
+            self.voice_clients = existing if existing is not None else await voice_state.channel.connect()
+        if self.voice_clients.channel.id != voice_state.channel.id:
+            raise ValueError("Rejoignez le salon vocal du Ménestrel.")
 
-        Raises:
-            NotConnectedToVoiceChannelException: if the user is not connected to a voice channel.
-        """
-        await self.join(voice_state)
+    async def _start(self, track):
+        # A fresh URL for the same direct format can still return HTTP 403.
+        # YouTube may expose a working HLS stream alongside blocked direct audio.
+        for attempt in range(2):
+            try:
+                return await self._start_stream(track, youtube_hls=bool(attempt and track.source == "youtube"))
+            except StreamPlaybackError:
+                if attempt or track.source == "radio":
+                    raise
+                if track.source == "youtube":
+                    Log.info(
+                        "Flux direct YouTube indisponible : tentative du flux HLS.")
 
-        if self.voice_clients.playing:
-            self.voice_clients.auto_queue.put(song)
-            raise AlreadyPlayingException
+    async def _start_stream(self, track, *, youtube_hls=False):
+        # Resolve at playback time: expiring stream URLs never enter the queue.
+        headers = {}
+        if track.source == "radio":
+            if track.radio_id:
+                radio = get_radio(track.radio_id)
+                track = replace(track, title=radio.name, uri=radio.url)
+            await asyncio.to_thread(public_url, track.uri)
+            stream = track.uri
+        else:
+            if youtube_hls:
+                info = await asyncio.to_thread(self._extract, track.uri, format_selector=YOUTUBE_HLS_FORMAT)
+            else:
+                info = await asyncio.to_thread(self._extract, track.uri)
+            stream = await asyncio.to_thread(public_url, info.get("url", ""))
+            headers = info.get("http_headers") or {}
+        source = StreamingAudio(stream, headers)
+        try:
+            await asyncio.wait_for(asyncio.to_thread(source.prepare), timeout=20)
+        except BaseException:
+            await asyncio.to_thread(source.cleanup)
+            raise
+        self._generation += 1
+        generation = self._generation
+        loop = asyncio.get_running_loop()
 
-        await self.voice_clients.play(song)
-        Log.info("Playing " + str(song) + " / " + str(song.uri) +
-                 " in " + self.voice_clients.channel.name)
-        # partial auto play mode isn't working
-        self.voice_clients.autoplay = wavelink.AutoPlayMode.disabled
+        def ended(error):
+            asyncio.run_coroutine_threadsafe(
+                self._finished(generation, error), loop)
 
-    async def join(self, voice_state: discord.VoiceState):
-        """Connect to the voice channel if the bot is not connected.
+        try:
+            self.voice_clients.play(source, after=ended)
+        except Exception:
+            source.cleanup()
+            raise
+        self._current = track
+        self.error = None
 
-        Args:
-            voice_state (discord.VoiceState): Voice state of the user if it's connected to a voice channel if is not it's none.
+    def _halt(self):
+        self._generation += 1
+        if self.voice_clients:
+            self.voice_clients.stop()
+        self._current = None
 
-        Raises:
-            NotConnectedToVoiceChannelException: if the user is not connected to a voice channel.
-            NoPlayingInstanceException: if there is no playing instance.
-        """
-        if not self.voice_clients:
-            if voice_state == None:
-                raise NotConnectedToVoiceChannelException
-            Log.info("Connecting to " + voice_state.channel.name +
-                     " | " + str(voice_state.channel.id))
-            self.voice_clients = await voice_state.channel.connect(cls=wavelink.Player)
+    async def _advance(self, failed=False):
+        while self._queue:
+            track = self._queue.popleft()
+            try:
+                await self._start(track)
+                return
+            except Exception as error:
+                failed = True
+                self.error = "Impossible de lire un titre. Vérifiez FFmpeg et la disponibilité de la source."
+                Log.warning(music_diagnostic(error, "queue/audio startup"))
+        if not failed:
+            await self._disconnect()
+
+    async def _finished(self, generation, error):
+        async with self._lock:
+            if generation != self._generation:
+                return
+            if error:
+                self.error = "La lecture audio a été interrompue."
+                Log.warning(music_diagnostic(error, "audio playback"))
+            if self._current and not error:
+                self.back_queue.appendleft(self._current)
+            self._current = None
+            await self._advance(failed=bool(error))
+
+    async def play(self, voice_state, song):
+        async with self._lock:
+            await self.join(voice_state)
+            if self._current:
+                if len(self._queue) >= 100:
+                    raise ValueError("La file contient déjà 100 titres.")
+                self._queue.append(song)
+                raise AlreadyPlayingException
+            try:
+                await self._start(song)
+            except Exception:
+                self.error = "Lecture impossible : la source refuse le flux audio ou celui-ci est indisponible."
+                raise
 
     async def skip(self):
-        """Skip the current song.
-
-        Raises:
-            NothingLeftInQueueException: if the queue is empty.
-            NoPlayingInstanceException: if there is no playing instance.            
-        """
-        self.__raise_if_there_no_playing_instance()
-
-        if self.voice_clients.auto_queue.is_empty:
-            raise NothingLeftInQueueException
-        if self.voice_clients.playing:
-            last_song = await self.voice_clients.stop()
-            self.back_queue.put_at(0, last_song)
-
-        song = await self.voice_clients.play(self.voice_clients.auto_queue.get())
-        self.voice_clients.auto_queue.remove(song)
-
-        Log.info("Playing " + str(song) + " / " + str(song.uri) +
-                 " in " + self.voice_clients.channel.name)
-
-        await self.resume()
+        async with self._lock:
+            self._require_voice()
+            if not self._queue:
+                raise NothingLeftInQueueException
+            if self._current:
+                self.back_queue.appendleft(self._current)
+            self._halt()
+            await self._advance()
 
     async def back(self):
-        """Play the previous song.
-
-        Raises:
-            NothingLeftInBackQueueException: if the back queue is empty.
-            NoPlayingInstanceException: if there is no playing instance.
-        """
-        self.__raise_if_there_no_playing_instance()
-
-        if self.back_queue.is_empty:
-            raise NothingLeftInBackQueueException
-
-        current_song = self.voice_clients.current
-        if current_song != None:
-            self.voice_clients.auto_queue.put_at(0, current_song)
-
-        song = self.back_queue.get()
-        self.back_queue.remove(song)
-
-        Log.info("Playing " + str(song) + " / " + str(song.uri) +
-                 " in " + self.voice_clients.channel.name)
-
-        await self.voice_clients.stop()
-        await self.voice_clients.play(song)
-
-        await self.resume()
-
-    async def resume(self):
-        """Resume the current song.
-
-        Raises:
-            NoPlayingInstanceException: if there is no playing instance.
-        """
-        if self.is_paused:
-            Log.info("Resuming music in " + self.voice_clients.channel.name)
-            await self.voice_clients.pause(False)
-
-    @property
-    def is_paused(self) -> bool:
-        """Check if the current song is paused.
-
-        Returns:
-            bool: True if paused else False.
-
-        Raises:
-            NoPlayingInstanceException: if there is no playing instance.
-        """
-        self.__raise_if_there_no_playing_instance()
-
-        return self.voice_clients.paused
-
-    async def search(self, search: str) -> wavelink.Playable:
-        """Search a song.
-
-        Args:
-            search (str): the string to search on youtube.
-
-        Returns:
-            wavelink.Playable: the song to play.
-
-        Raises:
-            NoResultsFoundException: if there is no results found.
-        """
-        music_list: list[wavelink.Playable] = await wavelink.Playable.search(search, node=self.__node)
-
-        if type(music_list) == wavelink.Playlist:
-            music_list_playlist: wavelink.Playlist = music_list
-            return music_list_playlist.pop()
-
-        if len(music_list) == 0:
-            raise NoResultsFoundException
-
-        return music_list[0]
-
-    async def stop(self, disconnect: bool = True):
-        """Stop the current song.
-
-        Args:
-            disconnect (bool, optional): if you need to disconnect the bot after stopping music. Defaults to True.
-
-        Raises:
-            NoPlayingInstanceException: if there is no playing instance.
-        """
-        self.__raise_if_there_no_playing_instance()
-
-        Log.info("Stopping music in " + self.voice_clients.channel.name)
-        await self.voice_clients.stop()
-        if disconnect:
-            Log.info("Disconnect from " + self.voice_clients.channel.name)
-            await self.disconnect()
-
-    async def disconnect(self):
-        """Disconnect the bot from the voice channel.
-
-        Raises:
-            NoPlayingInstanceException: if there is no playing instance.
-        """
-        self.__raise_if_there_no_playing_instance()
-
-        Log.info("Disconnect from " + self.voice_clients.channel.name)
-        await self.voice_clients.disconnect()
-        self.voice_clients = None
+        async with self._lock:
+            self._require_voice()
+            if not self.back_queue:
+                raise NothingLeftInBackQueueException
+            if self._current and len(self._queue) >= 100:
+                raise ValueError(
+                    "La file est pleine : impossible de réinsérer le titre actuel.")
+            previous = self.back_queue.popleft()
+            if self._current:
+                self._queue.appendleft(self._current)
+            self._queue.appendleft(previous)
+            self._halt()
+            await self._advance()
 
     async def pause(self):
-        """Pause the current song.
+        async with self._lock:
+            self._require_voice()
+            self.voice_clients.pause()
 
-        Raises:
-            NoPlayingInstanceException: if there is no playing instance.
-        """
-        if not self.is_paused:
-            Log.info("Pausing music in " + self.voice_clients.channel.name)
-            await self.voice_clients.pause(True)
+    async def resume(self):
+        async with self._lock:
+            self._require_voice()
+            self.voice_clients.resume()
 
-    @property
-    def now(self) -> wavelink.Playable | None:
-        """Get the current song.
+    async def _disconnect(self):
+        self._halt()
+        if self.voice_clients:
+            await self.voice_clients.disconnect(force=True)
+            self.voice_clients = None
 
-        Raises:
-            NoMusicPlayingException: if there is no music playing.
-            NoPlayingInstanceException: if there is no playing instance.
+    async def stop(self, disconnect=True):
+        async with self._lock:
+            self._require_voice()
+            self._queue.clear()
+            self.back_queue.clear()
+            self.error = None
+            self._halt()
+            if disconnect:
+                await self._disconnect()
 
-        Returns:
-            wavelink.Playable | None: the current song.
-        """
-        self.__raise_if_there_no_playing_instance()
+    async def disconnect(self):
+        await self.stop()
 
-        current_music = self.voice_clients.current
-        if current_music is None:
-            raise NoMusicPlayingException
-        return current_music
-
-    @property
-    def queue(self) -> list[wavelink.Playable]:
-        """Get the queue.
-
-        Raises:
-            NothingLeftInQueueException: if the queue is empty.
-
-        Returns:
-            list[wavelink.Playable]: the queue.
-        """
-        if self.voice_clients is None:
-            raise NothingLeftInQueueException
-        if self.voice_clients.auto_queue.is_empty:
-            raise NothingLeftInQueueException
-        songs = []
-        for song in reversed(self.voice_clients.auto_queue):
-            songs.append(song)
-        return songs
-
-    def __raise_if_there_no_playing_instance(self):
-        """Raise an exception if there is no playing instance.
-
-        Raises:
-            NoPlayingInstanceException: if there is no playing instance.
-        """
-        if self.voice_clients == None:
+    def _require_voice(self):
+        if not self.voice_clients or not self.voice_clients.is_connected():
             raise NoPlayingInstanceException
+
+    @property
+    def is_paused(self):
+        self._require_voice()
+        return self.voice_clients.is_paused()
+
+    @property
+    def now(self):
+        self._require_voice()
+        if not self._current:
+            raise NoMusicPlayingException
+        return self._current
+
+    @property
+    def queue(self):
+        if not self._queue:
+            raise NothingLeftInQueueException
+        return list(self._queue)
+
+    def state(self):
+        connected = bool(
+            self.voice_clients and self.voice_clients.is_connected())
+        return {"connected": connected, "paused": connected and self.voice_clients.is_paused(),
+                "channel_id": str(self.voice_clients.channel.id) if connected else None,
+                "channel_name": self.voice_clients.channel.name if connected else None,
+                "current": asdict(self._current) if connected and self._current else None,
+                "queue": [asdict(track) for track in self._queue],
+                "has_previous": bool(self.back_queue), "error": self.error,
+                "radios": radio_choices()}

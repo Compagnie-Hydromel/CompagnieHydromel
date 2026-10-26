@@ -10,6 +10,9 @@ from libs.databases.models.application_model import ApplicationModel
 from libs.utils.utils import Utils
 from libs.log import Log
 import discord
+from libs.communication import ComponentBus
+from libs.communication.hub import ComponentHub
+from libs.communication.protocol import MAX_MESSAGE_BYTES, configured_tokens
 
 
 @asynccontextmanager
@@ -30,12 +33,23 @@ async def lifespan(app: FastAPI):
 
     token_value = os.getenv(token_used)
     if not token_value:
-        Log.error(f"Discord bot token '{token_used}' is not set or invalid.")
-        return
+        raise RuntimeError(f"Discord bot token '{token_used}' is not set or invalid.")
 
-    asyncio.create_task(discord_bot.start(token_value))
-    yield
-    Log.info("Webserver is shutting down...")
+    app.state.component_hub = ComponentHub(configured_tokens())
+    app.state.component_bus = ComponentBus.from_env("webserver")
+    task = asyncio.create_task(discord_bot.start(token_value))
+    try:
+        if app.state.component_bus:
+            await app.state.component_bus.start()
+        yield
+    finally:
+        if app.state.component_bus:
+            await app.state.component_bus.close()
+        await app.state.component_hub.close()
+        await discord_bot.close()
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+        Log.info("Webserver is shutting down...")
 
 app = FastAPI(lifespan=lifespan, docs_url="/api/docs",
               redoc_url="/api/redoc", openapi_url="/api/openapi.json")
@@ -63,4 +77,4 @@ app.mount("/", StaticFiles(directory="http/public",
                            html=True), name="public")
 
 uvicorn.run(app, port=int(os.getenv("WEB_PORT", 8000)), host=os.getenv("WEB_HOST", "127.0.0.1"),
-            log_config=None, access_log=False)
+            log_config=None, access_log=False, ws_max_size=MAX_MESSAGE_BYTES)

@@ -14,10 +14,14 @@ cp docs/docker/.env.example docs/docker/.env
 ```
 
 Edit `docs/docker/.env` with all three Discord bot tokens, the public `APP_URL`, a
-random `SESSION_SECRET_KEY` (`openssl rand -hex 32`), and your **existing Lavalink
-v4** endpoint/password. Lavalink is not included in this stack; its sources/plugins
-must support the music providers you use. Its address must be reachable from the
-containers: `localhost` is not your host machine. Docker Discord connections need
+random `SESSION_SECRET_KEY` and distinct `BUS_WEBSERVER_TOKEN`, `BUS_BARMAN_TOKEN`,
+`BUS_MENESTREL_TOKEN`, `BUS_ARCHIVEUSE_TOKEN` values (`openssl rand -hex 32` for each).
+Music streams directly with yt-dlp and FFmpeg (included in the image), without
+Lavalink or saved audio files. All components communicate through the shared
+WebSocket bus at `ws://webserver:8000/api/internal/bus`; there is no music-specific
+listener or port 8001. Do not expose `/api/internal/bus` through your public reverse
+proxy; keep it on a private network, or use WSS and scoped tokens for remote components.
+See [communication.md](../communication.md). Docker Discord connections need
 outbound HTTPS/WebSocket access (and UDP when using voice).
 
 The webserver defaults to the Barman token with commands disabled. Enable the

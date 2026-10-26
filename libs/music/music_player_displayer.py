@@ -1,94 +1,77 @@
 import traceback
-import discord
-from math import floor
-from libs.exception.music.no_playing_instance_exception import NoPlayingInstanceException
-from libs.exception.music.nothing_left_in_back_queue import NothingLeftInBackQueueException
-from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
-from libs.log import Log
 
+import discord
+
+from libs.exception.bot_exception import BotException
+from libs.exception.music.no_music_playing_exception import NoMusicPlayingException
+from libs.exception.music.no_playing_instance_exception import NoPlayingInstanceException
+from libs.log import Log
 from libs.music.music_manager import MusicManager
 
 
 class MusicPlayerDisplayer(discord.ui.View):
-    message = None
-
-    def __init__(self, music_manager: MusicManager) -> None:
-        self.__music_manager = music_manager
+    def __init__(self, music_manager: MusicManager):
         super().__init__()
+        self.__music_manager = music_manager
+
+    async def interaction_check(self, interaction):
+        try:
+            self.__music_manager.authorize(interaction.user)
+            return True
+        except Exception:
+            await interaction.response.send_message(
+                "Rejoignez le salon vocal du Ménestrel pour le contrôler.", ephemeral=True)
+            return False
 
     @property
-    def embed(self) -> discord.Embed:
-        current_music_info = self.__music_manager.now
+    def embed(self):
+        song = self.__music_manager.now
+        seconds = song.length // 1000
+        duration = f"{seconds // 60}:{seconds % 60:02d}" if seconds else "En direct"
         embed = discord.Embed(
-            title="Now playing 🎶",
-            color=0x2F3136
-        )
-        duration_seconds = current_music_info.length / 1000
-        duration_minutes = duration_seconds / 60
-        duration_seconds = (duration_minutes - floor(duration_minutes)) * 60
-        duration = str(floor(duration_minutes)) + ":" + \
-            str(floor(duration_seconds))
-
+            title="En pause ⏸" if self.__music_manager.is_paused else "En lecture 🎶", color=0x2F3136)
         embed.add_field(
-            name="Title", value="[" + current_music_info.title + "](" + current_music_info.uri + ")", inline=True)
-        embed.add_field(
-            name="Author", value=current_music_info.author, inline=True)
-        embed.add_field(name="Duration", value=duration, inline=True)
-        embed.set_footer(text="source: " + current_music_info.source)
+            name="Titre", value=f"[{song.title}]({song.uri})", inline=True)
+        embed.add_field(name="Artiste", value=song.author, inline=True)
+        embed.add_field(name="Durée", value=duration, inline=True)
+        embed.set_footer(text="source: " + song.source)
         return embed
 
-    @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="⏮")
-    async def back(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
+    async def _control(self, interaction, action):
+        # Stream resolution can take longer than Discord's 3-second deadline.
+        await interaction.response.defer()
         try:
-            await self.__music_manager.back()
+            if action == "toggle":
+                action = "resume" if self.__music_manager.is_paused else "pause"
+            await getattr(self.__music_manager, action)()
         except NoPlayingInstanceException:
             pass
-        except NothingLeftInBackQueueException:
-            pass
-        except:
+        except BotException as error:
+            await interaction.followup.send(error.message, ephemeral=True)
+        except Exception:
             Log.error(traceback.format_exc())
+            await interaction.followup.send("Commande musicale impossible.", ephemeral=True)
         finally:
-            await self.refresh(interaction.response)
+            await self.refresh(interaction)
+
+    @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="⏮")
+    async def back(self, button, interaction):
+        await self._control(interaction, "back")
 
     @discord.ui.button(style=discord.ButtonStyle.primary, emoji="⏯")
-    async def play(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
-        try:
-            if self.__music_manager.is_paused:
-                await self.__music_manager.resume()
-            else:
-                await self.__music_manager.pause()
-            await self.refresh(interaction.response)
-        except NoPlayingInstanceException:
-            pass
-        except:
-            Log.error(traceback.format_exc())
+    async def play(self, button, interaction):
+        await self._control(interaction, "toggle")
 
     @discord.ui.button(style=discord.ButtonStyle.danger, emoji="⏹")
-    async def stop(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
-        try:
-            await self.__music_manager.stop()
-        except NoPlayingInstanceException:
-            pass
-        except:
-            Log.error(traceback.format_exc())
-        finally:
-            await self.refresh(interaction.response)
+    async def stop(self, button, interaction):
+        await self._control(interaction, "stop")
 
     @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="⏭")
-    async def skip(self, button: discord.ui.Button, interaction: discord.interactions.Interaction) -> None:
-        try:
-            await self.__music_manager.skip()
-        except NothingLeftInQueueException:
-            pass
-        except NoPlayingInstanceException:
-            pass
-        except:
-            Log.error(traceback.format_exc())
-        finally:
-            await self.refresh(interaction.response)
+    async def skip(self, button, interaction):
+        await self._control(interaction, "skip")
 
-    async def refresh(self, response: discord.message.Message):
+    async def refresh(self, interaction):
         try:
-            await response.edit_message(embed=self.embed)
-        except NoPlayingInstanceException:
-            await response.edit_message(content="No music playing.", embed=None, view=None)
+            await interaction.edit_original_response(embed=self.embed)
+        except (NoPlayingInstanceException, NoMusicPlayingException):
+            await interaction.edit_original_response(content="Aucune musique en cours.", embed=None, view=None)

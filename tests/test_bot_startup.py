@@ -6,7 +6,7 @@ from commands._bot import run_bot
 
 
 class TestBotStartup(unittest.TestCase):
-    def run_with_bot(self, token, error=None):
+    def run_with_bot(self, token, error=None, bus=None):
         bot = Mock()
         bot.start = AsyncMock(side_effect=error)
         bot.close = AsyncMock()
@@ -18,6 +18,8 @@ class TestBotStartup(unittest.TestCase):
         with patch("commands._bot.discord.Bot", side_effect=create_bot), patch(
             "commands._bot.os.listdir", return_value=["example.py", "ignored.txt"]
         ), patch("commands._bot.os.getenv", return_value=token), patch(
+            "commands._bot.ComponentBus.from_env", return_value=bus
+        ), patch(
             "commands._bot.Log.error"
         ) as log_error:
             if error is not None:
@@ -48,3 +50,15 @@ class TestBotStartup(unittest.TestCase):
 
     def test_login_failure_closes_bot(self):
         self.run_with_bot("test-token", RuntimeError("login failed"))
+
+    def test_bus_is_shared_with_cogs_and_closed_on_shutdown(self):
+        bus = Mock(start=AsyncMock(), close=AsyncMock())
+        bot, _ = self.run_with_bot("test-token", bus=bus)
+        self.assertIs(bot.component_bus, bus)
+        bus.start.assert_awaited_once()
+        bus.close.assert_awaited_once()
+
+    def test_bus_closes_even_if_discord_login_fails(self):
+        bus = Mock(start=AsyncMock(), close=AsyncMock())
+        self.run_with_bot("test-token", RuntimeError("login failed"), bus=bus)
+        bus.close.assert_awaited_once()

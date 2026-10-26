@@ -26,12 +26,14 @@ async def one(request: Request) -> SessionsProjection:
         return RedirectResponse(url="/dashboard")
 
     user = HTTPUtils.get_user_from_session(request)
+    HTTPUtils.require_discord_ready()
     return SessionsProjection(user=UserProjection.from_user(user))
 
 
 @router.get("/guilds")
 async def guilds(request: Request) -> list[GuildProjection]:
     user = HTTPUtils.get_user_from_session(request)
+    HTTPUtils.require_discord_ready()
     guild_list = []
 
     for guild_user in user.guildusers:

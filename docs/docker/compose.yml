@@ -15,6 +15,7 @@ x-app: &app
     SQL_LOG_FILE: /app/storages/sql.log
     WEB_HOST: 0.0.0.0
     WEB_PORT: "8000"
+    BUS_URL: ws://webserver:8000/api/internal/bus
   volumes:
     - hydromel-data:/app/storages
   init: true

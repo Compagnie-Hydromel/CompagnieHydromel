@@ -1,7 +1,7 @@
 import json
 import traceback
 from fastapi import Request
-import mysql
+from mysql.connector.errors import DatabaseError as MySQLDatabaseError
 from starlette.responses import Response as HTTPResponse
 from libs.log import Log
 from MIWOS.libs.exceptions.not_found_exception import NotFoundException
@@ -25,7 +25,7 @@ async def log_requests(request: Request, call_next):
     except MIWOSException as e:
         Log.error(f"MIWOS Exception: {str(e)}")
         return HTTPResponse(status_code=500, content=json.dumps({"error": "Internal Server Error", "message": str(e)}), media_type="application/json")
-    except mysql.connector.errors.DatabaseError as e:
+    except MySQLDatabaseError as e:
         Log.error(f"MySQL Database Error: {str(e)}")
         return HTTPResponse(status_code=500, content=json.dumps({"error": "Database Error", "message": str(e)}), media_type="application/json")
     except Exception as e:

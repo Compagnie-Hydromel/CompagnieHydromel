@@ -43,6 +43,12 @@ export default function SuperadminLayout() {
         >
           ✦ {t("superadmin.badges.title")}
         </NavLink>
+        <NavLink
+          to="/dashboard/superadmin/radios"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          ♬ Radios
+        </NavLink>
       </nav>
       {error ? (
         <p role="alert" className="admin-panel admin-notice error">

@@ -18,14 +18,36 @@ export class Model {
     url: string,
     body?: unknown,
   ): Promise<Response> {
-    const response = await fetch(url, {
+    const options = {
       method: method,
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include",
+      credentials: "include" as RequestCredentials,
       body: body ? JSON.stringify(body) : undefined,
-    });
+    };
+    let response = await fetch(url, options);
+    // Discord-backed reads can arrive before the bot's initial ready event.
+    // Only retry reads explicitly marked transient; never replay music commands.
+    for (
+      let retry = 0;
+      retry < 3 && method === "GET" && response.status === 503;
+      retry++
+    ) {
+      const after = response.headers.get("Retry-After");
+      const seconds = Number(after);
+      if (
+        after === null ||
+        !Number.isFinite(seconds) ||
+        seconds < 0 ||
+        seconds > 5
+      )
+        break;
+      await new Promise((resolve) =>
+        window.setTimeout(resolve, seconds * 1000),
+      );
+      response = await fetch(url, options);
+    }
     return response;
   }
 

@@ -1,5 +1,82 @@
 @import "tailwindcss";
 
+.music-player {
+  margin-block: 24px;
+}
+.music-current {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  background: #241b1633;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.music-current strong {
+  font-size: 1.25rem;
+}
+.music-controls,
+.music-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-block: 20px;
+  align-items: end;
+}
+.music-player button,
+.music-player input,
+.music-player select {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #947242;
+  border-radius: 6px;
+}
+.music-player button {
+  cursor: pointer;
+  background: #5c3c21;
+  color: #fff1ce;
+}
+.music-player button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.music-search label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.music-search input,
+.music-search select {
+  width: 100%;
+  background: #fff8e5;
+  color: #302113;
+}
+.music-query {
+  flex: 1 1 260px;
+}
+.music-queue ol {
+  list-style: decimal;
+  padding-left: 24px;
+}
+.music-queue li {
+  padding: 10px;
+  overflow-wrap: anywhere;
+}
+.music-queue small {
+  display: block;
+}
+.music-player a {
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  .music-search > label,
+  .music-search > button {
+    width: 100%;
+  }
+  .music-controls > button {
+    flex: 1 1 40%;
+  }
+}
+
 /* Keep intrinsic table, form and canvas widths inside their own panels. */
 #root,
 main,

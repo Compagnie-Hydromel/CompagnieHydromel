@@ -1,51 +1,82 @@
 import traceback
 import discord
-import os
-import wavelink
 
 from libs.exception.handler import Handler
-from libs.exception.music.nothing_left_in_queue_exception import NothingLeftInQueueException
 from libs.music.guild_music_manager import GuildMusicManager
 from libs.log import Log
 from libs.paginator import Paginator
 from libs.music.music_player_displayer import MusicPlayerDisplayer
+from libs.music.service import MusicService
+from libs.music.music_manager import Track
+from libs.music.radios import radio_choices
+
+
+async def radio_autocomplete(ctx):
+    needle = ctx.value.casefold()
+    return [discord.OptionChoice(name=radio["name"], value=radio["id"])
+            for radio in radio_choices() if needle in radio["name"].casefold()][:25]
 
 
 class Music(discord.Cog):
     def __init__(self, bot) -> None:
         self.__bot = bot
         self.__error_handler = Handler()
+        self.__guild_music_manager = GuildMusicManager()
+        self.__service = MusicService(bot, self.__guild_music_manager)
+        self.__bus = getattr(bot, "component_bus", None)
+        if self.__bus:
+            self.__bus.register(
+                "music.control", self.__service.control, callers={"webserver"})
 
-    @discord.Cog.listener()
-    async def on_ready(self):
-        self.__node = wavelink.Node(
-            uri=os.getenv("LAVALINK_URI"),
-            password=os.getenv("LAVALINK_PASSWORD"),
-            client=self.__bot
-        )
+    def cog_unload(self):
+        if self.__bus:
+            self.__bus.unregister("music.control")
+        self.__bot.loop.create_task(self.__service.close())
 
-        await wavelink.Pool.connect(nodes=[self.__node])
+    async def cog_before_invoke(self, ctx):
+        try:
+            if ctx.guild is None:
+                raise ValueError(
+                    "Cette commande nécessite un serveur Discord.")
+            if ctx.command.name in ("play", "radio", "stop", "pause", "resume", "back", "skip"):
+                self.__guild_music_manager.get(
+                    ctx.guild.id).authorize(ctx.author)
+        except Exception as error:
+            # Pycord only dispatches DiscordException subclasses from pre-hooks.
+            raise discord.ApplicationCommandInvokeError(error) from error
 
-        self.__guild_music_manager = GuildMusicManager(
-            self.__node
-        )
+    async def cog_command_error(self, ctx, error):
+        error = getattr(error, "original", error)
+        message = str(error) if isinstance(
+            error, ValueError) else self.__error_handler.response_handler(error, traceback.format_exc())
+        await ctx.respond(message, ephemeral=True)
 
     @discord.slash_command(description="Command that can play music that we want.")
-    @discord.option("search", description="Search or youtube link")
-    async def play(self, ctx: discord.ApplicationContext, *, search: str):
+    @discord.option("search", description="Titre, lien YouTube/SoundCloud ou identifiant radio (ex. fip)")
+    @discord.option("source", choices=["youtube", "soundcloud", "radio"], default="youtube")
+    async def play(self, ctx: discord.ApplicationContext, search: str, source: str = "youtube"):
+        await self._play(ctx, search, source)
+
+    @discord.slash_command(description="Écouter une radio de la liste proposée.")
+    @discord.option("station", description="Radio à écouter", autocomplete=radio_autocomplete)
+    async def radio(self, ctx: discord.ApplicationContext, station: str):
+        await self._play(ctx, station, "radio")
+
+    async def _play(self, ctx, search, source):
         Log.command(ctx.author.name +
                     " is launching play commands with " + search)
         try:
             await ctx.defer()
 
             music_manager = self.__guild_music_manager.get(ctx.guild.id)
-            song = await music_manager.search(search)
+            song = await music_manager.search(search, source)
+            music_manager.authorize(ctx.author)
             player_displayer = MusicPlayerDisplayer(music_manager)
 
             await music_manager.play(ctx.author.voice, song)
             await ctx.respond(embed=player_displayer.embed, view=player_displayer)
         except Exception as e:
-            await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
+            await ctx.respond(str(e) if isinstance(e, ValueError) else self.__error_handler.response_handler(e, traceback.format_exc()))
 
     @discord.slash_command(description="Command that stop the music and make the bot leave the channel.")
     async def stop(self, ctx: discord.ApplicationContext):
@@ -118,18 +149,17 @@ class Music(discord.Cog):
         except Exception as e:
             await ctx.respond(self.__error_handler.response_handler(e, traceback.format_exc()))
 
-    def __generate_pages(self, songs: list[wavelink.Playable]) -> list:
+    def __generate_pages(self, songs: list[Track]) -> list:
         pages = []
         song_per_page = 3
         counter = 0
         content = ""
-        songs.reverse()
         for song in songs:
             content += ("**[" + str(song) + "](" + song.uri +
                         ")**\n" + song.author + "\n\n")
 
             counter += 1
-            if counter > song_per_page:
+            if counter >= song_per_page:
                 pages.append(content)
                 content = ""
                 counter = 0
@@ -140,7 +170,4 @@ class Music(discord.Cog):
 
 
 def setup(bot):
-    if os.getenv("LAVALINK_PASSWORD") is None or os.getenv("LAVALINK_PASSWORD") == "":
-        Log.warning("No lavalink password found.")
-    else:
-        bot.add_cog(Music(bot))
+    bot.add_cog(Music(bot))

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Guild } from "../../models/guild";
+import MusicPlayer from "../../components/music-player";
 import { Dashboard as DashboardAPI } from "../../models/dashboard";
 import type { DashboardData, LeaderboardMember } from "../../models/dashboard";
 
@@ -237,6 +238,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+          <MusicPlayer compact />
           <section className="dashboard-panel">
             <div className="dashboard-panel-heading">
               <div>
