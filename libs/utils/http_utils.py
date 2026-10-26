@@ -9,6 +9,15 @@ from libs.databases.models.user import User
 
 class HTTPUtils:
     @staticmethod
+    def require_discord_ready():
+        bot = getattr(ApplicationModel, "bot", None)
+        if bot is None or not bot.is_ready():
+            raise HTTPException(
+                status_code=503, detail="Discord is starting. Please retry shortly.",
+                headers={"Retry-After": "3"})
+        return bot
+
+    @staticmethod
     def get_superadmin_from_session(request: Request) -> User:
         user = HTTPUtils.get_user_from_session(request)
         if not user.is_superadmin:

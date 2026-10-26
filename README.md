@@ -38,7 +38,7 @@
 Before starting the Bot, you'll need to modify/create some files, create the 3 Bot on Discord Developer Portal and make a basic discord test server to make it work and to use it.
 
 First, let's start with the files needed to be modified:
-- In the root folder of the discord bot, copy **.env.example** to **.env** and fill in the information (Databases, Discord Bot Tokens, Lavalink Password, etc.).
+- In the root folder of the discord bot, copy **.env.example** to **.env** and fill in the information (Databases, Discord Bot Tokens, music control secret, etc.).
 - Open Discord App or use [Discord Web](https://discord.com/app)
 - Click on the **+** icon then click on **Create My Own** and after **For me and my friends**. Now give it a name and after click on **Create**.
 
@@ -133,7 +133,7 @@ python3 bot.py
 # To start the barman
 python3 bot.py barman
 
-# To start the menestrel
+# To start the menestrel (see docs/music.md for streaming and web controls)
 python3 bot.py menestrel
 
 # To start the archiveuse
@@ -218,7 +218,7 @@ https://discord.com/blog/slash-commands-permissions-discord-apps-bots
 - https://docs.pycord.dev/en/stable/
 - https://discordpy.readthedocs.io/en/stable/
 - https://docs.python.org/3/
-- https://wavelink.dev/en/v1.3.5/index.html
+- https://github.com/yt-dlp/yt-dlp
 
 ## Contributing
 Please open an issue first to discuss what you would like to change.

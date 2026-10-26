@@ -14,10 +14,10 @@ cp docs/docker/.env.example docs/docker/.env
 ```
 
 Edit `docs/docker/.env` with all three Discord bot tokens, the public `APP_URL`, a
-random `SESSION_SECRET_KEY` (`openssl rand -hex 32`), and your **existing Lavalink
-v4** endpoint/password. Lavalink is not included in this stack; its sources/plugins
-must support the music providers you use. Its address must be reachable from the
-containers: `localhost` is not your host machine. Docker Discord connections need
+random `SESSION_SECRET_KEY` and a different `MUSIC_CONTROL_SECRET` (`openssl rand -hex 32`).
+Music streams directly with yt-dlp and FFmpeg (included in the image), without
+Lavalink or saved audio files. The webserver controls the Ménestrel over the private
+Compose network on port 8001; **do not publish this port**. Docker Discord connections need
 outbound HTTPS/WebSocket access (and UDP when using voice).
 
 The webserver defaults to the Barman token with commands disabled. Enable the

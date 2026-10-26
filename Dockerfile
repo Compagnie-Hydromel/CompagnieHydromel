@@ -25,12 +25,13 @@ ENV PYTHONUNBUFFERED=1 \
     WEB_PORT=8000 \
     SQL_LOG_FILE=/app/storages/sql.log
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libopus0 libffi8 ca-certificates \
+    && apt-get install -y --no-install-recommends libopus0 libffi8 ca-certificates ffmpeg \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --gid 10001 hydromel \
     && useradd --uid 10001 --gid hydromel --no-create-home hydromel
 WORKDIR /app
 COPY --from=dependencies /opt/venv /opt/venv
+COPY --from=frontend /usr/local/bin/node /usr/local/bin/node
 COPY bot.py requirements.txt LICENSE ./
 COPY commands/ commands/
 COPY cogs/ cogs/
