@@ -1,235 +1,40 @@
-# Compagnie Hydromel
+# Compagnie de l’Hydromel
 
-## Directory
+Trois bots Discord et un tableau de bord web pour animer et administrer un serveur :
 
-*Can be updated in the future*
+- **Barman** : administration, rôles, règlement, messages automatiques et bannière vocale.
+- **Archiveuse** : profils, niveaux, smartpoints et classements.
+- **Ménestrel** : musique YouTube, SoundCloud et radios, avec commandes Discord et lecteur web.
+- **Tableau de bord** : connexion depuis Discord, personnalisation des profils et administration.
 
-```
-.
-├── cogs                    # Collection of commands
-│   ├── archiveuse          # Archiveuse cog
-│   |   └── profile.py
-│   ├── menestrel           # Menestrel cog 
-│   |   └── play.py
-│   └── barman              # Barman cog
-│       └── bar_commands.py
-├── assets                   # All things that's not code
-│   ├── fonts
-│   └── img
-├── libs                    # Librairies
-│   ├── image_factory       # Image factory to create profile picture
-│   ├── databases           # Database management
-│   ├── music               # Music management
-│   ├── utils               # Utils functions
-│   └── exceptions          # Custom application exceptions
-├── tests                   # Folder containing automated tests
-├── bot.py                  # Bot base file, used to start the bot
-├── requirements.txt        # File containing all required dependencies.
-├── LICENSE
-└── README.md
-```
+## Documentation
 
-## Prerequisites
+La documentation est centralisée dans le **[wiki du projet](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki)**.
+Les guides détaillés et leurs mises à jour sont à rédiger dans le wiki.
 
-- [Python 3.13.2 or higher](https://www.python.org/downloads/release/python-3132/)
-- [Python-pip](https://pip.pypa.io/en/stable/installation/)
-- [python-venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
+| Besoin | Guide |
+| --- | --- |
+| Installer et lancer en local | [Installation](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Installation) |
+| Configurer Discord, les secrets et la base | [Configuration](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Configuration) |
+| Déployer avec SQLite ou MariaDB | [Déploiement Docker](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Deploiement-Docker) |
+| Utiliser le dashboard et les profils | [Guide utilisateur](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Guide-utilisateur) |
+| Administrer un serveur | [Administration](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Administration) |
+| Gérer les utilisateurs, badges et radios | [Super administration](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Super-administration) |
+| Utiliser ou dépanner le lecteur | [Musique](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Musique) |
+| Comprendre le code et le bus | [Architecture](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Architecture) · [Communication](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Communication) |
+| Retrouver les commandes disponibles | [Commandes](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Commandes) |
+| Migrer, sauvegarder et mettre à jour | [Base de données](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Base-de-donnees) · [Exploitation et sauvegardes](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Exploitation-et-sauvegardes) |
+| Contribuer et exécuter les vérifications | [Développement](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Developpement) |
+| Résoudre un problème | [Dépannage](https://github.com/Compagnie-Hydromel/CompagnieHydromel/wiki/Depannage) |
 
-Before starting the Bot, you'll need to modify/create some files, create the 3 Bot on Discord Developer Portal and make a basic discord test server to make it work and to use it.
+## Fichiers de configuration
 
-First, let's start with the files needed to be modified:
-- In the root folder of the discord bot, copy **.env.example** to **.env** and fill in the information (Databases, Discord Bot Tokens, component bus tokens, etc.).
-- Bots and the web app communicate through a shared WebSocket bus. See [docs/communication.md](docs/communication.md) for setup, RPC actions and events.
-- Open Discord App or use [Discord Web](https://discord.com/app)
-- Click on the **+** icon then click on **Create My Own** and after **For me and my friends**. Now give it a name and after click on **Create**.
+- [.env.example](.env.example) : configuration pour l’exécution locale.
+- [Dockerfile](Dockerfile) : image commune aux bots et au serveur web.
+- [deploy/docker/compose.yml](deploy/docker/compose.yml) : déploiement SQLite.
+- [deploy/docker/compose.mariadb.yml](deploy/docker/compose.mariadb.yml) : surcharge MariaDB.
+- [deploy/docker/.env.example](deploy/docker/.env.example) : configuration Docker à copier dans `deploy/docker/.env`.
 
-Let's now create the 3 Bot on Discord Developer Portal and invite it on the Discord Server created before. For this, follow [this tutorial](https://docs.pycord.dev/en/stable/discord.html).
+## Licence
 
-`WARNING`: Create 3 bot to have 3 individual token
-
-## Installation
-
-For a containerized deployment (SQLite or MariaDB), see
-[the Docker guide](docs/docker/README.md) and [Compose example](docs/docker/compose.yml).
-Container images are published to GHCR with `latest` for `main` and matching Git
-tags for tagged releases.
-
-```bash
-# create env folder
-python3 -m venv env 
-# enable the environement with
-source env/bin/activate
-
-
-# WARNING: use this for windows
-.\env\Scripts\Activate.ps1
-# Too check if it work execute 'pip list' and it will be almost empty if you were already owning some python package or not
-```
-now you can install the dependency with
-```bash
-python3 -m pip install -r requirements.txt
-```
-
-```bash
-python3 bot.py migrate
-
-# rollback migration if needed
-python3 bot.py rollback
-```
-
-`WARNING`: check that python3 is the good version of python you want to use. Don't hesitate to specifies the version with python3.* commands
-
-## Usage
-
-Set `LOG_FILE` in `.env` to customize the application log file path. When unset
-or empty, it defaults to `log.txt`. Relative paths use the working directory;
-the parent directory must already exist. Logs are also printed to the console.
-
-**Super administration → Badges** is restricted to users whose global database
-flag `users.is_superadmin` is enabled (Discord guild Administrator is not enough).
-Manage this flag from the server terminal, using **Discord user IDs**, not database IDs:
-
-```bash
-python3 bot.py superadmin add 123456789012345678
-python3 bot.py superadmin remove 123456789012345678
-python3 bot.py superadmin list
-```
-
-`add` creates the application user if needed. `remove` only revokes superadmin
-access; it never deletes the user. No Discord bot connection is required. Run
-database migrations first, and restrict shell access to trusted operators.
-
-Create badges with PNG/JPEG/WebP uploads, rename them, replace their images, or
-delete them and their assignments. Badges can be assigned or revoked for existing
-application users, searchable by Discord ID. Badges are global across guilds.
-The superadmin area has separate **Users** and **Badges** menus. Open a user’s
-detail page to view their recorded guild memberships, level, XP, monthly points,
-smartpoints, stored permissions, and badge assignments. Assign/revoke badges from
-that detail page, not the badge catalog. Search supports Discord IDs and names
-available in the bot cache. Guild presence is indicative, not a live verification.
-Images are normalized to 128 × 128 with transparency preserved and stored in
-`storages/locals/badges`; share this directory with the bots and include it in
-backups. No web endpoint allows users to change the superadmin flag.
-
-**Administration → Automatic messages** replaces `/automatic_message` for
-creating, editing, listing, and deleting daily or weekly messages. Choose a text
-channel, local time, and IANA timezone; existing schedules remain available.
-Attachments (up to 8 MiB) can be uploaded, replaced, or removed after saving the
-message. They are stored privately in `storages/locals/scheduled_messages`, which
-must be shared with Barman and included in backups. Barman must remain online;
-its scheduler checks every 30 seconds and does not catch up missed schedules.
-Editing preserves the last-send date to prevent duplicate delivery that day.
-
-The web **Dashboard** shows visible voice/stage channels and their participants,
-plus the monthly top 10 and level top 10 using the same ordering as Discord’s
-leaderboards (level ties use current-level XP). It refreshes every 20 seconds
-while the page is visible and follows the selected guild. Any current guild
-member can view it; private channels are filtered using both the viewer’s and
-bot’s Discord permissions. Missing Discord profiles fall back to their user IDs.
-
-```bash
-# To start all the bot
-python3 bot.py
-
-# To start the barman
-python3 bot.py barman
-
-# To start the menestrel (see docs/music.md for streaming and web controls)
-python3 bot.py menestrel
-
-# To start the archiveuse
-python3 bot.py archiveuse
-
-# To start the webserver
-python3 bot.py webserver
-```
-
-### Profile customization
-
-Profile customization is available exclusively in the web dashboard. Use `/web`
-on Discord to receive your login link, select your server, then open **Profile**.
-You can change name and progress-bar colors, select a profile layout, preview
-wallpapers, buy them with smartpoints, and choose an owned wallpaper.
-The `/profile` command remains available to display your profile on Discord.
-
-### Guild administration
-
-Members with the Discord **Administrator** permission can open
-**Administration → Layouts / Wallpapers** in the dashboard. The guild user's
-`is_admin` flag is synchronized with Discord when the server is accessed;
-revoking the permission also revokes web administration access.
-
-**Administration → Members** provides a searchable, paginated list of Discord
-members. Administrators can set exact smartpoint balances, levels, and current-level
-XP. XP must remain below `200 × min(level, 15)`; these manual edits do not grant
-level-up rewards or change monthly XP. Changes only affect the selected guild.
-
-**Administration → Roles** replaces the Discord `/manage_role` command. Add,
-edit, and remove rules for existing Discord roles: level rewards or reaction
-roles (message ID + emoji). Level rules synchronize tracked members after each
-change; synchronization can also be retried from the page. Members receive their
-highest eligible level role after accepting the rules. Reaction assignment stays
-in Barman, including removal of roles when reactions are removed. Add the initial
-reaction to the message on Discord. Unicode and custom emoji are supported.
-The bot needs Manage Roles and a role above the roles it assigns. Your own role
-hierarchy is enforced; managed, @everyone, and privileged administrative roles
-cannot be configured for automatic assignment. Removing a rule does not delete
-the Discord role or revoke existing reaction-role assignments.
-
-In **Administration → Roles → Rules acceptance**, set the rules message link
-or ID and its acceptance emoji. This replaces `/manage_accepted_rules_message`.
-Message links are checked against the selected server and fetched using the bot;
-plain IDs remain supported for existing setups. Add the initial reaction on
-Discord. You can view, change, or disable the setting from the web interface.
-Existing settings are loaded automatically, and changing or disabling the message
-does not reset members who have already accepted the rules.
-
-**Administration → Voice banner** replaces `/manage_banner_voice_channels`.
-Upload a background (PNG/JPEG/WebP, 8 MiB / 16 megapixels maximum; normalized to
-960 × 540), add existing voice channels, then drag their sample avatars on the
-preview or enter exact positions. Save each position; zero coordinates are valid.
-Existing images and channel settings are loaded automatically. You can remove
-channels from the banner or disable automatic updates without deleting Discord
-channels or changing the current Discord banner. Uploaded files are stored in
-`storages/locals/banners`; keep this directory alongside wallpaper uploads.
-Barman applies the configuration on the next voice-state update. Discord must
-support server banners, and the bot needs Manage Server permission.
-
-Layouts are created by dragging profile elements on the preview (or using arrow
-keys, with Shift for larger steps). Wallpapers are uploaded from your computer
-(static PNG, JPEG or WebP, up to 8 MiB / 16 megapixels), with a smartpoint price,
-level reward, or exclusive availability. Images are cropped to 500 × 281 and
-stored in `storages/locals/wallpapers`; keep this directory when deploying or
-backing up the application. Both the webserver and Discord bots need access to it.
-Existing wallpapers have an **Edit wallpaper** action for changing the name,
-price, and level requirement without re-uploading the image or affecting ownership.
-The same editor also offers **Replace image**: choose a file, check its preview,
-then upload it without changing the wallpaper ID or existing ownership. Image
-replacement is saved separately from metadata edits and uses a new immutable URL.
-New creations are scoped to the selected guild; legacy layouts remain shared.
-
-After updating, run `python3 bot.py migrate` before restarting the webserver to
-add guild ownership to profile layouts.
-
-## Avoid users to see admin commands
-use the discord default slash commands permission system
-https://discord.com/blog/slash-commands-permissions-discord-apps-bots
-
-## Usefull links
-- https://docs.pycord.dev/en/stable/
-- https://discordpy.readthedocs.io/en/stable/
-- https://docs.python.org/3/
-- https://github.com/yt-dlp/yt-dlp
-
-## Contributing
-Please open an issue first to discuss what you would like to change.
-Format code with pep8 
-```bash
-python3 bot.py format
-# or
-python3 bot.py check-format
-```
-you can use vscode extension like [Python autopep8](https://marketplace.visualstudio.com/items?itemName=ms-python.autopep8) to format your code automatically.
-
-## License
 [MIT](LICENSE)

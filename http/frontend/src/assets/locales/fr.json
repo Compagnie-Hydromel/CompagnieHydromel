@@ -423,6 +423,12 @@
     "previewOnly": "Aperçu uniquement — le fond sélectionné n’est pas modifié.",
     "stopPreview": "Fermer l’aperçu"
   },
+  "footer": {
+    "links": "Liens du projet",
+    "github": "GitHub",
+    "wiki": "Wiki",
+    "issues": "Signaler un problème"
+  },
   "generic": {
     "navigation": "Navigation principale",
     "account": "Menu du compte",

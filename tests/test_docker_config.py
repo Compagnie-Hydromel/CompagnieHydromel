@@ -44,7 +44,7 @@ class TestDockerFiles(unittest.TestCase):
         self.assertEqual(validation["env"]
                          ["HYDROMEL_ENV_FILE"], ".env.example")
         self.assertNotIn("--no-env-resolution", validation["run"])
-        compose = yaml.safe_load(Path("docs/docker/compose.yml").read_text())
+        compose = yaml.safe_load(Path("deploy/docker/compose.yml").read_text())
         self.assertEqual(compose["x-app"]["env_file"],
                          ["${HYDROMEL_ENV_FILE:-.env}"])
 
@@ -59,8 +59,8 @@ class TestComposeConfiguration(unittest.TestCase):
 
     def test_sqlite_and_mariadb_stack_configuration(self):
         base = ["docker", "compose", "--env-file",
-                "docs/docker/.env.example", "-f", "docs/docker/compose.yml"]
-        for backend, extra in (("sqlite", []), ("mariadb", ["-f", "docs/docker/compose.mariadb.yml"])):
+                "deploy/docker/.env.example", "-f", "deploy/docker/compose.yml"]
+        for backend, extra in (("sqlite", []), ("mariadb", ["-f", "deploy/docker/compose.mariadb.yml"])):
             with self.subTest(backend=backend):
                 result = subprocess.run(
                     base + extra + ["config", "--format", "json"], capture_output=True, text=True,

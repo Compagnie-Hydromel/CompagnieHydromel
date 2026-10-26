@@ -1,5 +1,5 @@
 # Run from the repository root:
-# docker compose --env-file docs/docker/.env -f docs/docker/compose.yml up -d --build
+# docker compose --env-file deploy/docker/.env -f deploy/docker/compose.yml up -d --build
 name: hydromel
 
 x-app: &app

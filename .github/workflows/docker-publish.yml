@@ -39,8 +39,8 @@ jobs:
         env:
           HYDROMEL_ENV_FILE: .env.example
         run: |
-          docker compose --env-file docs/docker/.env.example -f docs/docker/compose.yml config --quiet
-          docker compose --env-file docs/docker/.env.example -f docs/docker/compose.yml -f docs/docker/compose.mariadb.yml config --quiet
+          docker compose --env-file deploy/docker/.env.example -f deploy/docker/compose.yml config --quiet
+          docker compose --env-file deploy/docker/.env.example -f deploy/docker/compose.yml -f deploy/docker/compose.mariadb.yml config --quiet
 
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'

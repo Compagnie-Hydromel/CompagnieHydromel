@@ -16,6 +16,6 @@ htmlcov
 log.txt
 storages
 http/public
-docs
+deploy
 dist
 build

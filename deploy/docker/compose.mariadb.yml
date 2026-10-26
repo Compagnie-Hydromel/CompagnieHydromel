@@ -5,7 +5,7 @@ x-database-environment: &database-environment
   DB_PORT: "3306"
   DB_NAME: ${DB_NAME:-compagnieHydromel}
   DB_USER: ${DB_USER:-hydromel}
-  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in docs/docker/.env}
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in deploy/docker/.env}
 
 services:
   database:
@@ -13,8 +13,8 @@ services:
     environment:
       MARIADB_DATABASE: ${DB_NAME:-compagnieHydromel}
       MARIADB_USER: ${DB_USER:-hydromel}
-      MARIADB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in docs/docker/.env}
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Set MARIADB_ROOT_PASSWORD in docs/docker/.env}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in deploy/docker/.env}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Set MARIADB_ROOT_PASSWORD in deploy/docker/.env}
     volumes:
       - mariadb-data:/var/lib/mysql
     restart: unless-stopped

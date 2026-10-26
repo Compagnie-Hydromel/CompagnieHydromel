@@ -423,6 +423,12 @@
     "previewOnly": "Preview only — your selected wallpaper is unchanged.",
     "stopPreview": "Close preview"
   },
+  "footer": {
+    "links": "Project links",
+    "github": "GitHub",
+    "wiki": "Wiki",
+    "issues": "Report an issue"
+  },
   "generic": {
     "navigation": "Main navigation",
     "account": "Account menu",
