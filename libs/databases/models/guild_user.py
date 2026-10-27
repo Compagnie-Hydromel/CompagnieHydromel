@@ -73,7 +73,7 @@ class GuildUser(ApplicationModel):
 
     @property
     def avatar_url(self):
-        return self.get_guilduser().avatar.url
+        return self.get_guilduser().display_avatar.url
 
     @property
     def display_name(self):
