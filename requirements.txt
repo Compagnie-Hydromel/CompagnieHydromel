@@ -11,7 +11,7 @@ autopep8==2.3.2
 miwos @ git+https://github.com/Compagnie-Hydromel/MIWOS.git@main
 fastapi==0.162.0
 starlette==1.10.0
-uvicorn==0.35.0
+uvicorn==0.54.0
 itsdangerous==2.2.0
 PyJWT==2.15.1
 python-multipart==0.0.32
