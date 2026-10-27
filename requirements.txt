@@ -1,7 +1,7 @@
 py-cord[voice]==2.8.1
 audioop-lts; python_version>='3.13' 
 Pillow==13.0.0
-python-dotenv==1.2.3
+python-dotenv==1.2.4
 PyYAML==6.0.3
 Requests==2.33.0
 praw==7.7.1
