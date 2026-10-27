@@ -1,6 +1,7 @@
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, WebSocket
+from libs.communication.live import live_updates
 from pydantic import BaseModel, ConfigDict, Field
 
 from libs.databases.models.guild import Guild
@@ -43,3 +44,10 @@ async def show(request: Request, guild_id: int):
 @router.post("")
 async def control(request: Request, guild_id: int, command: MusicCommand):
     return await forward(request, guild_id, command.model_dump())
+
+
+@router.websocket("/live")
+async def live(socket: WebSocket, guild_id: int):
+    guild = Guild.find(guild_id)
+    await live_updates.stream(socket, guild.discord_id if guild else "missing", "music",
+                              lambda: show(socket, guild_id))

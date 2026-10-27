@@ -8,6 +8,7 @@ from starlette.concurrency import run_in_threadpool
 from libs.databases.models.radio import Radio
 from libs.music.music_manager import public_url
 from libs.utils.http_utils import HTTPUtils
+from libs.communication.live import live_updates
 
 
 router = APIRouter(prefix="/superadmin/radios")
@@ -51,6 +52,7 @@ async def create(request: Request, changes: RadioWrite):
     HTTPUtils.get_superadmin_from_session(request)
     await validate(changes)
     radio = Radio.createOrFail(slug="radio-" + uuid4().hex, **changes.model_dump())
+    live_updates.invalidate_topic("music")
     return radio_data(radio)
 
 
@@ -61,6 +63,7 @@ async def update(request: Request, radio_id: Annotated[int, Path(gt=0)], changes
     await validate(changes, radio)
     radio.name, radio.url = changes.name, changes.url
     radio.saveOrFail()
+    live_updates.invalidate_topic("music")
     return radio_data(radio)
 
 
@@ -68,4 +71,5 @@ async def update(request: Request, radio_id: Annotated[int, Path(gt=0)], changes
 async def delete(request: Request, radio_id: Annotated[int, Path(gt=0)]):
     HTTPUtils.get_superadmin_from_session(request)
     find_radio(radio_id).delete()
+    live_updates.invalidate_topic("music")
     return {"deleted": True}

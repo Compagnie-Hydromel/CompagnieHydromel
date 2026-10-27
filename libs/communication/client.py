@@ -31,6 +31,7 @@ class ComponentBus:
         self._writer = asyncio.Lock()
         self._socket = None
         self._runner = None
+        self.on_ready = None
         self.register("system.ping", self._ping, callers=set(
             DEFAULT_COMPONENTS) | component_names())
 
@@ -229,6 +230,8 @@ class ComponentBus:
         kind = message.get("type")
         if kind == "ready":
             self._ready.set()
+            if self.on_ready:
+                self.on_ready()
         elif kind in ("result", "error"):
             future = self._pending.get(message.get("id"))
             if future and not future.done():

@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 
 import discord
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, WebSocket
+from libs.communication.live import live_updates
 
 from libs.databases.models.application_model import ApplicationModel
 from libs.databases.models.guild import Guild
@@ -91,3 +92,10 @@ async def show(request: Request, guild_id: int):
         "level_top": leaderboard(guild.get_top_users(), discord_guild),
         "updated_at": datetime.now(timezone.utc).isoformat(),
     }
+
+
+@router.websocket("/live")
+async def live(socket: WebSocket, guild_id: int):
+    guild = Guild.find(guild_id)
+    await live_updates.stream(socket, guild.discord_id if guild else "missing", "dashboard",
+                              lambda: show(socket, guild_id))

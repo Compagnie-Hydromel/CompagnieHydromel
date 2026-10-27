@@ -4,6 +4,7 @@ import socket
 from collections import deque
 from dataclasses import asdict, dataclass, replace
 from urllib.parse import urlparse
+from functools import wraps
 
 import discord
 import yt_dlp
@@ -52,10 +53,22 @@ def public_url(url):
     return url
 
 
+def publishes_changes(method):
+    @wraps(method)
+    async def wrapped(self, *args, **kwargs):
+        try:
+            return await method(self, *args, **kwargs)
+        finally:
+            if self.on_change:
+                self.on_change()
+    return wrapped
+
+
 class MusicManager:
     """Native Discord streaming. yt-dlp only resolves metadata/URLs, never downloads."""
 
     def __init__(self):
+        self.on_change = None
         self.voice_clients = None
         self.back_queue = deque(maxlen=100)
         self._queue = deque()
@@ -212,6 +225,7 @@ class MusicManager:
         if not failed:
             await self._disconnect()
 
+    @publishes_changes
     async def _finished(self, generation, error):
         async with self._lock:
             if generation != self._generation:
@@ -224,6 +238,7 @@ class MusicManager:
             self._current = None
             await self._advance(failed=bool(error))
 
+    @publishes_changes
     async def play(self, voice_state, song):
         async with self._lock:
             await self.join(voice_state)
@@ -238,6 +253,7 @@ class MusicManager:
                 self.error = "Lecture impossible : la source refuse le flux audio ou celui-ci est indisponible."
                 raise
 
+    @publishes_changes
     async def skip(self):
         async with self._lock:
             self._require_voice()
@@ -248,6 +264,7 @@ class MusicManager:
             self._halt()
             await self._advance()
 
+    @publishes_changes
     async def back(self):
         async with self._lock:
             self._require_voice()
@@ -263,11 +280,13 @@ class MusicManager:
             self._halt()
             await self._advance()
 
+    @publishes_changes
     async def pause(self):
         async with self._lock:
             self._require_voice()
             self.voice_clients.pause()
 
+    @publishes_changes
     async def resume(self):
         async with self._lock:
             self._require_voice()
@@ -279,6 +298,7 @@ class MusicManager:
             await self.voice_clients.disconnect(force=True)
             self.voice_clients = None
 
+    @publishes_changes
     async def stop(self, disconnect=True):
         async with self._lock:
             self._require_voice()

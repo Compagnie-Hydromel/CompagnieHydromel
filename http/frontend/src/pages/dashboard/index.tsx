@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Guild } from "../../models/guild";
 import MusicPlayer from "../../components/music-player";
-import { Dashboard as DashboardAPI } from "../../models/dashboard";
+import { subscribeLive } from "../../utils/live";
 import type { DashboardData, LeaderboardMember } from "../../models/dashboard";
 
 function Leaderboard({
@@ -118,10 +118,8 @@ export default function Dashboard() {
   useEffect(() => {
     let cancelled = false;
     const version = ++generation.current;
-    let inFlight = false;
+    let unsubscribe: (() => void) | undefined;
     const load = async () => {
-      if (inFlight) return;
-      inFlight = true;
       setRefreshing(true);
       try {
         const guild = await Guild.currentlySelectedGuild();
@@ -132,11 +130,23 @@ export default function Dashboard() {
           }
           return;
         }
-        const result = await DashboardAPI.forGuild(Number(guild.get("id")));
-        if (!cancelled && version === generation.current) {
-          setData(result);
-          setError("");
-        }
+        if (cancelled || version !== generation.current) return;
+        unsubscribe = subscribeLive<DashboardData>(
+          `/api/sessions/guilds/${Number(guild.get("id"))}/dashboard/live`,
+          (result) => {
+            if (cancelled || version !== generation.current) return;
+            setData(result);
+            setError("");
+            setRefreshing(false);
+          },
+          (status) => {
+            if (cancelled || version !== generation.current) return;
+            const denied = ["401", "403", "404"].includes(status);
+            if (denied) setData(null);
+            setError(denied ? "dashboard.denied" : "dashboard.loadError");
+            setRefreshing(false);
+          },
+        );
       } catch (failure) {
         if (!cancelled && version === generation.current) {
           const denied =
@@ -146,17 +156,13 @@ export default function Dashboard() {
           setError(denied ? "dashboard.denied" : "dashboard.loadError");
         }
       } finally {
-        inFlight = false;
         if (!cancelled && version === generation.current) setRefreshing(false);
       }
     };
     void load();
-    const timer = window.setInterval(() => {
-      if (!document.hidden) void load();
-    }, 20000);
     return () => {
       cancelled = true;
-      window.clearInterval(timer);
+      unsubscribe?.();
     };
   }, [guildRevision, refreshRevision]);
 

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Guild } from "../models/guild";
 import { Music } from "../models/music";
 import type { MusicState, Track } from "../models/music";
+import { subscribeLive } from "../utils/live";
 
 function duration(track: Track) {
   if (!track.length) return "En direct";
@@ -46,26 +47,32 @@ export default function MusicPlayer({
   useEffect(() => {
     const version = ++generation.current;
     let cancelled = false;
-    let inFlight = false;
+    let unsubscribe: (() => void) | undefined;
     const load = async () => {
-      if (inFlight || acting.current) return;
-      inFlight = true;
       const currentOperation = operation.current;
       try {
         const guild = await Guild.currentlySelectedGuild();
         if (!guild) throw new Error("Sélectionnez un serveur.");
         const id = Number(guild.get("id"));
-        const data = await Music.request(id);
-        if (
-          !cancelled &&
-          version === generation.current &&
-          !acting.current &&
-          currentOperation === operation.current
-        ) {
-          setGuildId(id);
-          setState(data);
-          setError("");
-        }
+        if (cancelled || version !== generation.current) return;
+        setGuildId(id);
+        unsubscribe = subscribeLive<MusicState>(
+          `/api/sessions/guilds/${id}/music/live`,
+          (data) => {
+            if (cancelled || version !== generation.current) return;
+            setState(data);
+            setError("");
+          },
+          (status) => {
+            if (cancelled || version !== generation.current) return;
+            setState(null);
+            setError(
+              ["401", "403", "404"].includes(status)
+                ? "Accès refusé."
+                : "Ménestrel indisponible. Reconnexion…",
+            );
+          },
+        );
       } catch (failure) {
         if (
           !cancelled &&
@@ -80,17 +87,12 @@ export default function MusicPlayer({
               : "Ménestrel indisponible.",
           );
         }
-      } finally {
-        inFlight = false;
       }
     };
     void load();
-    const timer = window.setInterval(() => {
-      if (!document.hidden) void load();
-    }, 5000);
     return () => {
       cancelled = true;
-      window.clearInterval(timer);
+      unsubscribe?.();
     };
   }, [revision]);
 

@@ -13,6 +13,8 @@ import discord
 from libs.communication import ComponentBus
 from libs.communication.hub import ComponentHub
 from libs.communication.protocol import MAX_MESSAGE_BYTES, configured_tokens
+from libs.communication.protocol import component_names, DEFAULT_COMPONENTS
+from libs.communication.live import live_updates, register_discord_changes, receive_change
 
 
 @asynccontextmanager
@@ -22,6 +24,7 @@ async def lifespan(app: FastAPI):
     # Initialize Discord bot with commands disabled
     discord_bot = discord.Bot(
         intents=discord.Intents.all(), auto_sync_commands=False)
+    register_discord_changes(discord_bot)
 
     @discord_bot.event
     async def on_ready():
@@ -37,6 +40,11 @@ async def lifespan(app: FastAPI):
 
     app.state.component_hub = ComponentHub(configured_tokens())
     app.state.component_bus = ComponentBus.from_env("webserver")
+    discord_bot.component_bus = app.state.component_bus
+    if app.state.component_bus:
+        app.state.component_bus.on_ready = live_updates.invalidate_all
+        for component in set(DEFAULT_COMPONENTS) | component_names():
+            app.state.component_bus.on(component + ".live.changed", receive_change)
     task = asyncio.create_task(discord_bot.start(token_value))
     try:
         if app.state.component_bus:

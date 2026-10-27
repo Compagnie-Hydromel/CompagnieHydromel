@@ -117,6 +117,10 @@ class GuildUser(ApplicationModel):
 
         return point / calculated_point_per_level
 
+    def afterSave(self):
+        from libs.communication.live import notify_change
+        notify_change(self.guild.discord_id, "dashboard")
+
     def to_dict(self):
         base_dict = super().to_dict()
         base_dict["avatar_url"] = self.avatar_url
