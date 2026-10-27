@@ -1,0 +1,50 @@
+name: Dependency Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: http/frontend
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: http/frontend/package-lock.json
+      - run: npm ci
+      - run: npm audit
+
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+      - name: Install runtime dependencies in isolation
+        run: |
+          python -m venv .audit/runtime
+          .audit/runtime/bin/python -m pip install -r requirements.txt
+          .audit/runtime/bin/python -m pip check
+      - name: Audit runtime dependencies (including transitive packages)
+        # MIWOS is installed from Git and has no PyPI advisory entry; pip-audit
+        # reports it as skipped, but still audits its PyPI dependencies.
+        run: |
+          python -m pip install pip-audit==2.10.1
+          pip-audit --path .audit/runtime/lib/python3.13/site-packages
