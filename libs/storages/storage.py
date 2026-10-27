@@ -36,9 +36,9 @@ class Storage:
         storage_instance = self.__get_storage_instance(match_group[0])
         return storage_instance.delete(match_group[1])
 
-    def __check_format(self, url: str) -> str:
-        pattern = r"^([a-z]{0,}):\/\/([a-zA-Z\/. éàè,-_!~]{1,})$"
-        match = re.match(pattern, url)
+    def __check_format(self, url: str) -> tuple[str, str]:
+        pattern = r"([a-z]+)://([a-zA-Z0-9/. éàè,_!~-]+)"
+        match = re.fullmatch(pattern, url)
         if match:
             return match.groups()
         raise ValueError(f"Unsupported URL format: {url}")
