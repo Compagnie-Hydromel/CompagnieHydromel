@@ -3,7 +3,7 @@ audioop-lts; python_version>='3.13'
 Pillow==13.0.0
 python-dotenv==1.2.4
 PyYAML==6.0.3
-Requests==2.33.0
+Requests==2.34.2
 praw==8.0.3
 yt-dlp[default]==2026.10.21
 scheduler==0.8.11
