@@ -1,4 +1,6 @@
 import requests
+from urllib.parse import urlsplit
+from posixpath import splitext
 
 from libs.exception.storage.cant_store_file_with_https_exception import CantStoreFileWithHTTPSException
 
@@ -16,7 +18,7 @@ class HTTPSStorage:
         return self.prefix + url
 
     def get_file_type(self, url) -> str:
-        return url.split('.')[-1].lower()
+        return splitext(urlsplit(self.prefix + url).path)[1].lstrip('.').lower()
 
     def put(self, data, key):
         raise CantStoreFileWithHTTPSException(

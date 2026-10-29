@@ -1,6 +1,7 @@
 from io import BytesIO
 from io import IOBase
 import re
+from urllib.parse import urlsplit
 
 
 class Storage:
@@ -37,6 +38,11 @@ class Storage:
         return storage_instance.delete(match_group[1])
 
     def __check_format(self, url: str) -> tuple[str, str]:
+        if url.startswith(("http://", "https://")):
+            parsed = urlsplit(url)
+            if parsed.hostname and not re.search(r"\s", url):
+                return tuple(url.split("://", 1))
+            raise ValueError(f"Unsupported URL format: {url}")
         pattern = r"([a-z]+)://([a-zA-Z0-9/. éàè,_!~-]+)"
         match = re.fullmatch(pattern, url)
         if match:
