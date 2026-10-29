@@ -19,6 +19,7 @@ COMMANDS = {
     "check-format": "check_format",
     "test": "test",
     "superadmin": "superadmin",
+    "localize-images": "localize_images",
 }
 
 
