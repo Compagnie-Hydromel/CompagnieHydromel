@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 
 from MIWOS.config import DBConfig
-from MIWOS.db import migrate, rollback
+from MIWOS.db import migrate
 from MIWOS.libs.sql.select import executor_select
 
 from libs.databases.bootstrap import load_all_models
@@ -122,12 +122,13 @@ class TestMiwosIntegration(unittest.TestCase):
         record = self.create_member(1, smartpoint=75)
         migration = importlib.import_module(
             "libs.databases.migrations.20261027000000_optimize_database_queries")
-        rollback(1)
+        # Target this migration explicitly: newer feature migrations may follow it.
+        migration.OptimizeDatabaseQueries().rollback()
         for _, index, _ in migration.OptimizeDatabaseQueries.indexes:
             self.assertIsNone(self.executor.execute(
                 "SELECT name FROM sqlite_master WHERE type='index' AND name=?", [index]))
         self.assertEqual(GuildUser.find(record.id).smartpoint, 75)
-        migrate()
+        migration.OptimizeDatabaseQueries().migrate()
         migrate()
         for _, index, _ in migration.OptimizeDatabaseQueries.indexes:
             self.assertIsNotNone(self.executor.execute(

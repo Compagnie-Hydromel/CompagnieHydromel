@@ -47,7 +47,8 @@ def localize(records, uploads, label, dry_run=False):
             if local_url is not None:
                 uploads.delete(local_url)
             failed += 1
-            detail = error.detail if isinstance(error, HTTPException) else str(error)
+            detail = error.detail if isinstance(
+                error, HTTPException) else str(error)
             print(f"Failed {label} #{record.id}: {detail}")
             continue
         migrated += 1
@@ -61,7 +62,8 @@ def run():
     parser = argparse.ArgumentParser(
         prog="python3 bot.py localize-images",
         description="Download remote wallpaper/badge images and replace their URLs with local storage references.")
-    parser.add_argument("table", choices=("all", "wallpapers", "badges"), nargs="?", default="all")
+    parser.add_argument("table", choices=(
+        "all", "wallpapers", "badges"), nargs="?", default="all")
     parser.add_argument("--dry-run", action="store_true",
                         help="List remote images without downloading or changing anything")
     arguments = parser.parse_args(sys.argv[2:])
