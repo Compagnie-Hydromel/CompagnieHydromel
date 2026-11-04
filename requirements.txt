@@ -5,7 +5,7 @@ python-dotenv==1.2.4
 PyYAML==6.0.3
 Requests==2.34.2
 praw==8.0.3
-yt-dlp[default]==2026.10.21
+yt-dlp[default]==2026.10.26
 scheduler==0.8.11
 autopep8==2.3.2
 miwos @ git+https://github.com/Compagnie-Hydromel/MIWOS.git@main
