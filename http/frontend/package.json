@@ -16,27 +16,30 @@
     "@fortawesome/free-regular-svg-icons": "^7.0.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@fortawesome/react-fontawesome": "^3.5.0",
-    "@tailwindcss/vite": "^4.1.12",
+    "@tailwindcss/vite": "^4.3.5",
     "html2canvas": "^1.4.1",
     "i18next": "^26.5.11",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-i18next": "^17.1.8",
     "react-router-dom": "^7.18.4",
-    "tailwindcss": "^4.1.12"
+    "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
     "prettier": "3.7.4",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.39.1",
-    "vite": "^7.3.7"
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.6"
+  },
+  "overrides": {
+    "minimatch": "^11.0.5"
   }
 }
