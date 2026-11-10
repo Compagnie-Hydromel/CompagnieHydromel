@@ -34,12 +34,14 @@ export default function AdminWallpapers() {
     if (busy || !selected) return;
     setNotice("");
     setFailedUrl("");
-    if (selected.size > 8 * 1024 * 1024) {
+    if (selected.size > 10 * 1024 * 1024) {
       setNotice("admin.imageTooLarge");
       setFile(null);
     } else if (
       selected.type &&
-      !["image/png", "image/jpeg", "image/webp"].includes(selected.type)
+      !["image/png", "image/jpeg", "image/webp", "image/gif"].includes(
+        selected.type,
+      )
     ) {
       setNotice("admin.invalidImage");
       setFile(null);
@@ -175,7 +177,7 @@ export default function AdminWallpapers() {
                 id="wallpaper-image"
                 ref={fileInput}
                 type="file"
-                accept="image/png,image/jpeg,image/webp"
+                accept="image/png,image/jpeg,image/webp,image/gif"
                 onChange={(event) => chooseImage(event.target.files?.[0])}
               />
               <span className="admin-hint">{t("admin.imageFormats")}</span>

@@ -57,7 +57,7 @@ export default function SuperadminBadges() {
   const save = async (event: React.FormEvent) => {
     event.preventDefault();
     if (submitting.current) return;
-    if (file && file.size > 8 * 1024 * 1024) {
+    if (file && file.size > 10 * 1024 * 1024) {
       setError("admin.imageTooLarge");
       return;
     }
@@ -186,7 +186,7 @@ export default function SuperadminBadges() {
                   <input
                     key={editing ?? "new"}
                     type="file"
-                    accept="image/png,image/jpeg,image/webp"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
                     onChange={(event) =>
                       setFile(event.target.files?.[0] ?? null)
                     }

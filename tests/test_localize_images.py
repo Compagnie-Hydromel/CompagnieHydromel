@@ -55,13 +55,22 @@ class TestLocalizeImages(unittest.TestCase):
         fetch.assert_not_called()
         record.saveOrFail.assert_not_called()
 
-    def test_download_limits_stream_and_closes_response(self):
+    def test_download_reads_stream_and_closes_response(self):
         response = Mock(url="https://example.com/image.png")
         response.iter_content.return_value = [b"123", b"456"]
         context = Mock()
         context.__enter__ = Mock(return_value=response)
         context.__exit__ = Mock(return_value=False)
         with patch("commands.localize_images.requests.get", return_value=context):
-            with self.assertRaisesRegex(ValueError, "exceeds"):
-                download(response.url, 5)
+            self.assertEqual(download(response.url), b"123456")
         context.__exit__.assert_called_once()
+
+    def test_localization_bypasses_upload_size_limit(self):
+        output = BytesIO()
+        Image.new("RGB", (100, 100), "red").save(output, format="PNG")
+        record = SimpleNamespace(id=1, url="https://example.com/image.png", saveOrFail=Mock())
+        with TemporaryDirectory() as directory, patch.object(WallpaperUploads, "DIRECTORY", Path(directory)), \
+                patch.object(WallpaperUploads, "MAX_BYTES", 10), \
+                patch("commands.localize_images.download", return_value=output.getvalue()):
+            self.assertEqual(localize([record], WallpaperUploads, "wallpapers"), 0)
+            self.assertTrue(record.url.startswith(WallpaperUploads.PREFIX))

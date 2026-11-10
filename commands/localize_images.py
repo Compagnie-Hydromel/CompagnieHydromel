@@ -11,7 +11,7 @@ from libs.storages.badge_uploads import BadgeUploads
 from libs.storages.wallpaper_uploads import WallpaperUploads
 
 
-def download(url, max_bytes):
+def download(url):
     with requests.get(url, stream=True, timeout=(10, 30)) as response:
         response.raise_for_status()
         if urlsplit(response.url).scheme.lower() not in ("http", "https"):
@@ -19,8 +19,6 @@ def download(url, max_bytes):
         data = bytearray()
         for chunk in response.iter_content(chunk_size=65536):
             data.extend(chunk)
-            if len(data) > max_bytes:
-                raise ValueError("Image exceeds 8 MiB")
         return bytes(data)
 
 
@@ -37,9 +35,9 @@ def localize(records, uploads, label, dry_run=False):
             continue
         local_url = None
         try:
-            data = download(previous, uploads.MAX_BYTES)
+            data = download(previous)
             # A record ID is a stable, positive namespace for these filenames.
-            local_url = uploads.store(data, record.id)
+            local_url = uploads.store(data, record.id, enforce_size_limit=False)
             record.url = local_url
             record.saveOrFail()
         except Exception as error:

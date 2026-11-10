@@ -68,7 +68,7 @@ export default function AdminBanner() {
 
   const upload = async (file: File | undefined) => {
     if (!file || submitting.current) return;
-    if (file.size > 8 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
       setError("admin.imageTooLarge");
       return;
     }
@@ -384,7 +384,7 @@ export default function AdminBanner() {
           <input
             ref={fileInput}
             type="file"
-            accept="image/png,image/jpeg,image/webp"
+            accept="image/png,image/jpeg,image/webp,image/gif"
             disabled={busy}
             onChange={(event) => void upload(event.target.files?.[0])}
           />

@@ -1,3 +1,4 @@
+import asyncio
 from io import BytesIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -62,7 +63,7 @@ class TestWallpaperStorage(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
     def test_valid_images_are_normalized_and_work_with_discord_storage(self):
-        for format in ("PNG", "JPEG", "WEBP"):
+        for format in ("PNG", "JPEG", "WEBP", "GIF"):
             with self.subTest(format=format):
                 url = WallpaperUploads.store(image_bytes(format), 10)
                 filename = url.removeprefix(WallpaperUploads.PREFIX)
@@ -74,11 +75,25 @@ class TestWallpaperStorage(unittest.TestCase):
                     self.assertTrue(Storage().get(url).startswith(b"\x89PNG"))
 
     def test_image_bytes_are_validated_not_just_extension_or_mime(self):
-        for data in (b"", b"<svg onload='alert(1)'></svg>", b"not an image", image_bytes("GIF")):
+        for data in (b"", b"<svg onload='alert(1)'></svg>", b"not an image"):
             with self.subTest(data=data[:20]), self.assertRaises(HTTPException) as error:
                 WallpaperUploads.store(data, 10)
             self.assertEqual(error.exception.status_code, 422)
         self.assertFalse(self.root.exists())
+
+    def test_animated_gif_is_preserved_and_served(self):
+        output = BytesIO()
+        frames = [Image.new("RGB", (100, 100), color) for color in ("red", "blue")]
+        frames[0].save(output, format="GIF", save_all=True, append_images=frames[1:], duration=[100, 200], loop=0)
+        url = WallpaperUploads.store(output.getvalue(), 10)
+        filename = url.removeprefix(WallpaperUploads.PREFIX)
+        with Image.open(WallpaperUploads.image_path(filename)) as image:
+            self.assertEqual(image.n_frames, 2)
+            self.assertEqual(image.size, WallpaperUploads.SIZE)
+            self.assertEqual(image.info["duration"], 100)
+            image.seek(1)
+            self.assertEqual(image.info["duration"], 200)
+        self.assertEqual(asyncio.run(media.image(filename)).media_type, "image/gif")
 
     def test_size_and_pixel_limits(self):
         with patch.object(WallpaperUploads, "MAX_BYTES", 10), self.assertRaises(HTTPException) as error:

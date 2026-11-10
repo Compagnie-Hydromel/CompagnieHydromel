@@ -42,12 +42,14 @@ export default function WallpaperCard({
   const chooseFile = (selected: File | undefined) => {
     if (!selected || busy) return;
     setNotice("");
-    if (selected.size > 8 * 1024 * 1024) {
+    if (selected.size > 10 * 1024 * 1024) {
       clearFile();
       setNotice("admin.imageTooLarge");
     } else if (
       selected.type &&
-      !["image/png", "image/jpeg", "image/webp"].includes(selected.type)
+      !["image/png", "image/jpeg", "image/webp", "image/gif"].includes(
+        selected.type,
+      )
     ) {
       clearFile();
       setNotice("admin.invalidImage");
@@ -134,7 +136,7 @@ export default function WallpaperCard({
               <input
                 ref={fileInput}
                 type="file"
-                accept="image/png,image/jpeg,image/webp"
+                accept="image/png,image/jpeg,image/webp,image/gif"
                 onChange={(event) => chooseFile(event.target.files?.[0])}
               />
               <span className="admin-hint">{t("admin.imageFormats")}</span>

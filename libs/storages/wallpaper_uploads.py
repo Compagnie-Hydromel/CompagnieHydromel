@@ -5,14 +5,14 @@ import warnings
 from uuid import uuid4
 
 from fastapi import HTTPException
-from PIL import Image, ImageOps, UnidentifiedImageError
+from PIL import Image, ImageOps, ImageSequence, UnidentifiedImageError
 
 
 class WallpaperUploads:
     DIRECTORY = Path("storages/locals/wallpapers")
-    MAX_BYTES = 8 * 1024 * 1024
+    MAX_BYTES = 10 * 1024 * 1024
     MAX_PIXELS = 16000000
-    FILENAME = re.compile(r"[1-9][0-9]*-[0-9a-f]{32}\.png")
+    FILENAME = re.compile(r"[1-9][0-9]*-[0-9a-f]{32}\.(?:png|gif)")
     PREFIX = "local://wallpapers/"
     PUBLIC_PREFIX = "/api/wallpapers/"
     SIZE = (500, 281)
@@ -26,30 +26,42 @@ class WallpaperUploads:
         return url
 
     @classmethod
-    def store(cls, data, guild_id):
-        if len(data) > cls.MAX_BYTES:
-            raise HTTPException(status_code=413, detail="Image exceeds 8 MiB")
+    def store(cls, data, guild_id, *, enforce_size_limit=True):
+        if enforce_size_limit and len(data) > cls.MAX_BYTES:
+            raise HTTPException(status_code=413, detail="Image exceeds 10 MiB")
         try:
             with warnings.catch_warnings():
                 warnings.simplefilter("error", Image.DecompressionBombWarning)
                 with Image.open(BytesIO(data)) as source:
-                    if source.format not in ("PNG", "JPEG", "WEBP") or getattr(source, "is_animated", False):
+                    if source.format not in ("PNG", "JPEG", "WEBP", "GIF") or (source.format != "GIF" and getattr(source, "is_animated", False)):
                         raise ValueError(
-                            "Use a static PNG, JPEG or WebP image")
+                            "Use a PNG, JPEG, WebP or GIF image")
                     if source.width * source.height > cls.MAX_PIXELS:
                         raise ValueError("Image exceeds 16 megapixels")
-                    source.load()
-                    image = ImageOps.fit(ImageOps.exif_transpose(source).convert("RGBA"),
-                                         cls.SIZE, method=Image.Resampling.LANCZOS)
-                    image.info.clear()
                     output = BytesIO()
-                    image.save(output, format="PNG")
+                    if source.format == "GIF" and getattr(source, "is_animated", False):
+                        frames = []
+                        durations = []
+                        for frame in ImageSequence.Iterator(source):
+                            durations.append(frame.info.get("duration", 0))
+                            frames.append(ImageOps.fit(frame.convert("RGBA"), cls.SIZE,
+                                                       method=Image.Resampling.LANCZOS))
+                        frames[0].save(output, format="GIF", save_all=True, append_images=frames[1:],
+                                       duration=durations, loop=source.info.get("loop", 0), disposal=2)
+                        extension = "gif"
+                    else:
+                        source.load()
+                        image = ImageOps.fit(ImageOps.exif_transpose(source).convert("RGBA"),
+                                             cls.SIZE, method=Image.Resampling.LANCZOS)
+                        image.info.clear()
+                        image.save(output, format="PNG")
+                        extension = "png"
         except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError, Image.DecompressionBombWarning):
             raise HTTPException(
-                status_code=422, detail="Use a valid static PNG, JPEG or WebP image (max 16 megapixels)")
+                status_code=422, detail="Use a valid PNG, JPEG, WebP or GIF image (max 16 megapixels)")
 
         cls.DIRECTORY.mkdir(parents=True, exist_ok=True)
-        filename = f"{guild_id}-{uuid4().hex}.png"
+        filename = f"{guild_id}-{uuid4().hex}.{extension}"
         path = cls.DIRECTORY / filename
         created = False
         try:

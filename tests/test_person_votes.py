@@ -43,6 +43,17 @@ class TestPersonVotes(VoteDatabase, unittest.TestCase):
     def setUp(self):
         self.setup_database()
 
+    def test_vote_migration_resumes_after_partial_creation(self):
+        migration = importlib.import_module(
+            "libs.databases.migrations.20261030000000_create_person_votes")
+        poll = self.launch()
+        self.executor.commit("DROP TABLE personballots")
+        migration.CreatePersonVotes().migrate()
+        migration.CreatePersonVotes().migrate()
+        self.assertIsNotNone(PersonVote.find(poll.id))
+        poll.cast(50, 10, "100")
+        self.assertEqual(len(PersonBallot.all()), 1)
+
     def test_independent_member_quotas_and_no_duplicate_candidate(self):
         poll = self.launch()
         self.assertEqual(poll.cast(50, 10, "100"), 2)
