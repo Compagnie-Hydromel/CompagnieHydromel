@@ -37,7 +37,8 @@ def localize(records, uploads, label, dry_run=False):
         try:
             data = download(previous)
             # A record ID is a stable, positive namespace for these filenames.
-            local_url = uploads.store(data, record.id, enforce_size_limit=False)
+            local_url = uploads.store(
+                data, record.id, enforce_size_limit=False)
             record.url = local_url
             record.saveOrFail()
         except Exception as error:
