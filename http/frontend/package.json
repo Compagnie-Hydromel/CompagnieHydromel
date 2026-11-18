@@ -20,7 +20,7 @@
     "html2canvas": "^1.4.1",
     "i18next": "^26.5.11",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react-dom": "^19.3.1",
     "react-i18next": "^17.1.8",
     "react-router-dom": "^7.18.4",
     "tailwindcss": "^4.3.5"
@@ -28,7 +28,7 @@
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.0.0",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
