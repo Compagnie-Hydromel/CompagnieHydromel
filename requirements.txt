@@ -2,7 +2,7 @@ py-cord[voice]==2.8.1
 audioop-lts; python_version>='3.13' 
 Pillow==13.0.0
 python-dotenv==1.2.4
-PyYAML==6.0.3
+PyYAML==6.0.4
 Requests==2.34.2
 praw==8.0.3
 yt-dlp[default]==2026.10.26
